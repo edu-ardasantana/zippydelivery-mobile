@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "zippydelivery-mobile",
+    "slug": "zippydelivery-mobile",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
