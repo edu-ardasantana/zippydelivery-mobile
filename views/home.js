@@ -49,9 +49,13 @@ export default function Home({ navigation }) {
                 />
               </View>
               <View>
-                <Text style={styles.nomeLoja}>Boi e Brasa Spettus</Text>
+                <Text 
+                style={styles.nomeLoja}
+                onPress={() => navigation.navigate('HomeLoja')}
+                
+                >Boi e Brasa Spettus</Text>
                 <View style={styles.infoLoja}>
-                  <Text style={styles.infoLojaTime}>70 min        </Text>
+                  <Text style={styles.infoLojaTime}>Hoje, 70 min    </Text>
                   <Text style={styles.infoLojaStatus}>Aberto</Text>
                 </View>
               </View>
