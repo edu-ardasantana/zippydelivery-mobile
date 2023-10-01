@@ -3,6 +3,9 @@ import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'rea
 import Footer from '../footer'
 
 export default function Home({ navigation }) {
+
+  const listaNum = [1, 2, 3, 4, 5];
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -37,10 +40,10 @@ export default function Home({ navigation }) {
             source={require('/views/img/group5979.png')}
           />
         </View>
-        <Text style={styles.title}>Restaurantes</Text>
+        <Text style={styles.categoria}>Restaurantes</Text>
 
         <View style={styles.cards}>
-          {[1, 2, 3, 4, 5].map((_, index) => (
+          {listaNum.map((index) => (
             <TouchableOpacity key={index} style={styles.card}>
               <View>
                 <Image
@@ -94,13 +97,13 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
   },
-  title: {
+  categoria: {
     color: '#E1E1E6',
-    fontSize: 18,
+    fontSize: 17,
     letterSpacing: 1.5,
     fontWeight: '450',
     marginLeft: 30,
-    marginBottom: 20,
+    marginBottom: 15,
   },
   anuncio: {
     alignItems: 'center',
@@ -108,7 +111,7 @@ const styles = StyleSheet.create({
   anuncioImage: {
     width: 340,
     height: 130,
-    marginTop: 30,
+    marginTop: 20,
     marginBottom: 50,
   },
   cards: {
@@ -119,7 +122,7 @@ const styles = StyleSheet.create({
     width: '85%',
     backgroundColor: '#00070A',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 7,
     padding: 15,
     marginBottom: 7,
     flexDirection: 'row',
