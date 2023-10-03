@@ -9,7 +9,7 @@ export default function Home({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Menu')}>
           <Image
             style={styles.menuIcon}
             source={{
