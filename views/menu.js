@@ -8,7 +8,7 @@ export default function Menu({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Image
-            style={[styles.icon, { marginBottom: 20, marginTop: 20, marginLeft: 20, marginRight: 5 }]}
+            style={[styles.icon, { marginVertical: 20, tintColor: '#E1E1E6', marginLeft: 20, marginRight: 5 }]}
             source={{
               uri: 'https://api.iconify.design/material-symbols:close-rounded.svg',
             }}
@@ -20,7 +20,7 @@ export default function Menu({ navigation }) {
         <View style={styles.search}>
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Image
-              style={[styles.icon, { marginRight: 10 }]}
+              style={[styles.icon, { marginRight: 10, tintColor: '#7C7C8A', }]}
               source={{
                 uri: 'https://api.iconify.design/material-symbols:search-rounded.svg',
               }}
@@ -32,7 +32,7 @@ export default function Menu({ navigation }) {
           />
         </View>
 
-        <TouchableOpacity style={styles.divider}>
+        <TouchableOpacity style={styles.divider} onPress={() => navigation.navigate('Login')}>
           <Text style={styles.exit}>Sair</Text>
         </TouchableOpacity>
       </View>
@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
   icon: {
     width: 25,
     height: 25,
-    tintColor: '#E1E1E6',
   },
   search: {
     width: '85%',
@@ -84,7 +83,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     paddingHorizontal: 10,
-    placeholderTextColor: '#E1E1E6',
+    placeholderTextColor: '#7C7C8A',
+    color: '#7C7C8A',
   },
   divider: {
     width: '88%',
