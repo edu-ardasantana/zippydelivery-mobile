@@ -6,6 +6,7 @@ import Login from './views/login';
 import RecuperaSenha from './views/recuperaSenha';
 import CadastraUsuario from './views/cadastraUsuario';
 import HomeLojaScreen from '/views/homeLoja';
+import Menu from '/views/menu';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,9 +19,9 @@ export default function App() {
         <Stack.Screen name="RecuperaSenha" component={RecuperaSenha} options={{headerShown: false}} />
         <Stack.Screen name="CadastraUsuario" component={CadastraUsuario} options={{headerShown: false}} />
         <Stack.Screen name="HomeLoja" component={HomeLojaScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Menu" component={Menu} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
 
