@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Slide from '../slide';
+import Item from '../item';
 import Footer from '../footer';
 
 export default function HomeLoja({ navigation }) {
@@ -62,9 +62,9 @@ export default function HomeLoja({ navigation }) {
             <View key={index}>
               <Text style={styles.title2}>Categoria {index}</Text>
               <TouchableOpacity>
-                <Slide />
-                <Slide />
-                <Slide />
+                <Item />
+                <Item />
+                <Item />
               </TouchableOpacity>
             </View>
           ))}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   textoEtiqueta: {
     color: '#0D0D0D',
     fontWeight: 'bold',
-    padding: 3,
+    padding: 1,
   },
   container: {
     flex: 1,

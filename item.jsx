@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
-export default function Slide() {
+export default function Item() {
 
     const [quantity, setQuantity] = useState(1);
 
@@ -16,17 +16,14 @@ export default function Slide() {
 
     return (
         <TouchableOpacity style={styles.slide}>
-            <View style={styles.colum1}> {/* nome do prato, breve descrição, preço, alinhado em baixo do outro */}
+            <View style={styles.colum1}> 
                 <Text style={styles.nomeItem}>Salada Ravanello </Text>
                 <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>
                 <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(44.90)}</Text>
-
             </View>
 
-            <View style={styles.colum2}> {/* imagem do prato */}
+            <View style={styles.colum2}> 
                 <Image style={styles.itemImage} source={require('/views/img/item.png')} />
-                
-
             </View>
 
             {/* 
