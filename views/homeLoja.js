@@ -4,14 +4,13 @@ import Item from '../item';
 import Footer from '../footer';
 
 export default function HomeLoja({ navigation }) {
+
   const listagemProdutos = [1, 2, 3];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
   const [isFavorite, setIsFavorite] = useState(false);
 
-  function flagFavorite() {
-    setIsFavorite(!isFavorite);
-  }
+  function flagFavorite() { setIsFavorite(!isFavorite); }
 
   const heartImageSource = isFavorite
     ? { uri: 'https://api.iconify.design/material-symbols:favorite-rounded.svg' }
@@ -21,10 +20,7 @@ export default function HomeLoja({ navigation }) {
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
-          <Image
-            source={require('/views/img/imgLoja.png')}
-            style={styles.backgroundImage}
-          />
+          <Image source={require('/views/img/imgLoja.png')} style={styles.backgroundImage} />
           <View style={styles.headerContent}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
               <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} /></View>
@@ -40,7 +36,7 @@ export default function HomeLoja({ navigation }) {
           </View>
         </View>
 
-        <View style={styles.body}>
+        <View>
           <View style={styles.topo}>
             <Text style={[styles.title1, { marginTop: 20 }]}>Nome Restaurante</Text>
           </View>

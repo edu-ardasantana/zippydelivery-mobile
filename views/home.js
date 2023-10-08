@@ -8,9 +8,6 @@ export default function Home({ navigation }) {
   const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
-
-
-
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.header} /* onPress={() => navigation.navigate('Menu')} FORM PARA ALTERAR ENDEREÇO*/>
@@ -19,7 +16,7 @@ export default function Home({ navigation }) {
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
       </TouchableOpacity>
 
-      <ScrollView style={styles.body}>
+      <ScrollView>
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
           {[1, 2].map((index) =>
             <TouchableOpacity key={index} style={styles.banner}>
@@ -61,7 +58,6 @@ export default function Home({ navigation }) {
                 <Loja />
               </TouchableOpacity>
             </View>
-
           ))}
         </View>
       </ScrollView>
@@ -117,13 +113,11 @@ const styles = StyleSheet.create({
     width: '30%',
     height: '75%',
   },
-
   endereco: {
     color: '#0D0D0D',
     fontSize: 17,
     fontWeight: '600',
   },
-
   anuncioImage: {
     width: 300,
     height: 150,
@@ -131,7 +125,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 5,
   },
-
   icon: {
     width: 25,
     height: 25,
