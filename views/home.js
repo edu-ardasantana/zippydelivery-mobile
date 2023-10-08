@@ -1,138 +1,157 @@
 import React from 'react';
-import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Footer from '../footer'
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import Footer from '../footer';
+import Loja from '../loja'
 
 export default function Home({ navigation }) {
 
-  const listaNum = [1, 2, 3, 4, 5];
+  const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Menu')}>
-          <Image
-            style={styles.menuIcon}
-            source={{
-              uri: 'https://api.iconify.design/material-symbols:menu-rounded.svg',
-            }}
-          />
-        </TouchableOpacity>
+      <TouchableOpacity style={styles.header} /* onPress={() => navigation.navigate('Menu')} FORM PARA ALTERAR ENDEREÇO*/>
+        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
+        <Text style={styles.endereco}>Camaragibe, PE</Text>
+        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
+      </TouchableOpacity>
 
-        <Image
-          style={styles.logo}
-          source={require('/views/img/logo2.png')}
-        />
-
-        <TouchableOpacity>
-          <Image
-            style={styles.menuIcon}
-            source={{
-              uri: 'https://api.iconify.design/material-symbols:top-panel-open-outline-rounded.svg',
-            }}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView style={styles.body}>
-        <View style={styles.anuncio}>
-          <Image
-            style={styles.anuncioImage}
-            source={require('/views/img/group5979.png')}
-          />
-        </View>
-        <Text style={styles.categoria}>Restaurantes</Text>
-
-        <View style={styles.cards}>
-          {listaNum.map((index) => (
-            <TouchableOpacity key={index} style={styles.card}>
-              <View>
-                <Image
-                  style={styles.logoLoja}
-                  source={require('/views/img/logoLoja.png')}
-                />
-              </View>
-              <View>
-                <Text 
-                style={styles.nomeLoja}
-                onPress={() => navigation.navigate('HomeLoja')}
-                
-                >Boi e Brasa Spettus</Text>
-                <View style={styles.infoLoja}>
-                  <Text style={styles.infoLojaTime}>Hoje, 70 min    </Text>
-                  <Text style={styles.infoLojaStatus}>Aberto</Text>
-                </View>
-              </View>
+      <ScrollView>
+        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
+          {[1, 2].map((index) =>
+            <TouchableOpacity key={index} style={styles.banner}>
+              <Image style={styles.anuncioImage} source={require(`/views/img/banner${index}.jpg`)} />
             </TouchableOpacity>
+          )}
+        </ScrollView>
+
+        <View style={styles.containerSearch}>
+          <View style={styles.searchFilter}>
+            <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:menu-rounded.svg', }} />
+          </View>
+          <View style={styles.search}>
+            <TextInput style={styles.input} placeholder="Busque por pratos ou ingredientes" />
+            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+              <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg', }} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
+          {listagemEtiquetas.map((index) =>
+            index === 1 ? (
+              <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
+                <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Etiqueta {index}</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.etiqueta}>
+                <Text style={styles.textoEtiqueta}>Etiqueta {index}</Text>
+              </TouchableOpacity>
+            ))}
+        </ScrollView>
+
+        <Text style={styles.title2}>Lojas</Text>
+        <View style={styles.cards}>
+          {listagemLojas.map((index) => (
+            <View key={index}>
+              <TouchableOpacity onPress={() => navigation.navigate('HomeLoja')}>
+                <Loja />
+              </TouchableOpacity>
+            </View>
           ))}
         </View>
       </ScrollView>
       <Footer />
     </View>
-    
+
   );
 }
 
 const styles = StyleSheet.create({
+  etiqueta: {
+    backgroundColor: 'transparent',
+    padding: 8,
+    borderRadius: 50,
+    borderColor: '#FF9431',
+    borderWidth: 1.4,
+    marginLeft: 7,
+    marginTop: 20,
+  },
+  title2: {
+    color: '#0D0D0D',
+    fontSize: 18,
+    letterSpacing: 1.2,
+    fontWeight: '450',
+    marginLeft: 30,
+    marginBottom: 15,
+    marginTop: 30,
+    fontWeight: '650',
+  },
+  textoEtiqueta: {
+    color: '#0D0D0D',
+    fontWeight: 'bold',
+    padding: 1,
+  },
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#000A0F',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
-    backgroundColor: '#001119',
+    paddingLeft: 25,
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
   menuIcon: {
     width: 25,
     height: 25,
-    tintColor: '#ffffff',
-    margin: 20,
+    tintColor: '#FF9431',
+    marginVertical: 30,
+    marginHorizontal: 5,
   },
   logo: {
     width: '30%',
     height: '75%',
   },
-  body: {
-    flex: 1,
-  },
-  categoria: {
-    color: '#E1E1E6',
+  endereco: {
+    color: '#0D0D0D',
     fontSize: 17,
-    letterSpacing: 1.5,
-    fontWeight: '450',
-    marginLeft: 30,
-    marginBottom: 15,
-  },
-  anuncio: {
-    alignItems: 'center',
+    fontWeight: '600',
   },
   anuncioImage: {
-    width: 340,
-    height: 130,
-    marginTop: 20,
-    marginBottom: 50,
+    width: 300,
+    height: 150,
+    marginBottom: 25,
+    borderRadius: 10,
+    marginRight: 5,
   },
-  cards: {
+  icon: {
+    width: 25,
+    height: 25,
+  },
+  containerSearch: {
+    justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'column',
-  },
-  card: {
-    width: '85%',
-    backgroundColor: '#00070A',
-    borderWidth: 1,
-    borderRadius: 7,
-    padding: 15,
-    marginBottom: 7,
     flexDirection: 'row',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
+    marginBottom: 25,
+  },
+  search: {
+    width: 280,
+    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    borderRadius: 4,
+    backgroundColor: 'transparent',
+    borderColor: '#CCCCCC',
+    borderWidth: 1.4,
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    paddingHorizontal: 10,
+    placeholderTextColor: '#7C7C8A',
+    color: '#7C7C8A',
   },
   logoLoja: {
     width: 50,
@@ -158,5 +177,13 @@ const styles = StyleSheet.create({
     color: '#E1E1E6',
     fontSize: 14,
     fontWeight: '350',
+  },
+  carouselContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  carousel: {
+    marginLeft: 10,
   },
 });
