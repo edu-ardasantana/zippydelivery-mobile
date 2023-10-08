@@ -10,6 +10,9 @@ import HomeLojaScreen from '/views/homeLoja';
 import MenuScreen from '/views/menu';
 import DetalheItemScreen from './views/datelheItem';
 import SacolaScreen from './views/sacola';
+import ConfirmaPedidoScreen from './views/messageScreens/confirmaPedido';
+import ConfirmaAlteracaoScreen from './views/messageScreens/confirmaAlteracao';
+import ExitScreen from './views/messageScreens/exit';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +28,9 @@ export default function App() {
         <Stack.Screen name="Menu" component={MenuScreen} options={{headerShown: false}} />
         <Stack.Screen name="DetalheItem" component={DetalheItemScreen} options={{headerShown: false}} />
         <Stack.Screen name="Sacola" component={SacolaScreen} options={{headerShown: false}} />
+        <Stack.Screen name="ConfirmaPedido" component={ConfirmaPedidoScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Exit" component={ExitScreen} options={{headerShown: false}} />
+        <Stack.Screen name="ConfirmaAlteracao" component={ConfirmaAlteracaoScreen} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
