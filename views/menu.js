@@ -1,40 +1,32 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from '../footer';
 
 export default function Menu({ navigation }) {
+
+  var nomeUser = 'Gabriela Albuquerque';
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Image
-            style={[styles.icon, { marginVertical: 20, tintColor: '#E1E1E6', marginLeft: 20, marginRight: 5 }]}
-            source={{
-              uri: 'https://api.iconify.design/material-symbols:close-rounded.svg',
-            }}
-          />
-        </TouchableOpacity>
-        <Text style={styles.title}>Menu</Text>
-      </View>
       <View style={styles.body}>
-        <View style={styles.search}>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Image
-              style={[styles.icon, { marginRight: 10, tintColor: '#7C7C8A', }]}
-              source={{
-                uri: 'https://api.iconify.design/material-symbols:search-rounded.svg',
-              }}
-            />
-          </TouchableOpacity>
-          <TextInput
-            style={styles.input}
-            placeholder="Busque por pratos ou ingredientes"
-          />
+        <View style={styles.info}>
+          <Text style={styles.infoNameUser}>{nomeUser},</Text>
+          <Text style={styles.infoText}>o que você quer fazer agora?</Text>
         </View>
 
-        <TouchableOpacity style={styles.divider} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.exit}>Sair</Text>
-        </TouchableOpacity>
+        <View style={styles.options}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormConta')}>
+            <Text style={styles.optionText}>Configuração da conta</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormEndereco')}>
+            <Text style={styles.optionText}>Endereço de entrega</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Exit')}>
+            <Text style={styles.optionText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
+
+
       </View>
       <Footer />
     </View>
@@ -45,17 +37,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#000A0F',
-  },
-  header: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: '#001119',
-    alignItems: 'flex-end',
   },
   body: {
-    flex: 5,
-    alignItems: 'center',
+    flex: 1,
+    paddingLeft: 30,
+  },
+  info: {
+    marginTop: 80,
+    marginBottom: 50,
   },
   title: {
     color: '#E1E1E6',
@@ -65,19 +54,23 @@ const styles = StyleSheet.create({
     marginBottom: 23,
     marginTop: 20,
   },
-  icon: {
-    width: 25,
-    height: 25,
+  infoNameUser:{
+    color: '#0D0D0D',
+    fontSize: 20,
+    fontWeight: '600',
   },
-  search: {
-    width: '85%',
-    height: 40,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    borderRadius: 4,
-    backgroundColor: '#0D1D25',
-    marginTop: 35,
+  infoText:{
+    color: '#FF9431',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  
+  options: {
+    width: '94%',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    backgroundColor: '#b8b8b8',
+    marginTop: 40,
   },
   input: {
     width: '100%',
