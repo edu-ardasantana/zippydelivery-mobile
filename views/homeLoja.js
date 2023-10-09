@@ -1,66 +1,116 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Slide from '../slide';
+import Item from '../item';
+import Footer from '../footer';
 
 export default function HomeLoja({ navigation }) {
-  const carrosseis = [1, 2, 3];
+
+  const listagemProdutos = [1, 2, 3];
+  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  function flagFavorite() { setIsFavorite(!isFavorite); }
+
+  const heartImageSource = isFavorite
+    ? { uri: 'https://api.iconify.design/material-symbols:favorite-rounded.svg' }
+    : { uri: 'https://api.iconify.design/material-symbols:favorite-outline-rounded.svg' };
 
   return (
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-          </TouchableOpacity>
-
-          <Image style={styles.logo} source={require('/views/img/logo2.png')} />
-
-          <TouchableOpacity>
-            <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} />
-          </TouchableOpacity>
+          <Image source={require('/views/img/imgLoja.png')} style={styles.backgroundImage} />
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
+              <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} /></View>
+            </TouchableOpacity>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity onPress={flagFavorite} style={styles.iconWrapper}>
+                <View style={styles.iconBackground}><Image style={styles.icon} source={heartImageSource} /></View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
+                <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} /></View>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
 
-        <View style={styles.body}>
-          <View style={styles.anuncio}>
-            <Image style={styles.anuncioImage} source={require('/views/img/group5979.png')} />
+        <View>
+          <View style={styles.topo}>
+            <Text style={[styles.title1, { marginTop: 20 }]}>Nome Restaurante</Text>
           </View>
 
-          <View style={styles.anuncio}>
-            <Text style={[styles.title1, { marginBottom: 15 }]}>Nome Restaurante</Text>
-          </View>
+          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
+            {listagemEtiquetas.map((index) =>
+              index === 1 ? (
+                <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
+                  <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Etiqueta {index}</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.etiqueta}>
+                  <Text style={styles.textoEtiqueta}>Etiqueta {index}</Text>
+                </TouchableOpacity>
+              ))}
+          </ScrollView>
 
-          {carrosseis.map((index) => (
-            <TouchableOpacity key={index}>
+          {listagemProdutos.map((index) => (
+            <View key={index}>
               <Text style={styles.title2}>Categoria {index}</Text>
-              <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-                <Slide />
-                <Slide />
-                <Slide />
-              </ScrollView>
-            </TouchableOpacity>
+              <TouchableOpacity>
+                <Item />
+                <Item />
+                <Item />
+              </TouchableOpacity>
+            </View>
           ))}
         </View>
       </ScrollView>
+      <Footer />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  etiqueta: {
+    backgroundColor: 'transparent',
+    padding: 8,
+    borderRadius: 50,
+    borderColor: '#FF9431',
+    borderWidth: 1.4,
+    marginLeft: 7,
+    marginTop: 20,
+  },
+  textoEtiqueta: {
+    color: '#0D0D0D',
+    fontWeight: 'bold',
+    padding: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#000A0F',
+    backgroundColor: '#fff',
   },
   header: {
+    width: '100%',
+    height: 130,
+    position: 'relative',
+    backgroundColor: 'transparent',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  headerContent: {
     flexDirection: 'row',
-    backgroundColor: '#001119',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
-  logo: {
-    width: '30%',
-    height: '75%',
-  },
-  anuncio: {
+  topo: {
     alignItems: 'center',
   },
   anuncioImage: {
@@ -70,29 +120,38 @@ const styles = StyleSheet.create({
     marginBottom: 35,
   },
   title1: {
-    color: '#E1E1E6',
+    color: '#0D0D0D',
     fontSize: 22,
     letterSpacing: 1.2,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
   title2: {
-    color: '#E1E1E6',
-    fontSize: 17,
+    color: '#0D0D0D',
+    fontSize: 18,
     letterSpacing: 1.2,
     fontWeight: '450',
     marginLeft: 30,
     marginBottom: 15,
-    marginTop: 15,
+    marginTop: 30,
+    fontWeight: '650',
+  },
+  iconWrapper: {
+    padding: 10,
   },
   icon: {
-    tintColor: '#E1E1E6',
-    width: 25,
-    height: 25,
-    margin: 20,
+    width: 20,
+    height: 20,
+    tintColor: '#fff',
+  },
+  iconBackground: {
+    backgroundColor: 'rgba(25, 34, 39, 0.8)',
+    borderRadius: 999,
+    padding: 8,
   },
   carouselContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginLeft: 20,
   },
   carousel: {
     marginLeft: 20,
