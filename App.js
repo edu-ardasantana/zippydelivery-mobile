@@ -7,7 +7,7 @@ import Login from './views/login';
 import CadastraUsuario from './views/cadastraUsuario';
 import HomeLojaScreen from '/views/homeLoja';
 import MenuScreen from '/views/menu';
-import DetalheItemScreen from './views/datelheItem';
+import DetalheItemScreen from './views/detalheItem';
 import SacolaScreen from './views/sacola';
 import ConfirmaPedidoScreen from './views/messageScreens/confirmaPedido';
 import ConfirmaAlteracaoScreen from './views/messageScreens/confirmaAlteracao';
@@ -18,7 +18,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='CadastraUsuario'>
+      <Stack.Navigator initialRouteName='Login'>
         <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
         <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
         <Stack.Screen name="CadastraUsuario" component={CadastraUsuario} options={{headerShown: false}} />
