@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { TextInput, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
+import Footer from '../footer';
 
 export default function DetalheItem({ navigation }) {
     
@@ -21,7 +22,7 @@ export default function DetalheItem({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
           source={require('/views/img/item.png')}
@@ -81,13 +82,14 @@ export default function DetalheItem({ navigation }) {
           />
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   header: {
     width: '100%',

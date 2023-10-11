@@ -1,7 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Item() {
+
+    const navigation = useNavigation();
 
     const [quantity, setQuantity] = useState(1);
 
@@ -15,7 +18,7 @@ export default function Item() {
     }
 
     return (
-        <TouchableOpacity style={styles.slide} onPress={() => navigation.navigate('DetalheItem')}>
+        <TouchableOpacity onPress={() => navigation.navigate('DetalheItem')} style={styles.slide}>
             <View style={styles.colum1}> 
                 <Text style={styles.nomeItem}>Salada Ravanello </Text>
                 <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>
