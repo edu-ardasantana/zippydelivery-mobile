@@ -11,13 +11,13 @@ export default function Home({ navigation }) {
   return (
     <View style={styles.container}>
 
-      <View style={{alignItems:'center'}}>
+      {/* <View style={{alignItems:'center'}}> */}
         <TouchableOpacity style={styles.header} /* onPress={() => navigation.navigate('Menu')} FORM PARA ALTERAR ENDEREÇO*/>
           <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
           <Text style={styles.endereco}>Camaragibe, PE</Text>
           <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
         </TouchableOpacity>
-    </View>
+    {/* </View> */}
 
       <ScrollView>
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
@@ -28,7 +28,7 @@ export default function Home({ navigation }) {
           )}
         </ScrollView>
 
-        {/* <View style={styles.containerSearch}>
+        <View style={styles.containerSearch}>
           <View style={styles.searchFilter}>
             <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:menu-rounded.svg', }} />
           </View>
@@ -38,7 +38,7 @@ export default function Home({ navigation }) {
               <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg', }} />
             </TouchableOpacity>
           </View>
-        </View> */}
+        </View>
 
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
           {listagemEtiquetas.map((index) =>
