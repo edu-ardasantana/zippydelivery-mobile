@@ -1,8 +1,11 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput } from 'react-native'
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput, Picker  } from 'react-native'
 import { Button } from 'react-native-elements';
 
+
 export default function FormEndereco({ navigation }) {
+
+    const [selectedUF, setSelectedUF] = useState('');
 
     return (
 
@@ -48,11 +51,19 @@ export default function FormEndereco({ navigation }) {
                 </View>
 
                 <View>
-                    <Text style={styles.label}>UF select</Text>
-                    <TextInput
-                        style={styles.input}
-                    />
-                </View>
+                <Text style={styles.label}>UF</Text>
+                <Picker
+                    style={styles.input}
+                    selectedValue={selectedUF}
+                    onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
+                >
+                    <Picker.Item label="Selecione..." value="" />
+                    <Picker.Item label="PE" value="PE" />
+                    <Picker.Item label="PB" value="PB" />
+                    <Picker.Item label="BA" value="BA" />
+                    <Picker.Item label="RN" value="RN" />
+                </Picker>
+            </View>
 
                 <View>
                     <Text style={styles.label}>Complemento</Text>
