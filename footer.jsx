@@ -29,19 +29,19 @@ export default function Footer() {
       </TouchableOpacity> */}
 
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:home-outline.svg', }} />
+        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:home.svg', }} />
       </TouchableOpacity>
 
       <TouchableOpacity>
-        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:receipt-long-outline-rounded.svg', }} />
+        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:receipt.svg', }} />
       </TouchableOpacity>
 
       <TouchableOpacity>
-        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:shopping-bag-outline.svg', }} />
+        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:shopping-basket.svg', }} />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Menu')}>
-        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:person-outline.svg', }} />
+        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:user.svg', }} />
       </TouchableOpacity>
 
 
