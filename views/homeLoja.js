@@ -29,7 +29,7 @@ export default function HomeLoja({ navigation }) {
               <TouchableOpacity onPress={flagFavorite} style={styles.iconWrapper}>
                 <View style={styles.iconBackground}><Image style={styles.icon} source={heartImageSource} /></View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
+              <TouchableOpacity style={styles.iconWrapper}>
                 <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} /></View>
               </TouchableOpacity>
             </View>
