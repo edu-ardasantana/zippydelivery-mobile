@@ -33,6 +33,7 @@ export default function Exit({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff'
     },
     headerContent: {
         flexDirection: 'row',
