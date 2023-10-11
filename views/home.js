@@ -12,7 +12,7 @@ export default function Home({ navigation }) {
     <View style={styles.container}>
 
       {/* <View style={{alignItems:'center'}}> */}
-        <TouchableOpacity style={styles.header} /* onPress={() => navigation.navigate('Menu')} FORM PARA ALTERAR ENDEREÇO*/>
+        <TouchableOpacity style={styles.header}  onPress={() => navigation.navigate('Menu')} >
           <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
           <Text style={styles.endereco}>Camaragibe, PE</Text>
           <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
