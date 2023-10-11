@@ -13,6 +13,7 @@ import ConfirmaPedidoScreen from './views/messageScreens/confirmaPedido';
 import ConfirmaAlteracaoScreen from './views/messageScreens/confirmaAlteracao';
 import ExitScreen from './views/messageScreens/exit';
 import FormEndereco from './views/formEndereco';
+import FormConta from './views/formConta';
 
 
 const Stack = createNativeStackNavigator();
@@ -20,7 +21,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='FormEndereco'>
+      <Stack.Navigator initialRouteName='Login'>
         <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
         <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
         <Stack.Screen name="CadastraUsuario" component={CadastraUsuario} options={{headerShown: false}} />
@@ -32,6 +33,7 @@ export default function App() {
         <Stack.Screen name="Exit" component={ExitScreen} options={{headerShown: false}} />
         <Stack.Screen name="ConfirmaAlteracao" component={ConfirmaAlteracaoScreen} options={{headerShown: false}} />
         <Stack.Screen name="FormEndereco" component={FormEndereco} options={{headerShown: false}} />
+        <Stack.Screen name="FormConta" component={FormConta} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
