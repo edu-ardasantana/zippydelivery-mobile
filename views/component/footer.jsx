@@ -36,7 +36,7 @@ export default function Footer() {
         <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:receipt.svg', }} />
       </TouchableOpacity>
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Sacola')}>
         <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:shopping-basket.svg', }} />
       </TouchableOpacity>
 
