@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
-import Footer from '../footer';
+
 
 export default function DetalheItem({ navigation }) {
     

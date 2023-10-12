@@ -32,7 +32,7 @@ export default function Footer() {
         <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:home.svg', }} />
       </TouchableOpacity>
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Historico')}>
         <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:receipt.svg', }} />
       </TouchableOpacity>
 
@@ -43,7 +43,6 @@ export default function Footer() {
       <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Menu')}>
         <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:user.svg', }} />
       </TouchableOpacity>
-
 
     </View>
   );
@@ -62,7 +61,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 3,
     elevation: 5,
-  height: 60,
+    height: 60,
   },
   button: {
     paddingHorizontal: 20,
