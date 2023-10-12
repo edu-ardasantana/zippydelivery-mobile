@@ -27,7 +27,7 @@ export default function Loja({ navigation }) {
         <View style={styles.slide}>
 
             <View style={styles.colum1}>
-                <Image style={styles.lojaImage} source={require('./views/img/logoLoja.png')} />
+                <Image style={styles.lojaImage} source={require('../img/logoLoja.png')} />
             </View>
 
             <View style={styles.colum2}>

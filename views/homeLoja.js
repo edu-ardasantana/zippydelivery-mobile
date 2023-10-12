@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Item from '../item';
-import Footer from '../footer';
+import Item from './component/item';
+import Footer from './component/footer';
 
 export default function HomeLoja({ navigation }) {
 
@@ -72,20 +72,6 @@ export default function HomeLoja({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  etiqueta: {
-    backgroundColor: 'transparent',
-    padding: 8,
-    borderRadius: 50,
-    borderColor: '#FF9431',
-    borderWidth: 1.4,
-    marginLeft: 7,
-    marginTop: 20,
-  },
-  textoEtiqueta: {
-    color: '#0D0D0D',
-    fontWeight: 'bold',
-    padding: 1,
-  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -118,6 +104,20 @@ const styles = StyleSheet.create({
     height: 130,
     marginTop: 20,
     marginBottom: 35,
+  },
+  etiqueta: {
+    backgroundColor: 'transparent',
+    padding: 8,
+    borderRadius: 50,
+    borderColor: '#FF9431',
+    borderWidth: 1.4,
+    marginLeft: 7,
+    marginTop: 20,
+  },
+  textoEtiqueta: {
+    color: '#0D0D0D',
+    fontWeight: '600',
+    padding: 1,
   },
   title1: {
     color: '#0D0D0D',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Footer from '../footer';
-import Loja from '../loja'
+import Footer from './component/footer';
+import Loja from './component/loja'
 
 export default function Home({ navigation }) {
 
@@ -11,27 +11,22 @@ export default function Home({ navigation }) {
   return (
     <View style={styles.container}>
 
-      {/* <View style={{alignItems:'center'}}> */}
-        <TouchableOpacity style={styles.header}  onPress={() => navigation.navigate('Menu')} >
-          <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-          <Text style={styles.endereco}>Camaragibe, PE</Text>
-          <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
-        </TouchableOpacity>
-    {/* </View> */}
+      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('Menu')} >
+        <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
+        <Text style={styles.endereco}>Camaragibe, PE</Text>
+        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
+      </TouchableOpacity>
 
       <ScrollView>
-        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
+        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={[styles.carousel, { marginLeft: 17 }]}>
           {[1, 2].map((index) =>
             <TouchableOpacity key={index} style={styles.banner}>
-              <Image style={styles.anuncioImage} source={require(`/views/img/banner${index}.jpg`)} />
+              <Image style={styles.anuncioImage} source={require(`/views/img/banner${index}.png`)} />
             </TouchableOpacity>
           )}
         </ScrollView>
 
         <View style={styles.containerSearch}>
-          <View style={styles.searchFilter}>
-            <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:menu-rounded.svg', }} />
-          </View>
           <View style={styles.search}>
             <TextInput style={styles.input} placeholder="Busque por pratos ou ingredientes" />
             <TouchableOpacity onPress={() => navigation.navigate('Home')}>
@@ -71,30 +66,6 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  etiqueta: {
-    backgroundColor: 'transparent',
-    padding: 8,
-    borderRadius: 50,
-    borderColor: '#FF9431',
-    borderWidth: 1.4,
-    marginLeft: 7,
-    marginTop: 20,
-  },
-  title2: {
-    color: '#0D0D0D',
-    fontSize: 18,
-    letterSpacing: 1.2,
-    fontWeight: '450',
-    marginLeft: 30,
-    marginBottom: 15,
-    marginTop: 30,
-    fontWeight: '650',
-  },
-  textoEtiqueta: {
-    color: '#0D0D0D',
-    fontWeight: 'bold',
-    padding: 1,
-  },
   container: {
     flex: 1,
     flexDirection: 'column',
@@ -102,16 +73,15 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    paddingLeft: 25,
     alignItems: 'center',
-    height:50
+    height: 50
   },
   menuIcon: {
     width: 25,
     height: 25,
     tintColor: '#FF9431',
     marginVertical: 30,
-    marginHorizontal: 5,
+    marginHorizontal: 15,
   },
   logo: {
     width: '30%',
@@ -137,17 +107,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 25,
+    marginBottom: 10,
   },
   search: {
-    width: 280,
+    width: '90%',
     height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     borderRadius: 4,
     backgroundColor: 'transparent',
-    borderColor: '#CCCCCC',
+    borderColor: '#E6E6E6',
     borderWidth: 1.4,
   },
   input: {
@@ -156,6 +126,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     placeholderTextColor: '#7C7C8A',
     color: '#7C7C8A',
+  },
+  etiqueta: {
+    backgroundColor: 'transparent',
+    padding: 8,
+    borderRadius: 50,
+    borderColor: '#FF9431',
+    borderWidth: 1.4,
+    marginLeft: 7,
+    marginTop: 20,
+  },
+  textoEtiqueta: {
+    color: '#0D0D0D',
+    fontWeight: '600',
+    padding: 1,
   },
   logoLoja: {
     width: 50,
@@ -181,6 +165,16 @@ const styles = StyleSheet.create({
     color: '#E1E1E6',
     fontSize: 14,
     fontWeight: '350',
+  },
+  title2: {
+    color: '#0D0D0D',
+    fontSize: 18,
+    letterSpacing: 1.2,
+    fontWeight: '450',
+    marginLeft: 30,
+    marginBottom: 15,
+    marginTop: 30,
+    fontWeight: '650',
   },
   carouselContainer: {
     flexDirection: 'row',
