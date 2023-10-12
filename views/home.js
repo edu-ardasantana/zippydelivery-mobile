@@ -20,9 +20,9 @@ export default function Home({ navigation }) {
       <ScrollView>
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={[styles.carousel, { marginLeft: 17 }]}>
           {[1, 2].map((index) =>
-            <TouchableOpacity key={index} style={styles.banner}>
+            <View key={index} style={styles.banner}>
               <Image style={styles.anuncioImage} source={require(`/views/img/banner${index}.png`)} />
-            </TouchableOpacity>
+            </View>
           )}
         </ScrollView>
 
