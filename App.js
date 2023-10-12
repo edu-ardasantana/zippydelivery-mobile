@@ -15,6 +15,8 @@ import ExitScreen from './views/messageScreens/exit';
 import FormEnderecoScreen from './views/formEndereco';
 import FormContaScreen from './views/formConta';
 import HistoricoScreen from './views/historico';
+import SemPedidosScreen from './views/messageScreens/semPedidos';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -22,7 +24,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Home'>
+      <Stack.Navigator initialRouteName='Login'>
         <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
         <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
         <Stack.Screen name="CadastraUsuario" component={CadastraUsuario} options={{headerShown: false}} />
@@ -36,6 +38,7 @@ export default function App() {
         <Stack.Screen name="FormEndereco" component={FormEnderecoScreen} options={{headerShown: false}} />
         <Stack.Screen name="FormConta" component={FormContaScreen} options={{headerShown: false}} />
         <Stack.Screen name="Historico" component={HistoricoScreen} options={{headerShown: false}} />
+        <Stack.Screen name="SemPedidos" component={SemPedidosScreen} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

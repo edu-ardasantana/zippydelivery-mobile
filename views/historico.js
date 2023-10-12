@@ -3,9 +3,10 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Footer from './component/footer';
 import Pedido from './component/pedido';
 
-export default function Historico() {
+export default function Historico({ navigation }) {
 
-    const listagemPedidos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    //const listagemPedidos = [];
+    const listagemPedidos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
 
     return (
         <View style={styles.container}>
@@ -13,11 +14,19 @@ export default function Historico() {
                 <Text style={styles.title1}>Seus pedidos anteriores</Text>
             </View>
             <ScrollView >
-                <View style={styles.body}>
-                    {listagemPedidos.map((index) => (
-                        <Pedido />
-                    ))}
-                </View>
+                {
+                    listagemPedidos.length != 0 ? (
+                        <View style={styles.body}>
+                            {listagemPedidos.map((index) => (
+                                <Pedido />
+                            ))}
+                        </View>
+                    ) : (
+                        <View style={styles.body}>
+                            { navigation.navigate('SemPedidos')}
+                        </View>
+                    )
+                }
             </ScrollView>
             <Footer />
         </View>

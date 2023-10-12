@@ -135,6 +135,19 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontWeight: '650',
   },
+  iconWrapper: {
+    padding: 10,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    tintColor: '#fff',
+  },
+  iconBackground: {
+    backgroundColor: 'rgba(25, 34, 39, 0.8)',
+    borderRadius: 999,
+    padding: 8,
+  },
   carouselContainer: {
     flexDirection: 'row',
     alignItems: 'center',
