@@ -4,40 +4,26 @@ import { Button, Input } from 'react-native-elements';
 export default function FormConta({ navigation }) {
 
     return (
-
         <View style={styles.container}>
-
             <View style={styles.headerContent}>
                 <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
                     <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                 </TouchableOpacity>
             </View>
-
             <View style={{ alignItems: 'center' }}>
-
-                <View style={{marginBottom:40}}>
-
-                    <Input
-                    style={{paddingLeft:20}}
+                <View style={{ marginBottom: 40 }}>
+                    <Input style={{ paddingLeft: 20 }}
                         placeholder='Gabriela Albuquerque'
-                        leftIcon={
-                            <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/grommet-icons:edit.svg' }} />
-                        }
+                        leftIcon={<Image style={styles.icon} source={{ uri: 'https://api.iconify.design/grommet-icons:edit.svg' }} />}
                     />
-
                 </View>
-
                 <View>
-
                     <Text style={styles.label}>Email</Text>
                     <TextInput
                         style={styles.input}
                         placeholder='gabi_102@gmail.com'
                     />
-
                 </View>
-
-
                 <View>
                     <Text style={styles.label}>Senha atual</Text>
                     <TextInput
@@ -48,7 +34,7 @@ export default function FormConta({ navigation }) {
                 </View>
 
                 <View>
-                    <Text style={styles.label}>Nova Senha (Opcional)</Text>
+                    <Text style={styles.label}>Nova Senha <Text style={{ fontSize: 11 }}>(Opcional)</Text></Text>
                     <TextInput
                         style={styles.input}
                         placeholder='No mínimo 6 caracteres'
@@ -61,11 +47,8 @@ export default function FormConta({ navigation }) {
                     title="Atualizar dados"
                     onPress={() => navigation.navigate('ConfirmaAlteracao')}
                 />
-
             </View>
-
         </View>
-
     )
 }
 

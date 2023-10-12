@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Footer from '../footer';
+import Footer from './component/footer';
 
 export default function Menu({ navigation }) {
 
@@ -43,14 +43,6 @@ const styles = StyleSheet.create({
   info: {
     marginTop: 80,
     marginBottom: 50,
-  },
-  title: {
-    color: '#E1E1E6',
-    fontSize: 17,
-    letterSpacing: 1.2,
-    fontWeight: '450',
-    marginBottom: 23,
-    marginTop: 20,
   },
   infoNameUser: {
     color: '#0D0D0D',

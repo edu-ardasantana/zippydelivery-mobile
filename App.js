@@ -12,8 +12,11 @@ import SacolaScreen from './views/sacola';
 import ConfirmaPedidoScreen from './views/messageScreens/confirmaPedido';
 import ConfirmaAlteracaoScreen from './views/messageScreens/confirmaAlteracao';
 import ExitScreen from './views/messageScreens/exit';
-import FormEndereco from './views/formEndereco';
-import FormConta from './views/formConta';
+import FormEnderecoScreen from './views/formEndereco';
+import FormContaScreen from './views/formConta';
+import HistoricoScreen from './views/historico';
+import SemPedidosScreen from './views/messageScreens/semPedidos';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -32,8 +35,10 @@ export default function App() {
         <Stack.Screen name="ConfirmaPedido" component={ConfirmaPedidoScreen} options={{headerShown: false}} />
         <Stack.Screen name="Exit" component={ExitScreen} options={{headerShown: false}} />
         <Stack.Screen name="ConfirmaAlteracao" component={ConfirmaAlteracaoScreen} options={{headerShown: false}} />
-        <Stack.Screen name="FormEndereco" component={FormEndereco} options={{headerShown: false}} />
-        <Stack.Screen name="FormConta" component={FormConta} options={{headerShown: false}} />
+        <Stack.Screen name="FormEndereco" component={FormEnderecoScreen} options={{headerShown: false}} />
+        <Stack.Screen name="FormConta" component={FormContaScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Historico" component={HistoricoScreen} options={{headerShown: false}} />
+        <Stack.Screen name="SemPedidos" component={SemPedidosScreen} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
