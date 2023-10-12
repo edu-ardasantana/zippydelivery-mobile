@@ -36,6 +36,7 @@ export default function Historico({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor:'#fff'
     },
     headerContent: {
         flexDirection: 'column',
