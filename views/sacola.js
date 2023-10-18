@@ -70,7 +70,7 @@ export default function Sacola({ navigation }) {
                 <Button
                     buttonStyle={styles.button}
                     title="Continuar"
-                    onPress={() => navigation.navigate('')}
+                    onPress={() => navigation.navigate('ResumoSacola')}
                 />
                 
             </View>
