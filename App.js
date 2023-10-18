@@ -16,6 +16,7 @@ import FormEnderecoScreen from './views/formEndereco';
 import FormContaScreen from './views/formConta';
 import HistoricoScreen from './views/historico';
 import SemPedidosScreen from './views/messageScreens/semPedidos';
+import ResumoSacola from './views/resumoSacola';
 
 
 
@@ -39,6 +40,7 @@ export default function App() {
         <Stack.Screen name="FormConta" component={FormContaScreen} options={{headerShown: false}} />
         <Stack.Screen name="Historico" component={HistoricoScreen} options={{headerShown: false}} />
         <Stack.Screen name="SemPedidos" component={SemPedidosScreen} options={{headerShown: false}} />
+        <Stack.Screen name="ResumoSacola" component={ResumoSacola} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
