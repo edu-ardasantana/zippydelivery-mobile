@@ -10,7 +10,7 @@ export default function ResumoSacola({ navigation }) {
 
             <View style={styles.headerContent}>
 
-                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
+                <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
                     <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                 </TouchableOpacity>
 
