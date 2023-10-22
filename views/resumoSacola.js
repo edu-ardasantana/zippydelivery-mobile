@@ -82,7 +82,7 @@ export default function ResumoSacola({ navigation }) {
 
                 <View style={styles.footer2}>
 
-                    <TouchableOpacity style={styles.footerLink}>Alterar dados</TouchableOpacity>
+                    <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate('Sacola')}>Alterar dados</TouchableOpacity>
 
                 </View>
 
