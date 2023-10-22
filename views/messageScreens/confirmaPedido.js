@@ -1,22 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from '../component/footer';
 
 export default function ConfirmaPedido({ navigation }) {
 
+    const [pedidoExiste, setPedidoExiste] = useState(true);
+
+    useEffect(() => {
+        setPedidoExiste(true);
+    }, []);
+
+    const handleCancelarPedido = () => {
+        setPedidoExiste(false);
+    };
+
+    const handleVoltarTelaPrincipal = () => {
+        navigation.navigate('Home');
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContent}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
+                <TouchableOpacity onPress={handleVoltarTelaPrincipal} style={styles.iconWrapper}>
                     <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.body}>
-                <Image style={styles.iconMessage} source={require('/views/img/successIcon.png')} />
-                <Text style={styles.title1}>Pedido realizado!</Text>
-                <Text style={styles.title2}>Você pode acompanhar na tela principal</Text>
-            </View>
+            {pedidoExiste ? (
+                <View style={styles.body}>
+                    <Image style={styles.iconMessage} source={require('/views/img/successIcon.png')} />
+                    <Text style={styles.title1}>Pedido realizado!</Text>
+                    <Text style={styles.title2}>Você pode voltar para a tela principal</Text>
+                    <TouchableOpacity onPress={handleCancelarPedido}>
+                        <Text style={styles.title3}>Cancelar pedido</Text>
+                    </TouchableOpacity>
+                </View>
+            ) : (
+                <View style={styles.body}>
+                    <Image style={styles.iconMessage} source={require('/views/img/successIcon.png')} />
+                    <Text style={styles.title1}>Pedido cancelado!</Text>
+                    <Text style={styles.title2}>Você pode voltar para a tela principal</Text>
+                </View>
+            )}
             <Footer />
         </View>
     )
@@ -66,4 +91,11 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         marginTop: 5,
     },
+    title3: {
+        color: '#AB222E',
+        fontSize: 13,
+        fontWeight: '500',
+        textDecorationLine: 'underline',
+        marginTop: 70,
+    }
 })
