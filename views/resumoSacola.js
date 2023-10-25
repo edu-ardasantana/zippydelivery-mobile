@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import ItemSacola from './component/itemSacola';
 import { Button } from 'react-native-elements';
 
 export default function ResumoSacola({ navigation }) {
+
+    const [selectedPayment, setSelectedPayment] = useState(null);
 
     return (
         <View style={styles.container}>
@@ -22,7 +23,7 @@ export default function ResumoSacola({ navigation }) {
 
             </View>
 
-            <Text style={styles.enderecoTitle}>Resumo de valores</Text><br />
+            <Text style={styles.subTitle}>Resumo de valores</Text><br />
 
             <View style={styles.resumo}>
                 <Text>Subtotal</Text> <Text>R$ 31,90</Text>
@@ -40,34 +41,52 @@ export default function ResumoSacola({ navigation }) {
                 <View style={styles.dividerLine} />
             </View>
 
-            <Text style={styles.enderecoTitle}>Pagamento pelo app</Text>
+            <Text style={styles.subTitle}>Escolha a forma de pagamento</Text>
 
-            <View style={styles.endereco}>
-                <Image style={styles.logoCartao} source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/langpt-1500px-Mastercard_2019_logo.svg.png', }} />
+            <View style={styles.bloco}>
+                <TouchableOpacity
+                    onPress={() => setSelectedPayment('creditCard')}
+                    style={[styles.blocoTouchable, selectedPayment === 'creditCard' && styles.selectedPaymentTouchable]}
+                >
+                    <View style={styles.blocoContent}>
+                        <Image style={styles.logoCartao} source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/langpt-1500px-Mastercard_2019_logo.svg.png' }} />
+                        <Text style={styles.blocoText}><span style={styles.span}>Crédito</span><br />Mastecard **** 0987</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
 
-                <Text style={styles.enderecoText}><span style={styles.span}>Crédito</span><br />Mastecard **** 0987
-                </Text>
-
+            <View style={styles.bloco}>
+                
+                <TouchableOpacity
+                    onPress={() => setSelectedPayment('cash')}
+                    style={[styles.blocoTouchable, selectedPayment === 'cash' && styles.selectedPaymentTouchable]}
+                >
+                    <View style={styles.blocoContent}>
+                        <Image style={styles.logoCash} source={{ uri: 'https://api.iconify.design/iconoir:lot-of-cash.svg' }} />
+                        <Text style={styles.blocoText}><span style={styles.span}>Pagar na entrega</span></Text>
+                    </View>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
             </View>
 
-            <Text style={styles.enderecoTitle}>Confirme a entrega</Text>
+            <Text style={styles.subTitle}>Confirme a entrega</Text>
 
-            <View style={styles.endereco}>
+            <View style={styles.bloco}>
+
                 <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/ic:outline-delivery-dining.svg', }} />
 
-                <Text style={styles.enderecoText}><span style={styles.span}>Entrega Hoje</span><br />Hoje, 40 - 50 min
+                <Text style={styles.blocoText}><span style={styles.span}>Entrega Hoje</span><br />Hoje, 40 - 50 min
                 </Text>
 
             </View>
 
-            <View style={styles.endereco}>
+            <View style={styles.bloco}>
                 <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
 
-                <Text style={styles.enderecoText}>Avenida do príncipe mimado, 267<br />Caxangá - Condomínio das flores bloco 02 apto 505
+                <Text style={styles.blocoText}>Avenida do príncipe mimado, 267<br />Caxangá - Condomínio das flores bloco 02 apto 505
                 </Text>
 
             </View>
@@ -75,14 +94,14 @@ export default function ResumoSacola({ navigation }) {
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
             </View>
-
-
 
             <View style={styles.footerContainer}>
 
                 <View style={styles.footer2}>
 
-                    <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate('Sacola')}>Alterar dados</TouchableOpacity>
+                    <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate('Sacola')}>
+                        <Text>Alterar dados</Text>
+                    </TouchableOpacity>
 
                 </View>
 
@@ -94,7 +113,6 @@ export default function ResumoSacola({ navigation }) {
 
             </View>
 
-
         </View>
     )
 
@@ -105,7 +123,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         backgroundColor: '#fff',
-        // justifyContent: 'space-between',
     },
     headerContent: {
         flexDirection: 'row',
@@ -130,17 +147,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         color: '#FF9431'
     },
-    endereco: {
+    bloco: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20
     },
-    enderecoText: {
-        fontSize: 10,
-        justifyContent: 'space-between',
+    blocoText: {
+        fontSize: 10
     },
-    enderecoTitle: {
-        fontWeight: 500,
+    subTitle: {
+        fontWeight: 'bold',
         paddingTop: 20,
         paddingHorizontal: 20,
         fontSize: 15,
@@ -194,6 +210,13 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         marginHorizontal: 15,
     },
+    logoCash: {
+        width: 40,
+        height: 40,
+        marginVertical: 20,
+        marginHorizontal: 15,
+        tintColor: '#FF9431',
+    },
     resumo: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -203,5 +226,28 @@ const styles = StyleSheet.create({
     footerLink: {
         color: '#FF9431',
         alignSelf: 'center'
-    }
+    },
+    selectedPaymentOption: {
+        borderWidth: 2,
+        borderColor: '#FF9431',
+        borderRadius: 5,
+    },
+    blocoTouchable: {
+        marginVertical:10,
+        width: '100%',
+        height: 70,
+        borderWidth: 1, 
+        borderColor: '#ddd',
+        borderRadius: 5,
+        padding: 10, 
+        justifyContent:'center'
+    },
+    blocoContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    selectedPaymentTouchable: {
+        borderColor: '#FF9431',
+    },
+
 });
