@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 export default function Loja({ navigation }) {
     const tempoMin = 40;
@@ -7,15 +7,6 @@ export default function Loja({ navigation }) {
     const categoria = 'Bebidas';
     const frete = formatarMoeda(6.99);
 
-    const [isFavorite, setIsFavorite] = useState(false);
-
-    function flagFavorite() {
-        setIsFavorite(!isFavorite);
-    }
-
-    const heartImageSource = isFavorite
-        ? { uri: 'https://api.iconify.design/material-symbols:favorite-rounded.svg' }
-        : { uri: 'https://api.iconify.design/material-symbols:favorite-outline-rounded.svg' };
 
     function formatarMoeda(dataParam) {
         return dataParam
@@ -35,12 +26,7 @@ export default function Loja({ navigation }) {
                 <Text style={styles.text}>{categoria}</Text>
                 <Text style={styles.text}>{tempoMin}-{tempoMax} min • {frete}</Text>
             </View>
-
-            <View style={styles.colum3}>
-                <TouchableOpacity onPress={flagFavorite} style={styles.iconWrapper}>
-                    <View style={styles.iconBackground}><Image style={styles.icon} source={heartImageSource} /></View>
-                </TouchableOpacity>
-            </View>
+            
         </View>
     );
 }
