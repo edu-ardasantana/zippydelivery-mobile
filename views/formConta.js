@@ -1,7 +1,69 @@
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput } from 'react-native'
 import { Button, Input } from 'react-native-elements';
+import { useRoute } from '@react-navigation/native';
+
 
 export default function FormConta({ navigation }) {
+    const route = useRoute();
+    const { cliente } = route.params || {};
+    
+    const [nome, setNome] = useState('');
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+  
+    useEffect(() => {
+      // Aqui você pode buscar os dados do cliente do banco de dados usando o cliente.id
+      // e, em seguida, definir os estados nome, email e senha com os valores do cliente
+      // Certifique-se de que a chamada à API seja assíncrona.
+      
+      // Exemplo hipotético (não esqueça de lidar com erros):
+      axios.get(`http://localhost:8082/api/cliente/402`)
+        .then(function (response) {
+          const data = response.data;
+          setNome(data.nome);
+          setEmail(data.email);
+          setSenha(data.senha);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }, []); // O array vazio [] garante que este efeito seja executado uma vez ao carregar o componente.
+  
+  const alterarDados = () => {
+
+    
+    axios
+      .put(`http://localhost:8082/api/cliente/402`, {
+        
+        nome: nome,
+        email: email,
+        senha: senha,
+      })
+      
+      .then(function (response) {
+        console.log(response);
+        Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
+      })
+      .catch(function (error) {
+        console.log(error);
+        Alert.alert('Erro', 'Não foi possível atualizar os dados.');
+      });
+  };
+
+  const excluirDados = () => {
+
+    axios.delete(`http://localhost:8082/api/cliente/402`)
+    
+    .then(function (response) {
+    console.log(reponse);
+    }).catch(function (error) {
+    console.log(error);
+    
+    });
+    
+    }
 
     return (
         <View style={styles.container}>
@@ -15,6 +77,8 @@ export default function FormConta({ navigation }) {
                     <Input style={{ paddingLeft: 20 }}
                         placeholder='Gabriela Albuquerque'
                         leftIcon={<Image style={styles.icon} source={{ uri: 'https://api.iconify.design/grommet-icons:edit.svg' }} />}
+                        onChangeText={(text) => setNome(text)}
+                        value={nome}
                     />
                 </View>
                 <View>
@@ -22,6 +86,8 @@ export default function FormConta({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='gabi_102@gmail.com'
+                        onChangeText={(text) => setEmail(text)}
+                        value={email}
                     />
                 </View>
                 <View>
@@ -30,6 +96,8 @@ export default function FormConta({ navigation }) {
                         style={styles.input}
                         placeholder='******'
                         secureTextEntry={true}
+                        onChangeText={(text) => setSenha(text)}
+                        value={senha}
                     />
                 </View>
 
@@ -39,13 +107,22 @@ export default function FormConta({ navigation }) {
                         style={styles.input}
                         placeholder='No mínimo 6 caracteres'
                         secureTextEntry={true}
+                        onChangeText={(text) => setSenha(text)}
+                        value={senha}
                     />
                 </View>
 
                 <Button
                     buttonStyle={styles.button}
                     title="Atualizar dados"
-                    onPress={() => navigation.navigate('ConfirmaAlteracao')}
+                    onPress={() => {
+                        alterarDados();
+                        navigation.navigate('ConfirmaAlteracao')}}
+                />
+                <Button
+                    buttonStyle={styles.button}
+                    title="Excluir conta"
+                    onPress={()=> excluirDados()}
                 />
             </View>
         </View>
