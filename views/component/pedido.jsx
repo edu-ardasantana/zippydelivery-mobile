@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
@@ -9,6 +10,8 @@ export default function Pedido() {
     var orderStatus = 'Concluído';
     var orderNumber = 1300;
     var quantityItemsOrder = 5;
+
+    const navigation = useNavigation();
 
     return (
         <View style={styles.bodyContent}>
@@ -28,8 +31,8 @@ export default function Pedido() {
                     }
                 </View>
             </View>
-            <TouchableOpacity style={styles.button}>
-                <Text style={{ color: '#FF9431', fontWeight: '450' }}>Adicionar à sacola</Text>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DetalhePedido')}>
+                <Text style={{ color: '#FF9431', fontWeight: '450' }}>ver detalhes</Text>
             </TouchableOpacity>
         </View>
     )

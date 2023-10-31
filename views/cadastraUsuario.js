@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
 
 export default function CadastraUsuario({ navigation }) {
@@ -21,6 +21,16 @@ export default function CadastraUsuario({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='Exemplo: Maria da Silva'
+                    />
+
+                </View>
+
+                <View>
+
+                    <Text style={styles.label}>CPF</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder='000.000.000-00'
                     />
 
                 </View>
