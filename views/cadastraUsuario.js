@@ -1,9 +1,32 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
 
 export default function CadastraUsuario({ navigation }) {
 
+
+    const [nome, setNome] = useState('');
+    const [cpf, setCpf] = useState('');
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+
+    const inserirDados = () => {
+        const userData = {
+            nome: nome,
+            cpf: cpf,
+            email: email,
+            senha: senha
+        };
+
+        axios.post('http://localhost:8080/api/cliente', userData)
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
     return (
 
         <View style={styles.container}>
@@ -21,6 +44,8 @@ export default function CadastraUsuario({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='Exemplo: Maria da Silva'
+                        onChangeText={(text) => setNome(text)}
+                        value={nome}
                     />
 
                 </View>
@@ -31,6 +56,8 @@ export default function CadastraUsuario({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='000.000.000-00'
+                        onChangeText={(text) => setCpf(text)}
+                        value={cpf}
                     />
 
                 </View>
@@ -41,6 +68,8 @@ export default function CadastraUsuario({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='Exemplo: exemplo@email.com'
+                        onChangeText={(text) => setEmail(text)}
+                        value={email}
                     />
 
                 </View>
@@ -51,13 +80,18 @@ export default function CadastraUsuario({ navigation }) {
                         style={styles.input}
                         placeholder='No mínimo 6 caracteres'
                         secureTextEntry={true}
+                        onChangeText={(text) => setSenha(text)}
+                        value={senha}
                     />
                 </View>
 
                 <Button
                     buttonStyle={styles.button}
                     title="Criar conta"
-                    onPress={() => navigation.navigate('Login')}
+                    onPress={() => {
+                        inserirDados();
+                        navigation.navigate('Login')
+                    }}
                 />
                 <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                     <Text style={styles.link}> Já tenho uma conta</Text>
