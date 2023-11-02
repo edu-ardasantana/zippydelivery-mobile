@@ -12,14 +12,10 @@ export default function FormConta({ navigation }) {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const id = 1
   
     useEffect(() => {
-      // Aqui você pode buscar os dados do cliente do banco de dados usando o cliente.id
-      // e, em seguida, definir os estados nome, email e senha com os valores do cliente
-      // Certifique-se de que a chamada à API seja assíncrona.
-      
-      // Exemplo hipotético (não esqueça de lidar com erros):
-      axios.get(`http://localhost:8082/api/cliente/402`)
+      axios.get(`http://localhost:8080/api/cliente/${id}`)
         .then(function (response) {
           const data = response.data;
           setNome(data.nome);
@@ -29,13 +25,13 @@ export default function FormConta({ navigation }) {
         .catch(function (error) {
           console.log(error);
         });
-    }, []); // O array vazio [] garante que este efeito seja executado uma vez ao carregar o componente.
+    }, []); 
   
   const alterarDados = () => {
 
     
     axios
-      .put(`http://localhost:8082/api/cliente/402`, {
+      .put(`http://localhost:8080/api/cliente/${id}`, {
         
         nome: nome,
         email: email,
@@ -44,20 +40,18 @@ export default function FormConta({ navigation }) {
       
       .then(function (response) {
         console.log(response);
-        Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
       })
       .catch(function (error) {
         console.log(error);
-        Alert.alert('Erro', 'Não foi possível atualizar os dados.');
       });
   };
 
   const excluirDados = () => {
 
-    axios.delete(`http://localhost:8082/api/cliente/402`)
+    axios.delete(`http://localhost:8080/api/cliente/${id}`)
     
     .then(function (response) {
-    console.log(reponse);
+    console.log(response);
     }).catch(function (error) {
     console.log(error);
     
@@ -107,8 +101,6 @@ export default function FormConta({ navigation }) {
                         style={styles.input}
                         placeholder='No mínimo 6 caracteres'
                         secureTextEntry={true}
-                        onChangeText={(text) => setSenha(text)}
-                        value={senha}
                     />
                 </View>
 

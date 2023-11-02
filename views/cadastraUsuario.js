@@ -19,14 +19,12 @@ export default function CadastraUsuario({ navigation }) {
             senha: senha
         };
 
-        axios.post('http://localhost:8082/api/cliente', userData)
+        axios.post('http://localhost:8080/api/cliente', userData)
             .then(function (response) {
                 console.log(response);
-                // Se desejar, você pode adicionar aqui um redirecionamento para outra tela
             })
             .catch(function (error) {
                 console.log(error);
-                // Trate os erros de acordo com sua lógica de aplicação
             });
     };
     return (
