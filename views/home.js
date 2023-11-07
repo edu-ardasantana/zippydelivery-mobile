@@ -10,25 +10,27 @@ export default function Home({ navigation }) {
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
   const [empresas, setEmpresas] = useState([]);
+  const [empresas2, setEmpresas2] = useState([]);
 
-  useEffect(() => {
-      carregarLista()
+  useEffect(async () => {
+    
+    
+    await axios.get('http://localhost:8080/api/empresa')
+      .then(function (response) {
+        console.log(response.data);
+        setEmpresas(response.data);
+        console.log(empresas);
+      }).catch(function (error) {
+        console.log(error);
+
+      });
   }, [])
 
-  function carregarLista(){
-    axios.get('http://localhost:8080/api/empresa')
-    .then(function (response) {
-      const empresaLocal = response.data;
-      console.log(response.data);
-      setEmpresas(empresaLocal);
-      console.log(empresas);
-    }).catch(function (error) {
-      console.log(error);
-
-    });
-  }
-
-  
+  useEffect(() => {
+    setEmpresas2(empresas);
+    console.log(empresas2);
+    console.log(empresas); // Isso vai refletir o estado atualizado
+  }, [empresas]);
 
   return (
     <View style={styles.container}>
@@ -70,7 +72,7 @@ export default function Home({ navigation }) {
             ))}
         </ScrollView>
 
-        {empresas.map((l, i) => {
+        {empresas2.map((l, i) => {
 
           <View style={styles.slide} key={i}>
 
