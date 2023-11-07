@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
 import Loja from './component/loja'
+import axios from 'axios';
 
 export default function Home({ navigation }) {
 
   const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+
+  const [empresas, setEmpresas] = useState([]);
+
+  useEffect(() => {
+      carregarLista()
+  }, [])
+
+  function carregarLista(){
+    axios.get('http://localhost:8080/api/empresa')
+    .then(function (response) {
+      const empresaLocal = response.data;
+      console.log(response.data);
+      setEmpresas(empresaLocal);
+      console.log(empresas);
+    }).catch(function (error) {
+      console.log(error);
+
+    });
+  }
+
+  
 
   return (
     <View style={styles.container}>
@@ -48,7 +70,24 @@ export default function Home({ navigation }) {
             ))}
         </ScrollView>
 
-        <Text style={styles.title2}>Lojas</Text>
+        {empresas.map((l, i) => {
+
+          <View style={styles.slide} key={i}>
+
+            <View style={styles.colum1}>
+              <Image style={styles.lojaImage} source={l.imgPerfil} />
+            </View>
+
+            <View style={styles.colum2}>
+              <Text style={styles.nomeItem}>{l.nome}</Text>
+              <Text style={styles.text}>{l.categoria}</Text>
+              <Text style={styles.text}>{l.taxaFrete}</Text>
+            </View>
+
+          </View>
+        })}
+
+        {/* /*<Text style={styles.title2}>Lojas</Text>
         <View style={styles.cards}>
           {listagemLojas.map((index) => (
             <View key={index}>
@@ -57,7 +96,8 @@ export default function Home({ navigation }) {
               </TouchableOpacity>
             </View>
           ))}
-        </View>
+        </View> */}
+
       </ScrollView>
       <Footer />
     </View>
