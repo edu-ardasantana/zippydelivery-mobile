@@ -1,9 +1,16 @@
+import { type } from 'os';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
+interface LojaProps  {
+    nome: string;
+    categoria: string;
+    imagem: string;
+    taxaFrete: string;
+  };
+  
 
-
-export default function Loja({ navigation }) {
+export default function Loja({ navigation },props: LojaProps) {
     const tempoMin = 40;
     const tempoMax = 50;
     const categoria = 'Bebidas';
@@ -20,13 +27,13 @@ export default function Loja({ navigation }) {
         <View style={styles.slide}>
 
             <View style={styles.colum1}>
-                <Image style={styles.lojaImage} source={require('../img/logoLoja.png')} />
+                <Image style={styles.lojaImage} source={{uri:props.imagem}} />
             </View>
 
             <View style={styles.colum2}>
-                <Text style={styles.nomeItem}>Nome Restaurante </Text>
-                <Text style={styles.text}>{categoria}</Text>
-                <Text style={styles.text}>{tempoMin}-{tempoMax} min • {frete}</Text>
+                <Text style={styles.nomeItem}>{props.nome}</Text>
+                <Text style={styles.text}>{props.categoria}</Text>
+                <Text style={styles.text}>{props.taxaFrete}</Text>
             </View>
             
         </View>

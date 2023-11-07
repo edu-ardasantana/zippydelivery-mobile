@@ -70,7 +70,9 @@ export default function Home({ navigation }) {
 
          return( <View style={styles.slide} key={i}>
 
-            <View style={styles.colum1}>
+<Loja categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imagem}/>
+
+            {/* <View style={styles.colum1}>
               <Image style={styles.lojaImage} source={{uri: l.imgPerfil}} />
             </View>
 
@@ -78,7 +80,7 @@ export default function Home({ navigation }) {
               <Text style={styles.nomeItem}>{l.nome}</Text>
               <Text style={styles.text}>{l.categoria}</Text>
               <Text style={styles.text}>{l.taxaFrete}</Text>
-            </View>
+            </View> */}
 
           </View>
           )
