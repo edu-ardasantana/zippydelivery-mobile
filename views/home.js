@@ -10,27 +10,21 @@ export default function Home({ navigation }) {
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
   const [empresas, setEmpresas] = useState([]);
-  const [empresas2, setEmpresas2] = useState([]);
 
-  useEffect(async () => {
-    
-    
-    await axios.get('http://localhost:8080/api/empresa')
+  useEffect( () => {
+    axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
         console.log(response.data);
-        setEmpresas(response.data);
-        console.log(empresas);
+        return setEmpresas(...empresas, response.data);
+       
       }).catch(function (error) {
         console.log(error);
 
       });
   }, [])
 
-  useEffect(() => {
-    setEmpresas2(empresas);
-    console.log(empresas2);
-    console.log(empresas); // Isso vai refletir o estado atualizado
-  }, [empresas]);
+ 
+ 
 
   return (
     <View style={styles.container}>
@@ -72,12 +66,12 @@ export default function Home({ navigation }) {
             ))}
         </ScrollView>
 
-        {empresas2.map((l, i) => {
+        {empresas.map((l, i) => {
 
-          <View style={styles.slide} key={i}>
+         return( <View style={styles.slide} key={i}>
 
             <View style={styles.colum1}>
-              <Image style={styles.lojaImage} source={l.imgPerfil} />
+              <Image style={styles.lojaImage} source={{uri: l.imgPerfil}} />
             </View>
 
             <View style={styles.colum2}>
@@ -87,6 +81,7 @@ export default function Home({ navigation }) {
             </View>
 
           </View>
+          )
         })}
 
         {/* /*<Text style={styles.title2}>Lojas</Text>
@@ -108,6 +103,56 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  slide: {
+    flex: 1,
+    marginHorizontal: 15,
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6E6E6',
+    justifyContent: 'space-between',
+},
+colum1: {
+    flex: 1.2,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginLeft: 20,
+},
+colum2: {
+    flex: 2.5,
+    flexDirection: 'column',
+    justifyContent: 'center',
+},
+colum3: {
+    flex: 0.5,
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+},
+iconWrapper: {
+    padding: 10,
+},
+icon: {
+    width: 20,
+    height: 20,
+    tintColor: '#ABABAB',
+},
+text: {
+    color: '#7C7C8A',
+    fontSize: 12,
+    fontWeight: '400',
+},
+lojaImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    marginVertical: 10,
+    marginRight: 7,
+},
+nomeItem: {
+    color: '#0D0D0D',
+    fontSize: 15,
+    fontWeight: '600',
+},
   container: {
     flex: 1,
     flexDirection: 'column',
