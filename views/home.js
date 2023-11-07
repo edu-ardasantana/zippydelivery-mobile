@@ -68,9 +68,7 @@ export default function Home({ navigation }) {
 
         {empresas.map((l, i) => {
 
-         return( <View style={styles.slide} key={i}>
-
-<Loja categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imagem}/>
+         return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil}/>
 
             {/* <View style={styles.colum1}>
               <Image style={styles.lojaImage} source={{uri: l.imgPerfil}} />
@@ -81,9 +79,6 @@ export default function Home({ navigation }) {
               <Text style={styles.text}>{l.categoria}</Text>
               <Text style={styles.text}>{l.taxaFrete}</Text>
             </View> */}
-
-          </View>
-          )
         })}
 
         {/* /*<Text style={styles.title2}>Lojas</Text>

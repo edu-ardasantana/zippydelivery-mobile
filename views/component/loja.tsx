@@ -10,7 +10,7 @@ interface LojaProps  {
   };
   
 
-export default function Loja({ navigation },props: LojaProps) {
+export default function Loja(props: LojaProps) {
     const tempoMin = 40;
     const tempoMax = 50;
     const categoria = 'Bebidas';
