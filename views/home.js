@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
 import Loja from './component/loja'
+import axios from 'axios';
 
 export default function Home({ navigation }) {
 
   const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+
+  const [empresas, setEmpresas] = useState([]);
+
+  useEffect( () => {
+    axios.get('http://localhost:8080/api/empresa')
+      .then(function (response) {
+        console.log(response.data);
+        return setEmpresas(...empresas, response.data);
+       
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+  }, [])
+
+ 
+ 
 
   return (
     <View style={styles.container}>
@@ -48,7 +66,12 @@ export default function Home({ navigation }) {
             ))}
         </ScrollView>
 
-        <Text style={styles.title2}>Lojas</Text>
+        {empresas.map((l, i) => {
+
+          return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil}/>
+        })}
+
+        {/* /*<Text style={styles.title2}>Lojas</Text>
         <View style={styles.cards}>
           {listagemLojas.map((index) => (
             <View key={index}>
@@ -57,7 +80,8 @@ export default function Home({ navigation }) {
               </TouchableOpacity>
             </View>
           ))}
-        </View>
+        </View> */}
+
       </ScrollView>
       <Footer />
     </View>
@@ -66,6 +90,56 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  slide: {
+    flex: 1,
+    marginHorizontal: 15,
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6E6E6',
+    justifyContent: 'space-between',
+},
+colum1: {
+    flex: 1.2,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginLeft: 20,
+},
+colum2: {
+    flex: 2.5,
+    flexDirection: 'column',
+    justifyContent: 'center',
+},
+colum3: {
+    flex: 0.5,
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+},
+iconWrapper: {
+    padding: 10,
+},
+icon: {
+    width: 20,
+    height: 20,
+    tintColor: '#ABABAB',
+},
+text: {
+    color: '#7C7C8A',
+    fontSize: 12,
+    fontWeight: '400',
+},
+lojaImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    marginVertical: 10,
+    marginRight: 7,
+},
+nomeItem: {
+    color: '#0D0D0D',
+    fontSize: 15,
+    fontWeight: '600',
+},
   container: {
     flex: 1,
     flexDirection: 'column',
