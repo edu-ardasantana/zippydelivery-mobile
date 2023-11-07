@@ -1,62 +1,82 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput, Modal, Pressable } from 'react-native'
 import { Button, Input } from 'react-native-elements';
 import { useRoute } from '@react-navigation/native';
-
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 
 export default function FormConta({ navigation }) {
+    const [modalVisible, setModalVisible] = useState(false);
+
     const route = useRoute();
     const { cliente } = route.params || {};
-    
+
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const id = 1
-  
+    const id = 2
+
     useEffect(() => {
-      axios.get(`http://localhost:8080/api/cliente/${id}`)
-        .then(function (response) {
-          const data = response.data;
-          setNome(data.nome);
-          setEmail(data.email);
-          setSenha(data.senha);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }, []); 
-  
-  const alterarDados = () => {
+        axios.get(`http://localhost:8080/api/cliente/${id}`)
+            .then(function (response) {
+                const data = response.data;
+                setNome(data.nome);
+                setEmail(data.email);
+                setSenha(data.senha);
 
-    
-    axios
-      .put(`http://localhost:8080/api/cliente/${id}`, {
-        
-        nome: nome,
-        email: email,
-        senha: senha,
-      })
-      
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
+            })
+            .catch(function (error) {
+                console.log(error);
+                showMessage({
+                    message: `Algo deu errado: ${error}`,
+                    type: "danger",
+                });
+            });
+    }, []);
 
-  const excluirDados = () => {
+    const alterarDados = () => {
 
-    axios.delete(`http://localhost:8080/api/cliente/${id}`)
-    
-    .then(function (response) {
-    console.log(response);
-    }).catch(function (error) {
-    console.log(error);
-    
-    });
-    
+
+        axios
+            .put(`http://localhost:8080/api/cliente/${id}`, {
+
+                nome: nome,
+                email: email,
+                senha: senha,
+            })
+
+            .then(function (response) {
+                console.log(response);
+                showMessage({
+                    message: "Alteração realizada com sucesso!",
+                    type: "success"
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+                showMessage({
+                    message: `Algo deu errado: ${error}`,
+                    type: "danger",
+                });
+            });
+    };
+
+    const excluirDados = () => {
+
+        axios.delete(`http://localhost:8080/api/cliente/${id}`)
+
+            .then(function (response) {
+                console.log(response);
+                navigation.navigate('Login');
+            }).catch(function (error) {
+                console.log(error);
+                showMessage({
+                    message: `Algo deu errado: ${error}`,
+                    type: "danger",
+                });
+
+            });
+
     }
 
     return (
@@ -109,13 +129,55 @@ export default function FormConta({ navigation }) {
                     title="Atualizar dados"
                     onPress={() => {
                         alterarDados();
-                        navigation.navigate('ConfirmaAlteracao')}}
+                        navigation.navigate('ConfirmaAlteracao')
+                    }}
                 />
-                <Button
+
+                <View style={styles.centeredView}>
+                    <Modal animationType="slide" transparent={true} visible={modalVisible}>
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <Text style={styles.modalText}>Tem certeza que deseja excluir sua conta?</Text>
+
+                                <View style={styles.buttonGroup}>
+                                    <Pressable
+                                        style={[styles.buttonModal, styles.buttonCancel]}
+                                        onPress={() => setModalVisible(!modalVisible)}>
+                                        <Text style={styles.textStyle}>Cancelar</Text>
+                                    </Pressable>
+                                    <Pressable
+                                        style={[styles.buttonModal, styles.buttonDelete]}
+                                        onPress={() => {
+                                            excluirDados();
+                                        }}>
+                                        <Text style={styles.textStyle}>Excluir</Text>
+                                    </Pressable>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+
+                    <Button
+                        buttonStyle={[styles.buttonModal, styles.buttonOpen]}
+                        title="Excluir conta"
+                        onPress={() => {
+                            setModalVisible(true)
+                        }}
+                    />
+
+                    
+                </View>
+
+
+
+                {/* <Button
                     buttonStyle={styles.button}
                     title="Excluir conta"
-                    onPress={()=> excluirDados()}
-                />
+                    onPress={() => excluirDados()}
+                /> */}
+
+                <FlashMessage position="top" />
+
             </View>
         </View>
     )
@@ -181,5 +243,65 @@ const styles = StyleSheet.create({
         height: 40,
         width: 300,
         borderRadius: 5
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    buttonModal: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+    },
+    buttonOpen: {
+        backgroundColor: '#FF9431',
+        height: 40,
+        width: 300,
+        borderRadius: 5,
+    },
+    buttonCancel: {
+        backgroundColor: '#2196F3',
+        height: 40,
+        width: 90,
+        borderRadius: 5,
+        marginRight: 10,
+    },
+    buttonDelete: {
+        backgroundColor: 'red',
+        height: 40,
+        width: 90,
+        borderRadius: 5,
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: 400
+    },
+    buttonGroup: {
+        flexDirection: 'row',
+        marginTop: 20,
     },
 })
