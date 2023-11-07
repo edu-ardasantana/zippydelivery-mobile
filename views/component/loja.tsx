@@ -48,6 +48,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#E6E6E6',
         justifyContent: 'space-between',
+        backgroundColor: "red",
+        marginVertical: 20,
+        paddingVertical: 20,
+        paddingHorizontal: 5,
     },
     colum1: {
         flex: 1.2,
@@ -55,11 +59,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'center',
         marginLeft: 20,
+        backgroundColor: "blue",
     },
     colum2: {
         flex: 2.5,
         flexDirection: 'column',
         justifyContent: 'center',
+        backgroundColor: "yellow",
     },
     colum3: {
         flex: 0.5,

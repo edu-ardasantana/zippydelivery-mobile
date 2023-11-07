@@ -68,17 +68,7 @@ export default function Home({ navigation }) {
 
         {empresas.map((l, i) => {
 
-         return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil}/>
-
-            {/* <View style={styles.colum1}>
-              <Image style={styles.lojaImage} source={{uri: l.imgPerfil}} />
-            </View>
-
-            <View style={styles.colum2}>
-              <Text style={styles.nomeItem}>{l.nome}</Text>
-              <Text style={styles.text}>{l.categoria}</Text>
-              <Text style={styles.text}>{l.taxaFrete}</Text>
-            </View> */}
+          return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil}/>
         })}
 
         {/* /*<Text style={styles.title2}>Lojas</Text>
