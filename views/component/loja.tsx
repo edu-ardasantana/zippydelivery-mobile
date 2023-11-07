@@ -1,21 +1,21 @@
+import { type } from 'os';
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
-export default function Loja({ navigation }) {
+interface LojaProps  {
+    nome: string;
+    categoria: string;
+    imagem: string;
+    taxaFrete: string;
+  };
+  
+
+export default function Loja(props: LojaProps) {
     const tempoMin = 40;
     const tempoMax = 50;
     const categoria = 'Bebidas';
     const frete = formatarMoeda(6.99);
 
-    const [isFavorite, setIsFavorite] = useState(false);
-
-    function flagFavorite() {
-        setIsFavorite(!isFavorite);
-    }
-
-    const heartImageSource = isFavorite
-        ? { uri: 'https://api.iconify.design/material-symbols:favorite-rounded.svg' }
-        : { uri: 'https://api.iconify.design/material-symbols:favorite-outline-rounded.svg' };
 
     function formatarMoeda(dataParam) {
         return dataParam
@@ -27,20 +27,15 @@ export default function Loja({ navigation }) {
         <View style={styles.slide}>
 
             <View style={styles.colum1}>
-                <Image style={styles.lojaImage} source={require('../img/logoLoja.png')} />
+                <Image style={styles.lojaImage} source={{uri:props.imagem}} />
             </View>
 
             <View style={styles.colum2}>
-                <Text style={styles.nomeItem}>Nome Restaurante </Text>
-                <Text style={styles.text}>{categoria}</Text>
-                <Text style={styles.text}>{tempoMin}-{tempoMax} min • {frete}</Text>
+                <Text style={styles.nomeItem}>{props.nome}</Text>
+                <Text style={styles.text}>{props.categoria}</Text>
+                <Text style={styles.text}>{props.taxaFrete}</Text>
             </View>
-
-            <View style={styles.colum3}>
-                <TouchableOpacity onPress={flagFavorite} style={styles.iconWrapper}>
-                    <View style={styles.iconBackground}><Image style={styles.icon} source={heartImageSource} /></View>
-                </TouchableOpacity>
-            </View>
+            
         </View>
     );
 }
@@ -53,6 +48,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#E6E6E6',
         justifyContent: 'space-between',
+        backgroundColor: "red",
+        marginVertical: 20,
+        paddingVertical: 20,
+        paddingHorizontal: 5,
     },
     colum1: {
         flex: 1.2,
@@ -60,11 +59,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'center',
         marginLeft: 20,
+        backgroundColor: "blue",
     },
     colum2: {
         flex: 2.5,
         flexDirection: 'column',
         justifyContent: 'center',
+        backgroundColor: "yellow",
     },
     colum3: {
         flex: 0.5,
