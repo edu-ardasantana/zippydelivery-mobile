@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {  View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import ItemSacola from './component/itemSacola';
 import { Button } from 'react-native-elements';
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Sacola({ navigation }) {
 
     const listagemProdutos = [1, 2, 3];
+
+    const [endereco, setEndereco] = useState();
+    const isFocused = useIsFocused();
+
+    const id = 2
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/cliente/${id}`)
+            .then(function(response) {
+                setEndereco(response.data)
+                console.log(endereco.logradouro)
+            })
+            .catch(function (error) {
+                console.log(error)
+            })
+    })
 
     return (
         <View style={styles.container}>
@@ -30,7 +49,7 @@ export default function Sacola({ navigation }) {
                 <View style={styles.endereco}>
                     <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
 
-                    <Text style={styles.enderecoText}>Avenida do príncipe mimado, 267<br />Caxangá - Condomínio das flores bloco 02 apto 505
+                    <Text style={styles.enderecoText}><br />Caxangá - Condomínio das flores bloco 02 apto 505
                     </Text>
 
                     <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>

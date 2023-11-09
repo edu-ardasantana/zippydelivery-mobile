@@ -1,11 +1,46 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput, Picker } from 'react-native'
 import { Button } from 'react-native-elements';
-
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 
 export default function FormEndereco({ navigation }) {
 
+    const [logradouro, setLogradouro] = useState('');
+    const [bairro, setBairro] = useState('');
+    const [cidade, setCidade] = useState('');
+    const [cep, setCep] = useState('');
+    const [complemento, setComplemento] = useState('');
+
     const [selectedUF, setSelectedUF] = useState('');
+
+    const id = 2
+
+    const inserirDados = () => {
+        const userData = {
+            logradouro: logradouro,
+            bairro: bairro,
+            cidade: cidade,
+            cep: cep,
+            complemento: complemento
+        }
+
+        axios.put(`http://localhost:8080/api/cliente/${id}`, userData)
+            .then(function (response) {
+                console.log(response);
+                showMessage({
+                    message: "Cadastro de endereço realizado com sucesso!",
+                    type: "success"
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+                showMessage({
+                    message: `Algo deu errado: ${error}`,
+                    type: "danger",
+                });
+            });
+    }
 
     return (
 
@@ -33,6 +68,8 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>Logradouro</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setLogradouro(text)}
+                        value={logradouro}
                     />
                 </View>
 
@@ -40,6 +77,8 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>Bairro</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setBairro(text)}
+                        value={bairro}
                     />
                 </View>
 
@@ -47,6 +86,8 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>Cidade</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setCidade(text)}
+                        value={cidade}
                     />
                 </View>
 
@@ -56,6 +97,7 @@ export default function FormEndereco({ navigation }) {
                         style={styles.input}
                         selectedValue={selectedUF}
                         onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
+                       
                     >
                         <Picker.Item label="Selecione..." value="" />
                         <Picker.Item label="PE" value="PE" />
@@ -69,6 +111,8 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>CEP</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setCep(text)}
+                        value={cep}
                     />
                 </View>
 
@@ -76,13 +120,17 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>Complemento</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setComplemento(text)}
+                        value={complemento}
                     />
                 </View>
 
                 <Button
                     buttonStyle={styles.button}
                     title="Use este endereço"
-                    onPress={() => navigation.navigate('Menu')}
+                    onPress={() => {
+                        inserirDados();
+                    }}
                 />
 
             </View>
