@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 
 export default function CadastraUsuario({ navigation }) {
 
@@ -22,9 +23,17 @@ export default function CadastraUsuario({ navigation }) {
         axios.post('http://localhost:8080/api/cliente', userData)
             .then(function (response) {
                 console.log(response);
+                showMessage({
+                    message: "Cadastro realizado com sucesso!",
+                    type: "success"
+                });
             })
             .catch(function (error) {
                 console.log(error);
+                showMessage({
+                    message: `Algo deu errado: ${error}`,
+                    type: "danger",
+                });
             });
     };
     return (
@@ -90,7 +99,6 @@ export default function CadastraUsuario({ navigation }) {
                     title="Criar conta"
                     onPress={() => {
                         inserirDados();
-                        navigation.navigate('Login')
                     }}
                 />
                 <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -115,6 +123,9 @@ export default function CadastraUsuario({ navigation }) {
                     />
                     <Text style={styles.googleButtonText}>Entre com o Google</Text>
                 </TouchableOpacity>
+
+                <FlashMessage position="top" />
+
             </View>
 
         </View>
