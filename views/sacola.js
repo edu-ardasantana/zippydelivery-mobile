@@ -1,31 +1,31 @@
+import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import {  View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import ItemSacola from './component/itemSacola';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
-import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
-import { useIsFocused } from '@react-navigation/native';
+import ItemSacola from './component/itemSacola';
 
 export default function Sacola({ navigation }) {
 
+    localStorage.setItem("var", "sacola");
     const listagemProdutos = [1, 2, 3];
 
-    const [endereco, setEndereco] = useState();
+    const [getEndereco, setEndereco] = useState([]);
     const isFocused = useIsFocused();
 
-    const id = 2
+    const id = 3
 
     useEffect(() => {
         axios.get(`http://localhost:8080/api/cliente/${id}`)
-            .then(function(response) {
+            .then(function (response) {
                 setEndereco(response.data)
-                console.log(endereco.logradouro)
             })
             .catch(function (error) {
                 console.log(error)
             })
-    })
+    }, [isFocused])
 
+console.log(getEndereco)
     return (
         <View style={styles.container}>
 
@@ -43,20 +43,33 @@ export default function Sacola({ navigation }) {
 
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
                 <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
 
-                <View style={styles.endereco}>
+                {getEndereco.logradouro != null || getEndereco.logradouro != "" ?  
+
+                 <View style={styles.endereco}>
                     <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
 
-                    <Text style={styles.enderecoText}><br />Caxangá - Condomínio das flores bloco 02 apto 505
+                    <Text style={styles.enderecoText}>{getEndereco.logradouro} {getEndereco.cidade} - {getEndereco.estado}, {getEndereco.bairro} - {getEndereco.cep}
                     </Text>
 
                     <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
                         <Text style={styles.limpar}>Trocar</Text>
                     </TouchableOpacity>
 
+                </View> :
+
+                <View style={styles.semEndereco}>
+
+                <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                        <Text style={styles.limpar}>Escolher endereço</Text>
+                    </TouchableOpacity>
+
                 </View>
+
+            }
+
 
                 <View style={styles.dividerContainer}>
                     <View style={styles.dividerLine} />
@@ -91,7 +104,7 @@ export default function Sacola({ navigation }) {
                     title="Continuar"
                     onPress={() => navigation.navigate('ResumoSacola')}
                 />
-                
+
             </View>
 
         </View>
@@ -126,15 +139,23 @@ const styles = StyleSheet.create({
     },
     limpar: {
         paddingHorizontal: 20,
-        color: '#FF9431'
+        color: '#FF9431',
+        fontWeight:'600'
+    },
+    semEndereco:{
+        padding: 20,
+        alignItems:'center',
+        textDecorationLine:'underline',
+        textDecorationColor:'#FF9431'
     },
     endereco: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between'
     },
     enderecoText: {
         marginStart: 5,
-        fontSize: 10,
+        fontSize: 14,
         justifyContent: 'space-between',
     },
     enderecoTitle: {
@@ -161,7 +182,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
     },
     footerContainer: {
-        justifyContent:'center',
+        justifyContent: 'center',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
         paddingVertical: 70,
@@ -177,13 +198,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     footerText: {
-        paddingRight:25
+        paddingRight: 25
     },
     preco: {
         fontWeight: 'bold',
     },
     button: {
-        alignSelf:'center',
+        alignSelf: 'center',
         marginTop: 20,
         backgroundColor: '#FF9431',
         height: 30,

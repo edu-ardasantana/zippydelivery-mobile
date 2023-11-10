@@ -5,6 +5,7 @@ import Footer from './component/footer';
 export default function Menu({ navigation }) {
 
   var nomeUser = 'Gabriela Albuquerque';
+  localStorage.setItem("var", "menu");
 
   return (
     <View style={styles.container}>

@@ -14,6 +14,9 @@ export default function FormConta({ navigation }) {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+
+
+
     const id = 2;
 
     useEffect(() => {
@@ -165,7 +168,7 @@ export default function FormConta({ navigation }) {
                         }}
                     />
 
-                    
+
                 </View>
 
 
