@@ -2,16 +2,17 @@ import { type } from 'os';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-interface LojaProps  {
+interface LojaProps {
     nome: string;
     categoria: string;
     imagem: string;
     taxaFrete: string;
-  };
-  
+    tempoEntrega: any;
+};
 
-export default function Loja(props: LojaProps) {
-    const tempoMin = 40;
+
+export default function Loja(props: LojaProps, { navigation }) {
+    /*const tempoMin = 40;
     const tempoMax = 50;
     const categoria = 'Bebidas';
     const frete = formatarMoeda(6.99);
@@ -21,22 +22,21 @@ export default function Loja(props: LojaProps) {
         return dataParam
             ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
             : '';
-    }
+    }*/
 
     return (
-        <View style={styles.slide}>
+            <View style={styles.slide}>
 
-            <View style={styles.colum1}>
-                <Image style={styles.lojaImage} source={{uri:props.imagem}} />
-            </View>
+                <View style={styles.colum1}>
+                    <Image style={styles.lojaImage} source={{ uri: props.imagem }} />
+                </View>
 
-            <View style={styles.colum2}>
-                <Text style={styles.nomeItem}>{props.nome}</Text>
-                <Text style={styles.text}>{props.categoria}</Text>
-                <Text style={styles.text}>{props.taxaFrete}</Text>
+                <View style={styles.colum2}>
+                    <Text style={styles.nomeItem}>{props.nome}</Text>
+                    <Text style={styles.text}>{props.tempoEntrega}-{props.tempoEntrega+10} min • {props.categoria} • R${props.taxaFrete}</Text>
+                </View>
+
             </View>
-            
-        </View>
     );
 }
 
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         flexDirection: 'row',
         borderBottomWidth: 1,
-        borderBottomColor: '#BBB',
+        borderBottomColor: '#E6E6E6',
         justifyContent: 'space-between',
         marginVertical: 20,
         paddingHorizontal: 5,
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#7C7C8A',
-        fontSize: 12,
+        fontSize: 16,
         fontWeight: '400',
     },
     lojaImage: {
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     },
     nomeItem: {
         color: '#0D0D0D',
-        fontSize: 15,
+        fontSize: 18,
         fontWeight: '600',
         marginBottom: 2,
     },

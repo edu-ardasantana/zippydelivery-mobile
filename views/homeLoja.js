@@ -3,12 +3,12 @@ import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'rea
 import Item from './component/item';
 import Footer from './component/footer';
 
-export default function HomeLoja({ navigation }) {
+export default function HomeLoja({ navigation, route }) {
 
   const listagemProdutos = [1, 2, 3];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
-
+  console.log(route.params)
 
   return (
     <View style={styles.container}>
@@ -57,7 +57,7 @@ export default function HomeLoja({ navigation }) {
           ))}
         </View>
       </ScrollView>
-      <Footer />
+      {/*<Footer />*/}
     </View>
   );
 }

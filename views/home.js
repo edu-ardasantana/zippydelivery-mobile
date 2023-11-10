@@ -11,20 +11,20 @@ export default function Home({ navigation }) {
 
   const [empresas, setEmpresas] = useState([]);
 
-  useEffect( () => {
+  useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
         console.log(response.data);
         return setEmpresas(...empresas, response.data);
-       
+
       }).catch(function (error) {
         console.log(error);
 
       });
   }, [])
 
- 
- 
+
+
 
   return (
     <View style={styles.container}>
@@ -68,7 +68,11 @@ export default function Home({ navigation }) {
 
         {empresas.map((l, i) => {
 
-          return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil}/>
+          return(
+            <TouchableOpacity onPress={() => navigation.navigate('HomeLoja', {id: l.id})} style={styles.cadaRestaurante}>
+                <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} tempoEntrega={l.tempoEntrega}/>
+            </TouchableOpacity>
+          )
         })}
 
         {/* /*<Text style={styles.title2}>Lojas</Text>
@@ -97,49 +101,50 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E6E6E6',
     justifyContent: 'space-between',
-},
-colum1: {
+
+  },
+  colum1: {
     flex: 1.2,
     flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'center',
     marginLeft: 20,
-},
-colum2: {
+  },
+  colum2: {
     flex: 2.5,
     flexDirection: 'column',
     justifyContent: 'center',
-},
-colum3: {
+  },
+  colum3: {
     flex: 0.5,
     flexDirection: 'column',
     alignItems: 'flex-end',
-},
-iconWrapper: {
+  },
+  iconWrapper: {
     padding: 10,
-},
-icon: {
+  },
+  icon: {
     width: 20,
     height: 20,
     tintColor: '#ABABAB',
-},
-text: {
+  },
+  text: {
     color: '#7C7C8A',
     fontSize: 12,
     fontWeight: '400',
-},
-lojaImage: {
+  },
+  lojaImage: {
     width: 70,
     height: 70,
     borderRadius: 50,
     marginVertical: 10,
     marginRight: 7,
-},
-nomeItem: {
+  },
+  nomeItem: {
     color: '#0D0D0D',
     fontSize: 15,
     fontWeight: '600',
-},
+  },
   container: {
     flex: 1,
     flexDirection: 'column',
@@ -148,7 +153,7 @@ nomeItem: {
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 50
+    height: 50,
   },
   menuIcon: {
     width: 25,
@@ -258,4 +263,8 @@ nomeItem: {
   carousel: {
     marginLeft: 10,
   },
+  cadaRestaurante: {
+    flex: 1.6,
+    flexDirection: 'row',
+  }
 });

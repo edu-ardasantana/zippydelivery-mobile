@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         marginBottom: 8,
-        color: '#4D585E'
+        color: '#4D585E',
     },
     input: {
         width: 300,

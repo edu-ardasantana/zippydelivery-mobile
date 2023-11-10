@@ -124,7 +124,7 @@ export default function CadastraUsuario({ navigation }) {
                     <Text style={styles.googleButtonText}>Entre com o Google</Text>
                 </TouchableOpacity>
 
-                <FlashMessage position="top" />
+                <FlashMessage position="bottom" />
 
             </View>
 
