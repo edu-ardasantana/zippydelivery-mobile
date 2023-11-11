@@ -1,20 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Item from './component/item';
 import Footer from './component/footer';
+import axios from 'axios';
 
 export default function HomeLoja({ navigation, route }) {
 
   const listagemProdutos = [1, 2, 3];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
-  console.log(route.params)
+  const [empresa, setEmpresa] = useState('');
+
+  useEffect( () => {
+
+    console.log(route.params.id)
+    consultarEmpresa(route.params.id)
+    
+  }, [])
+
+  async function consultarEmpresa(idEmpresa){
+
+    await axios.get('http://localhost:8080/api/empresa/' + idEmpresa)
+    .then(function (response) {
+      console.log(response.data);
+      setEmpresa(response.data);
+
+    }).catch(function (error) {
+      console.log(error);
+
+    });
+  }
+
+  const [produtos, setProdutos] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/produto')
+      .then(function (response) {
+        console.log(response.data);
+        return setEmpresas(...produtos, response.data);
+
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+  }, [])
 
   return (
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
-          <Image source={require('/views/img/imgLoja.png')} style={styles.backgroundImage} />
+          <Image source={empresa.imgCapa} style={styles.backgroundImage} />
           <View style={styles.headerContent}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
               <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} /></View>
@@ -29,7 +64,7 @@ export default function HomeLoja({ navigation, route }) {
 
         <View>
           <View style={styles.topo}>
-            <Text style={[styles.title1, { marginTop: 20 }]}>Nome Restaurante</Text>
+            <Text style={[styles.title1, { marginTop: 20 }]}>{empresa.nome}</Text>
           </View>
 
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>

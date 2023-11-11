@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         paddingHorizontal: 5,
         paddingBottom: 24,
+        height: '70%',
     },
     colum1: {
         flex: 1.2,
