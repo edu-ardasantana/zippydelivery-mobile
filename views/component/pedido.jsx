@@ -1,8 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
-export default function Pedido() {
+
+export default function Pedido(id, route) {
 
     var quantity = 2;
     var restaurantName = 'Império dos Churros Camaragibe';
@@ -10,8 +12,29 @@ export default function Pedido() {
     var orderStatus = 'Concluído';
     var orderNumber = 1300;
     var quantityItemsOrder = 5;
-
+    
     const navigation = useNavigation();
+
+
+
+    // const getDetails = async () => {
+    //     try {
+    //       const resposta = await axios.get(`http://localhost:8080/api/pedido/${route.params.id}`);
+    //       const dados = await resposta.json();
+    //       setDetails(dados);
+    
+    //       // Navegue para a próxima página e passe os dados como parâmetro
+    //       navigation.navigate('DetalhePedido', {dados:resposta.data});
+    //       console.log(details)
+    //     } catch (erro) {
+    //       console.error('Erro na requisição:', erro);
+    //     }
+    //   };
+    
+    //   useEffect(() => {
+    //     getDetails();
+
+    //   }, []);
 
     return (
         <View style={styles.bodyContent}>
@@ -31,7 +54,7 @@ export default function Pedido() {
                     }
                 </View>
             </View>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DetalhePedido')}>
+            <TouchableOpacity style={styles.button} onPress={('')}>
                 <Text style={{ color: '#FF9431', fontWeight: '450' }}>ver detalhes</Text>
             </TouchableOpacity>
         </View>

@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Footer from './component/footer';
 import Pedido from './component/pedido';
+import axios from 'axios';
+
 
 export default function Historico({ navigation }) {
 
-    //const listagemPedidos = [];
-    const listagemPedidos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
+    const listagemPedidos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    const [lista, setLista] = useState([]);
+    // const [details, setDetails] = useState(null)
+
+    function carregarLista() {
+
+        axios.get("http://localhost:8080/api/pedido")
+        .then((response) => {
+            setLista(response.data)
+            console.log(lista)
+        })
+    }
+
+    useEffect(() => {
+        carregarLista();
+    }, []) 
+
 
     return (
         <View style={styles.container}>

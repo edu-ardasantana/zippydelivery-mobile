@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Footer from './component/footer';
 
-export default function DetalhePedido({ navigation }) {
+export default function DetalhePedido({ route, navigation }) {
 
     var orderStatus = 'Concluído';
     var orderNumber = 1300;
