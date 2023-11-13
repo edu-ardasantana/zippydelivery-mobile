@@ -17,7 +17,7 @@ export default function FormConta({ navigation }) {
 
 
 
-    const id = 2;
+    const id = 4;
 
     useEffect(() => {
         axios.get(`http://localhost:8080/api/cliente/${id}`)
@@ -105,16 +105,6 @@ export default function FormConta({ navigation }) {
                         placeholder='gabi_102@gmail.com'
                         onChangeText={(text) => setEmail(text)}
                         value={email}
-                    />
-                </View>
-                <View>
-                    <Text style={styles.label}>Senha atual</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder='******'
-                        secureTextEntry={true}
-                        onChangeText={(text) => setSenha(text)}
-                        value={senha}
                     />
                 </View>
 

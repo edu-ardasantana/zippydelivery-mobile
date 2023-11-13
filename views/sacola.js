@@ -13,7 +13,7 @@ export default function Sacola({ navigation }) {
     const [getEndereco, setEndereco] = useState([]);
     const isFocused = useIsFocused();
 
-    const id = 3
+    const id = 4
 
     useEffect(() => {
         axios.get(`http://localhost:8080/api/cliente/${id}`)
@@ -25,7 +25,15 @@ export default function Sacola({ navigation }) {
             })
     }, [isFocused])
 
-console.log(getEndereco)
+
+    let enderecoCompleto;
+    if (getEndereco.logradouro == null) {
+        enderecoCompleto = null;
+    } else {
+        enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
+    }
+
+
     return (
         <View style={styles.container}>
 
@@ -46,29 +54,32 @@ console.log(getEndereco)
             <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
                 <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
 
-                {getEndereco.logradouro != null || getEndereco.logradouro != "" ?  
+                {enderecoCompleto == null ?
 
-                 <View style={styles.endereco}>
-                    <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
+                    <View style={styles.semEndereco}>
 
-                    <Text style={styles.enderecoText}>{getEndereco.logradouro} {getEndereco.cidade} - {getEndereco.estado}, {getEndereco.bairro} - {getEndereco.cep}
-                    </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                            <Text style={styles.limpar}>Escolher endereço</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
-                        <Text style={styles.limpar}>Trocar</Text>
-                    </TouchableOpacity>
+                    </View>
 
-                </View> :
+                    :
 
-                <View style={styles.semEndereco}>
+                    <View style={styles.endereco}>
+                        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
 
-                <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
-                        <Text style={styles.limpar}>Escolher endereço</Text>
-                    </TouchableOpacity>
+                        <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
 
-                </View>
+                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                            <Text style={styles.limpar}>Trocar</Text>
+                        </TouchableOpacity>
 
-            }
+                    </View>
+
+
+
+                }
 
 
                 <View style={styles.dividerContainer}>
@@ -140,13 +151,13 @@ const styles = StyleSheet.create({
     limpar: {
         paddingHorizontal: 20,
         color: '#FF9431',
-        fontWeight:'600'
+        fontWeight: '600'
     },
-    semEndereco:{
+    semEndereco: {
         padding: 20,
-        alignItems:'center',
-        textDecorationLine:'underline',
-        textDecorationColor:'#FF9431'
+        alignItems: 'center',
+        textDecorationLine: 'underline',
+        textDecorationColor: '#FF9431'
     },
     endereco: {
         flexDirection: 'row',

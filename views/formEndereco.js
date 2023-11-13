@@ -1,53 +1,43 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput, Picker } from 'react-native'
+import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
-import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 
 export default function FormEndereco({ navigation }) {
-
-    const estados = [
-        { key: 'AC', value: 'AC', text: 'Acre' },
-        { key: 'AL', value: 'AL', text: 'Alagoas' },
-        { key: 'AP', value: 'AP', text: 'Amapá' },
-        { key: 'AM', value: 'AM', text: 'Amazonas' },
-        { key: 'BA', value: 'BA', text: 'Bahia' },
-        { key: 'CE', value: 'CE', text: 'Ceará' },
-        { key: 'DF', value: 'DF', text: 'Distrito Federal' },
-        { key: 'ES', value: 'ES', text: 'Espírito Santo' },
-        { key: 'GO', value: 'GO', text: 'Goiás' },
-        { key: 'MA', value: 'MA', text: 'Maranhão' },
-        { key: 'MT', value: 'MT', text: 'Mato Grosso' },
-        { key: 'MS', value: 'MS', text: 'Mato Grosso do Sul' },
-        { key: 'MG', value: 'MG', text: 'Minas Gerais' },
-        { key: 'PA', value: 'PA', text: 'Pará' },
-        { key: 'PB', value: 'PB', text: 'Paraíba' },
-        { key: 'PR', value: 'PR', text: 'Paraná' },
-        { key: 'PE', value: 'PE', text: 'Pernambuco' },
-        { key: 'PI', value: 'PI', text: 'Piauí' },
-        { key: 'RJ', value: 'RJ', text: 'Rio de Janeiro' },
-        { key: 'RN', value: 'RN', text: 'Rio Grande do Norte' },
-        { key: 'RS', value: 'RS', text: 'Rio Grande do Sul' },
-        { key: 'RO', value: 'RO', text: 'Rondônia' },
-        { key: 'RR', value: 'RR', text: 'Roraima' },
-        { key: 'SC', value: 'SC', text: 'Santa Catarina' },
-        { key: 'SP', value: 'SP', text: 'São Paulo' },
-        { key: 'SE', value: 'SE', text: 'Sergipe' },
-        { key: 'TO', value: 'TO', text: 'Tocantins' }
-    ];
 
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
+    const [estado, setEstado] = useState('');
     const [cep, setCep] = useState('');
     const [complemento, setComplemento] = useState('');
 
-
     const [selectedUF, setSelectedUF] = useState('');
 
-    const id = 3
+    const id = 4;
 
     const local = localStorage.getItem("var");
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/cliente/${id}`)
+            .then(function (response) {
+                const data = response.data;
+                setLogradouro(data.logradouro);
+                setBairro(data.bairro);
+                setCidade(data.cidade);
+                setCep(data.cep);
+                setEstado(data.estado);
+                setComplemento(data.complemento);
+            })
+            .catch(function (error) {
+                console.log(error);
+                showMessage({
+                    message: `Algo deu errado: ${error}`,
+                    type: "danger",
+                });
+            });
+    }, []);
 
     const inserirDados = () => {
         const userData = {
@@ -58,15 +48,6 @@ export default function FormEndereco({ navigation }) {
             complemento: complemento
         }
 
-        axios.get(`http://localhost:8080/api/cliente/${id}`)
-            .then(function (response) {
-                const data = response.data;
-                setLogradouro(data.logradouro);
-                setBairro(data.bairro);
-                setCidade(data.cidade);
-                setCep(data.cep);
-                setComplemento(data.complemento);
-            })
 
         axios.put(`http://localhost:8080/api/cliente/${id}`, userData)
             .then(function (response) {
@@ -94,35 +75,26 @@ export default function FormEndereco({ navigation }) {
 
         <View style={styles.container}>
 
-            {local == "sacola" ? <View style={styles.headerContent}>
-                <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-                </TouchableOpacity>
+            {local == "sacola" ?
 
-                <View style={{ alignItems: 'flex-end' }}>
-                    <TouchableOpacity style={styles.header} >
-                        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-                        <Text style={styles.endereco}>{cidade}, PE</Text>
-                        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
+                <View style={styles.headerContent}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
+                        <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                     </TouchableOpacity>
+
                 </View>
-            </View> :
+
+                :
+
                 <View style={styles.headerContent}>
                     <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
                         <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                     </TouchableOpacity>
 
-                    <View style={{ alignItems: 'flex-end' }}>
-                        <TouchableOpacity style={styles.header} >
-                            <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-                            <Text style={styles.endereco}>{cidade}, PE</Text>
-                            <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
-                        </TouchableOpacity>
-                    </View>
                 </View>
             }
 
-            <br /><br /> <br />
+           <Text style={styles.title}>Alterar endereço de entrega</Text>
 
             <View style={{ alignItems: 'center' }}>
 
@@ -158,9 +130,15 @@ export default function FormEndereco({ navigation }) {
                     <Picker
                         style={styles.input}
                         selectedValue={selectedUF}
-                        onChange={(e, { value }) => setSelectedUF(value)}
+                        onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
+                        onChangeText={(text) => setEstado(text)}
+                        value={estado}
                     >
-                        {renderProductList()}
+                        <Picker.Item label="Selecione..." value="" />
+                        <Picker.Item label="PE" value="PE" />
+                        <Picker.Item label="PB" value="PB" />
+                        <Picker.Item label="BA" value="BA" />
+                        <Picker.Item label="RN" value="RN" />
                     </Picker>
                 </View>
 
@@ -191,7 +169,6 @@ export default function FormEndereco({ navigation }) {
                 />
 
             </View>
-
         </View>
     )
 
@@ -217,6 +194,15 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         tintColor: '#FF9431',
+    },
+    title:{
+
+        fontSize: 18,
+        fontWeight:'bold',
+        color:'#FF9431',
+        textAlign:'center',
+        paddingBottom:20
+
     },
     header: {
         flexDirection: 'row',
