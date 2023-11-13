@@ -9,7 +9,7 @@ export default function Home({ navigation }) {
   const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
-  const id = 4;
+  const id = 1;
 
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
@@ -32,12 +32,17 @@ export default function Home({ navigation }) {
       })
       .catch(function (error) {
         console.log(error);
-        showMessage({
-          message: `Algo deu errado: ${error}`,
-          type: "danger",
-        });
+        console.log(error)
       });
   }, [])
+
+  let endereco;
+
+  if (cidade == null) {
+    endereco = null;
+  } else {
+    endereco = `${cidade}, ${estado}`
+  }
 
   return (
     <View style={styles.container}>
@@ -45,13 +50,13 @@ export default function Home({ navigation }) {
       <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
 
-        {cidade == null ?
+        {endereco == null ?
 
           <Text style={styles.endereco}>Escolher endereço</Text>
 
           :
 
-          <Text style={styles.endereco}>{cidade}, {estado}</Text>
+          <Text style={styles.endereco}>{endereco}</Text>
 
         }
 

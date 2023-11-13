@@ -13,7 +13,7 @@ export default function Sacola({ navigation }) {
     const [getEndereco, setEndereco] = useState([]);
     const isFocused = useIsFocused();
 
-    const id = 4
+    const id = 1
 
     useEffect(() => {
         axios.get(`http://localhost:8080/api/cliente/${id}`)

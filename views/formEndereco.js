@@ -15,7 +15,7 @@ export default function FormEndereco({ navigation }) {
 
     const [selectedUF, setSelectedUF] = useState('');
 
-    const id = 4;
+    const id = 1;
 
     const local = localStorage.getItem("var");
 
@@ -39,13 +39,46 @@ export default function FormEndereco({ navigation }) {
             });
     }, []);
 
+    const estados = [
+        { label: "Selecione...", value: "" },
+        { label: "Acre", value: "AC" },
+        { label: "Alagoas", value: "AL" },
+        { label: "Amapá", value: "AP" },
+        { label: "Amazonas", value: "AM" },
+        { label: "Bahia", value: "BA" },
+        { label: "Ceará", value: "CE" },
+        { label: "Distrito Federal", value: "DF" },
+        { label: "Espírito Santo", value: "ES" },
+        { label: "Goiás", value: "GO" },
+        { label: "Maranhão", value: "MA" },
+        { label: "Mato Grosso", value: "MT" },
+        { label: "Mato Grosso do Sul", value: "MS" },
+        { label: "Minas Gerais", value: "MG" },
+        { label: "Pará", value: "PA" },
+        { label: "Paraíba", value: "PB" },
+        { label: "Paraná", value: "PR" },
+        { label: "Pernambuco", value: "PE" },
+        { label: "Piauí", value: "PI" },
+        { label: "Rio de Janeiro", value: "RJ" },
+        { label: "Rio Grande do Norte", value: "RN" },
+        { label: "Rio Grande do Sul", value: "RS" },
+        { label: "Rondônia", value: "RO" },
+        { label: "Roraima", value: "RR" },
+        { label: "Santa Catarina", value: "SC" },
+        { label: "São Paulo", value: "SP" },
+        { label: "Sergipe", value: "SE" },
+        { label: "Tocantins", value: "TO" },
+    ];
+
+
     const inserirDados = () => {
         const userData = {
             logradouro: logradouro,
             bairro: bairro,
             cidade: cidade,
             cep: cep,
-            complemento: complemento
+            complemento: complemento,
+            estado: selectedUF,
         }
 
 
@@ -64,11 +97,6 @@ export default function FormEndereco({ navigation }) {
                     type: "danger",
                 });
             });
-    }
-    const renderProductList = () => {
-        return estados.map((product) => {
-            return <Picker.Item label={product.text} value={product.value} />
-        })
     }
 
     return (
@@ -94,7 +122,7 @@ export default function FormEndereco({ navigation }) {
                 </View>
             }
 
-           <Text style={styles.title}>Alterar endereço de entrega</Text>
+            <Text style={styles.title}>Alterar endereço de entrega</Text>
 
             <View style={{ alignItems: 'center' }}>
 
@@ -131,15 +159,11 @@ export default function FormEndereco({ navigation }) {
                         style={styles.input}
                         selectedValue={selectedUF}
                         onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
-                        onChangeText={(text) => setEstado(text)}
-                        value={estado}
                     >
-                        <Picker.Item label="Selecione..." value="" />
-                        <Picker.Item label="PE" value="PE" />
-                        <Picker.Item label="PB" value="PB" />
-                        <Picker.Item label="BA" value="BA" />
-                        <Picker.Item label="RN" value="RN" />
-                    </Picker>
+                        {estados.map((estado) => (
+                            <Picker.Item key={estado.value} label={estado.label} value={estado.value} />
+                        ))}
+                    </ Picker>
                 </View>
 
                 <View>
@@ -195,13 +219,13 @@ const styles = StyleSheet.create({
         height: 20,
         tintColor: '#FF9431',
     },
-    title:{
+    title: {
 
         fontSize: 18,
-        fontWeight:'bold',
-        color:'#FF9431',
-        textAlign:'center',
-        paddingBottom:20
+        fontWeight: 'bold',
+        color: '#FF9431',
+        textAlign: 'center',
+        paddingBottom: 20
 
     },
     header: {
