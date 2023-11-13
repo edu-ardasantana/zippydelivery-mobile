@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
 import { showMessage } from "react-native-flash-message";
+import { TextInputMask } from 'react-native-masked-text';
 
 export default function FormEndereco({ navigation }) {
 
@@ -168,8 +169,12 @@ export default function FormEndereco({ navigation }) {
 
                 <View>
                     <Text style={styles.label}>CEP</Text>
-                    <TextInput
+                    <TextInputMask
                         style={styles.input}
+                        type={'custom'}
+                        options={{
+                            mask: '99999-999'
+                          }}
                         onChangeText={(text) => setCep(text)}
                         value={cep}
                     />
