@@ -260,7 +260,6 @@ const styles = StyleSheet.create({
         width: 300,
         height: 40,
         paddingHorizontal: 10,
-        color: '#C4C4CC',
         backgroundColor: '#dbdbe749',
         marginBottom: 10,
         borderRadius: 5,

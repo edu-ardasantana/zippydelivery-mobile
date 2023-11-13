@@ -90,7 +90,6 @@ export default function FormConta({ navigation }) {
             <View style={{ alignItems: 'center' }}>
                 <View style={{ marginBottom: 40 }}>
                     <Input style={{ paddingLeft: 20 }}
-                        placeholder='Gabriela Albuquerque'
                         leftIcon={<Image style={styles.icon} source={{ uri: 'https://api.iconify.design/grommet-icons:edit.svg' }} />}
                         onChangeText={(text) => setNome(text)}
                         value={nome}
@@ -100,7 +99,6 @@ export default function FormConta({ navigation }) {
                     <Text style={styles.label}>Email</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder='gabi_102@gmail.com'
                         onChangeText={(text) => setEmail(text)}
                         value={email}
                     />
@@ -111,6 +109,7 @@ export default function FormConta({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='No mínimo 6 caracteres'
+                        placeholderTextColor='#C4C4CC'
                         secureTextEntry={true}
                     />
                 </View>
@@ -158,14 +157,6 @@ export default function FormConta({ navigation }) {
 
 
                 </View>
-
-
-
-                {/* <Button
-                    buttonStyle={styles.button}
-                    title="Excluir conta"
-                    onPress={() => excluirDados()}
-                /> */}
 
                 <FlashMessage position="top" />
 
@@ -222,7 +213,6 @@ const styles = StyleSheet.create({
         width: 300,
         height: 40,
         paddingHorizontal: 10,
-        color: '#C4C4CC',
         backgroundColor: '#dbdbe749',
         marginBottom: 10,
         borderRadius: 5,

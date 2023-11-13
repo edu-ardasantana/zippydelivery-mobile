@@ -54,6 +54,7 @@ export default function CadastraUsuario({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='Exemplo: Maria da Silva'
+                        placeholderTextColor='#C4C4CC'
                         onChangeText={(text) => setNome(text)}
                         value={nome}
                     />
@@ -67,6 +68,7 @@ export default function CadastraUsuario({ navigation }) {
                         style={styles.input}
                         type={'cpf'}
                         placeholder='000.000.000-00'
+                        placeholderTextColor='#C4C4CC'
                         onChangeText={(text) => setCpf(text)}
                         value={cpf}
                     />
@@ -79,6 +81,7 @@ export default function CadastraUsuario({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='Exemplo: exemplo@email.com'
+                        placeholderTextColor='#C4C4CC'
                         onChangeText={(text) => setEmail(text)}
                         value={email}
                     />
@@ -90,6 +93,7 @@ export default function CadastraUsuario({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='No mínimo 6 caracteres'
+                        placeholderTextColor='#C4C4CC'
                         secureTextEntry={true}
                         onChangeText={(text) => setSenha(text)}
                         value={senha}
@@ -157,7 +161,6 @@ const styles = StyleSheet.create({
         width: 300,
         height: 40,
         paddingHorizontal: 10,
-        color: '#C4C4CC',
         backgroundColor: '#dbdbe749',
         marginBottom: 10,
         borderRadius: 5,
