@@ -43,11 +43,7 @@ export default function DetalhePedido({ route, navigation }) {
                         {/* Exiba as informações do pedido */}
                         <Text style={styles.h1}>{item.produto.titulo}</Text>
                         <Text style={styles.h1}>{item.produto.descricao}</Text>
-                        <View style={{flexDirection:"row", justifyContent:'flex-start', margin:0}}>
-                            <Text style={[styles.h1]}>{item.qtdProduto}x</Text>
-                            <Text style={[styles.h1, {textAlign:'center'}]}>R${item.valorUnitario}</Text>
-                        </View>
-
+                        <Text style={[styles.h1]}>{item.qtdProduto}x R$ {item.valorUnitario.toFixed(2)}</Text>
                         <Text style={{ color: '#FF9431', paddingLeft: 20 }}>
                         <strong>{`R$ ${(item.qtdProduto * item.valorUnitario).toFixed(2)}`}</strong>
                         </Text>
