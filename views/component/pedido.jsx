@@ -20,7 +20,7 @@ export default function Pedido({quantity, restaurantName, orderName, orderStatus
             <View style={[styles.box, { flexDirection: 'column', }]}>
                 <View style={styles.infoGeral}>
                     <Image style={[styles.icon, { margin: 0 }]} source={{ uri:uriStatus}} />
-                    <Text style={styles.title3}>Pedido {orderStatus} • Nº {orderNumber}</Text>
+                    <Text style={[styles.title3, {alignSelf:'center'}]}>Pedido {orderStatus} • Nº {orderNumber}</Text>
                 </View>
                 <View style={styles.infoEspecifica}>
                     <Text style={styles.title3}>{1} {orderName}</Text>
@@ -65,8 +65,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     infoEspecifica: {
-        marginTop: 5,
-        paddingLeft: 23,
+        marginTop: 0,
+        paddingLeft: 20,
     },
     title2: {
         color: '#0D0D0D',
@@ -79,6 +79,8 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '500',
         marginLeft: 5,
+    
+        
     },
     button: {
         width: '95%',
