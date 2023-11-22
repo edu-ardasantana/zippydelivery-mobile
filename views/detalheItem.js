@@ -19,15 +19,15 @@ export default function DetalheItem({ route, navigation }) {
     }
   }
 
-  function formatarMoeda(dataParam) {
-    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
-  }
+  // function formatarMoeda(dataParam) {
+  //   return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+  // }
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('/views/img/item.png')}
+          source={require('/views/img/item.png')} /*item.imagem*/
           style={styles.backgroundImage}
         />
         <View style={styles.headerContent}>
@@ -42,15 +42,15 @@ export default function DetalheItem({ route, navigation }) {
         <View style={styles.bodyContent1}>
           <Text style={[styles.title1, { marginTop: 30 }]}>{item.titulo}</Text>
           <Text style={styles.descricao}>{item.descricao}</Text>
-          <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(item.preco)}</Text>
+          <Text style={[styles.title2, { color: '#FF9431' }]}>R$ {item.preco.toFixed(2)}</Text>
         </View>
 
         <View style={styles.bodyContent2}>
           <View style={styles.box}>
-            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} />
+            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} /> {/* item.empresa.imgPerfil*/}
             <Text style={styles.title3}>{item.empresa.nome}</Text>
           </View>
-          <Text style={styles.text}>{item.tempoEntregaMinimo}-{tempoEntregaMaximo} • {item.categoria.descricao} • <Text style={{ color: '#FF9431' }}>{item.empresa.frete}</Text></Text>
+          <Text style={styles.text}>{item.tempoEntregaMinimo}-{tempoEntregaMaximo} • {item.categoria.descricao} • <Text style={{ color: '#FF9431' }}>R$ {item.empresa.taxaFrete.toFixed(2)}</Text></Text>
         </View>
         <View style={styles.divider}></View>
 
