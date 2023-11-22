@@ -3,7 +3,9 @@ import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet 
 import { Button } from 'react-native-elements';
 
 
-export default function DetalheItem({ navigation }) {
+export default function DetalheItem({ route, navigation }) {
+
+  const { item } = route.params;
     
   const [quantity, setQuantity] = useState(1);
 
@@ -38,17 +40,17 @@ export default function DetalheItem({ navigation }) {
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent1}>
-          <Text style={[styles.title1, { marginTop: 30 }]}>Salada Ravanello</Text>
-          <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>
-          <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(44.90)}</Text>
+          <Text style={[styles.title1, { marginTop: 30 }]}>{item.titulo}</Text>
+          <Text style={styles.descricao}>{item.descricao}</Text>
+          <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(item.preco)}</Text>
         </View>
 
         <View style={styles.bodyContent2}>
           <View style={styles.box}>
             <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} />
-            <Text style={styles.title3}>Nome do Restaurante</Text>
+            <Text style={styles.title3}>{item.empresa.nome}</Text>
           </View>
-          <Text style={styles.text}>40-50 min • Categoria • <Text style={{ color: '#FF9431' }}>Grátis</Text></Text>
+          <Text style={styles.text}>{item.tempoEntregaMinimo}-{tempoEntregaMaximo} • {item.categoria.descricao} • <Text style={{ color: '#FF9431' }}>{item.empresa.frete}</Text></Text>
         </View>
         <View style={styles.divider}></View>
 
