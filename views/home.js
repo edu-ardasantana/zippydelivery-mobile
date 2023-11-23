@@ -1,19 +1,65 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
 import Loja from './component/loja'
+import axios from 'axios';
 
 export default function Home({ navigation }) {
 
   const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
+  const id = 1;
+
+  const [empresas, setEmpresas] = useState([]);
+  const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/empresa')
+      .then(function (response) {
+        return setEmpresas(...empresas, response.data);
+
+      }).catch(function (error) {
+        console.log(error);
+      });
+
+    axios.get(`http://localhost:8080/api/cliente/${id}`)
+      .then(function (response) {
+        const data = response.data;
+        setCidade(data.cidade);
+        setEstado(data.estado);
+      })
+      .catch(function (error) {
+        console.log(error);
+        console.log(error)
+      });
+  }, [])
+
+  let endereco;
+
+  if (cidade == null) {
+    endereco = null;
+  } else {
+    endereco = `${cidade}, ${estado}`
+  }
+
   return (
     <View style={styles.container}>
 
-      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('Menu')} >
+      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-        <Text style={styles.endereco}>Camaragibe, PE</Text>
+
+        {endereco == null ?
+
+          <Text style={styles.endereco}>Escolher endereço</Text>
+
+          :
+
+          <Text style={styles.endereco}>{endereco}</Text>
+
+        }
+
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
       </TouchableOpacity>
 
@@ -48,7 +94,12 @@ export default function Home({ navigation }) {
             ))}
         </ScrollView>
 
-        <Text style={styles.title2}>Lojas</Text>
+        {empresas.map((l, i) => {
+
+          return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} />
+        })}
+
+        {/* /*<Text style={styles.title2}>Lojas</Text>
         <View style={styles.cards}>
           {listagemLojas.map((index) => (
             <View key={index}>
@@ -57,7 +108,8 @@ export default function Home({ navigation }) {
               </TouchableOpacity>
             </View>
           ))}
-        </View>
+        </View> */}
+
       </ScrollView>
       <Footer />
     </View>
@@ -66,6 +118,56 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  slide: {
+    flex: 1,
+    marginHorizontal: 15,
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6E6E6',
+    justifyContent: 'space-between',
+  },
+  colum1: {
+    flex: 1.2,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginLeft: 20,
+  },
+  colum2: {
+    flex: 2.5,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  colum3: {
+    flex: 0.5,
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  iconWrapper: {
+    padding: 10,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    tintColor: '#ABABAB',
+  },
+  text: {
+    color: '#7C7C8A',
+    fontSize: 12,
+    fontWeight: '400',
+  },
+  lojaImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    marginVertical: 10,
+    marginRight: 7,
+  },
+  nomeItem: {
+    color: '#0D0D0D',
+    fontSize: 15,
+    fontWeight: '600',
+  },
   container: {
     flex: 1,
     flexDirection: 'column',
