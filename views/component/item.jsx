@@ -1,15 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { type } from 'os';
 
-interface ProdutoProps {
-    nome: string;
-    descricao: string;
-    imagem: string;
-    preco: string;
-};
+export default function Item() {
 
-export default function Item(props: ProdutoProps, { navigation }) {
+    const navigation = useNavigation();
 
     const [quantity, setQuantity] = useState(1);
 
@@ -94,7 +89,7 @@ const styles = StyleSheet.create({
     title2: {
         fontSize: 14,
         letterSpacing: 1.2,
-        fontWeight: '500',
+        fontWeight: '550',
     },
     nomeItem: {
         color: '#0D0D0D',

@@ -9,29 +9,57 @@ export default function Home({ navigation }) {
   const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
+  const id = 1;
+
   const [empresas, setEmpresas] = useState([]);
+  const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
-        console.log(response.data);
         return setEmpresas(...empresas, response.data);
 
       }).catch(function (error) {
         console.log(error);
+      });
 
+    axios.get(`http://localhost:8080/api/cliente/${id}`)
+      .then(function (response) {
+        const data = response.data;
+        setCidade(data.cidade);
+        setEstado(data.estado);
+      })
+      .catch(function (error) {
+        console.log(error);
+        console.log(error)
       });
   }, [])
 
+  let endereco;
 
-
+  if (cidade == null) {
+    endereco = null;
+  } else {
+    endereco = `${cidade}, ${estado}`
+  }
 
   return (
     <View style={styles.container}>
 
-      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('Menu')} >
+      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-        <Text style={styles.endereco}>Camaragibe, PE</Text>
+
+        {endereco == null ?
+
+          <Text style={styles.endereco}>Escolher endereço</Text>
+
+          :
+
+          <Text style={styles.endereco}>{endereco}</Text>
+
+        }
+
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
       </TouchableOpacity>
 
@@ -68,11 +96,7 @@ export default function Home({ navigation }) {
 
         {empresas.map((l, i) => {
 
-          return(
-            <TouchableOpacity onPress={() => navigation.navigate('HomeLoja', {id: l.id})} style={styles.cadaRestaurante}>
-                <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} tempoEntrega={l.tempoEntrega}/>
-            </TouchableOpacity>
-          )
+          return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} />
         })}
 
         {/* /*<Text style={styles.title2}>Lojas</Text>
@@ -101,7 +125,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E6E6E6',
     justifyContent: 'space-between',
-
   },
   colum1: {
     flex: 1.2,
@@ -153,7 +176,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 50,
+    height: 50
   },
   menuIcon: {
     width: 25,
@@ -263,8 +286,4 @@ const styles = StyleSheet.create({
   carousel: {
     marginLeft: 10,
   },
-  cadaRestaurante: {
-    flex: 1.6,
-    flexDirection: 'row',
-  }
 });

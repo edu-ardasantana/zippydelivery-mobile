@@ -1,11 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import Footer from './component/footer';
 
-export default function DetalhePedido({ navigation }) {
+export default function DetalhePedido({ route, navigation }) {
 
-    var orderStatus = 'Concluído';
-    var orderNumber = 1300;
+    const { pedido }  = route.params;
+    console.log(pedido)
+
+    function calcularSubtotal (itensPedido) {
+        return itensPedido.reduce((subtotal, item) => subtotal + item.qtdProduto * item.valorUnitario, 0);
+    }
+
+    function calcularTotal(itensPedido, taxaEntrega = 0) {
+        const subtotal = calcularSubtotal(itensPedido);
+        return subtotal + taxaEntrega;
+    }
 
     return (
 
@@ -21,42 +30,50 @@ export default function DetalhePedido({ navigation }) {
 
             </View>
 
-            <Text style={styles.title}>Império dos Churros Camaragibe </Text>
-            <Text style={styles.info}>Pedido {orderStatus} • Nº {orderNumber}</Text>
+            <Text style={styles.title}>{pedido.empresa.nome}</Text>
+            <Text style={styles.info}>Pedido {pedido.status} • Nº {pedido.id}</Text>
+            <ScrollView>
+            {
+                pedido.itensPedido.map((item, index) => (
+                    <View key={index} style={styles.item}>
+                    {/* Use a tag <Image /> para exibir uma imagem */}
+                    <Image style={styles.itemImage} source={require('/views/img/item.png')} />
 
-            <View style={styles.item}>
-
-                <Image style={styles.itemImage} source={require('/views/img/item.png')} />
-
-                <View style={styles.resumoPedido}>
-
-                    <Text style={styles.h1}>Salada Ravello <br /><br /> 1</Text>
-
-                    <Text style={{ color: '#FF9431', paddingLeft: 20 }}><strong>R$ 31,90</strong> </Text>
-
-                </View>
-
-            </View>
+                    <View style={styles.resumoPedido}>
+                        {/* Exiba as informações do pedido */}
+                        <Text style={styles.h1}>{item.produto.titulo}</Text>
+                        <Text style={styles.h1}>{item.produto.descricao}</Text>
+                        <Text style={[styles.h1]}>{item.qtdProduto}x R$ {item.valorUnitario.toFixed(2)}</Text>
+                        <Text style={{ color: '#FF9431', paddingLeft: 20 }}>
+                        <strong>{`R$ ${(item.qtdProduto * item.valorUnitario).toFixed(2)}`}</strong>
+                        </Text>
+                    </View>
+                    </View>
+                ))
+                } 
+            </ScrollView>
 
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
             </View>
 
-            <Text style={styles.h1}>Resumo de valores</Text><br />
-
-            <View style={styles.resumo}>
-                <Text>Subtotal</Text> <Text>R$ 31,90</Text>
+            <View>
+                <Text style={styles.h1}>Resumo de valores</Text>
             </View>
 
             <View style={styles.resumo}>
-                <Text>Taxa de entrega</Text> <Text>Grátis</Text>
+                <Text>Subtotal</Text> 
+                <Text>{`R${calcularSubtotal(pedido.itensPedido).toFixed(2)}`}</Text>
             </View>
 
             <View style={styles.resumo}>
-                <Text><strong>Total</strong></Text> <Text><strong>R$ 31,90</strong></Text>
+                <Text>Taxa de entrega</Text> 
+                <Text>{pedido.empresa.taxaFrete}</Text>
+            </View>
+
+            <View style={styles.resumo}>
+                <Text><strong>Total</strong></Text> <Text><strong>{`R$ ${calcularTotal(pedido.itensPedido, pedido.empresa.taxaFrete).toFixed(2)}`}</strong></Text>
             </View><br />
-
-
 
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
@@ -65,7 +82,7 @@ export default function DetalhePedido({ navigation }) {
             <View style={styles.pagamento}>
                 <Text style={styles.h1}>Pagamento pelo app</Text>
 
-                <Image style={styles.logoCartao} source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/langpt-1500px-Mastercard_2019_logo.svg.png' }} />
+                <Image style={styles.logoCartao} source={{uri:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/langpt-1500px-Mastercard_2019_logo.svg.png' }}/>
 
                 <Text style={styles.blocoText}>Mastecard **** 0987</Text>
             </View>
@@ -73,22 +90,23 @@ export default function DetalhePedido({ navigation }) {
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
             </View>
-
-            <Text style={styles.h1}>Endereço de entrega</Text>
-
+            <View>
+                <Text style={styles.h1}>Endereço de entrega</Text>
+            </View>
             <View style={styles.bloco}>
                 <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
 
-                <Text style={styles.blocoText}>Avenida do príncipe mimado, 267<br />Caxangá - Condomínio das flores bloco 02 apto 505
+                <Text style={styles.blocoText}>{pedido.cliente.logradouro}, {pedido.cliente.bairo} - <br /> {pedido.cliente.complemento}
                 </Text>
 
             </View>
-
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Adicionar à sacola</Text>
-
-            </TouchableOpacity>
-
+            <View>
+                <TouchableOpacity style={styles.button}>
+                    <View>
+                        <Text style={styles.buttonText}>Adicionar à sacola</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
             <View style={styles.footerContainer}>
                 <Footer />
             </View>
@@ -215,7 +233,7 @@ const styles = StyleSheet.create({
 
     },
     resumoPedido: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between',
     },
     footerContainer: {

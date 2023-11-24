@@ -1,31 +1,129 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput, Picker } from 'react-native'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
-
+import { showMessage } from "react-native-flash-message";
+import { TextInputMask } from 'react-native-masked-text';
 
 export default function FormEndereco({ navigation }) {
 
+    const [logradouro, setLogradouro] = useState('');
+    const [bairro, setBairro] = useState('');
+    const [cidade, setCidade] = useState('');
+    const [estado, setEstado] = useState('');
+    const [cep, setCep] = useState('');
+    const [complemento, setComplemento] = useState('');
+
     const [selectedUF, setSelectedUF] = useState('');
+
+    const id = 1;
+
+    const local = localStorage.getItem("var");
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/cliente/${id}`)
+            .then(function (response) {
+                const data = response.data;
+                setLogradouro(data.logradouro);
+                setBairro(data.bairro);
+                setCidade(data.cidade);
+                setCep(data.cep);
+                setEstado(data.estado);
+                setComplemento(data.complemento);
+            })
+            .catch(function (error) {
+                console.log(error);
+                showMessage({
+                    message: `Algo deu errado: ${error}`,
+                    type: "danger",
+                });
+            });
+    }, []);
+
+    const estados = [
+        { label: "Selecione...", value: "" },
+        { label: "Acre", value: "AC" },
+        { label: "Alagoas", value: "AL" },
+        { label: "Amapá", value: "AP" },
+        { label: "Amazonas", value: "AM" },
+        { label: "Bahia", value: "BA" },
+        { label: "Ceará", value: "CE" },
+        { label: "Distrito Federal", value: "DF" },
+        { label: "Espírito Santo", value: "ES" },
+        { label: "Goiás", value: "GO" },
+        { label: "Maranhão", value: "MA" },
+        { label: "Mato Grosso", value: "MT" },
+        { label: "Mato Grosso do Sul", value: "MS" },
+        { label: "Minas Gerais", value: "MG" },
+        { label: "Pará", value: "PA" },
+        { label: "Paraíba", value: "PB" },
+        { label: "Paraná", value: "PR" },
+        { label: "Pernambuco", value: "PE" },
+        { label: "Piauí", value: "PI" },
+        { label: "Rio de Janeiro", value: "RJ" },
+        { label: "Rio Grande do Norte", value: "RN" },
+        { label: "Rio Grande do Sul", value: "RS" },
+        { label: "Rondônia", value: "RO" },
+        { label: "Roraima", value: "RR" },
+        { label: "Santa Catarina", value: "SC" },
+        { label: "São Paulo", value: "SP" },
+        { label: "Sergipe", value: "SE" },
+        { label: "Tocantins", value: "TO" },
+    ];
+
+
+    const inserirDados = () => {
+        const userData = {
+            logradouro: logradouro,
+            bairro: bairro,
+            cidade: cidade,
+            cep: cep,
+            complemento: complemento,
+            estado: selectedUF,
+        }
+
+
+        axios.put(`http://localhost:8080/api/cliente/${id}`, userData)
+            .then(function (response) {
+                console.log(response);
+                showMessage({
+                    message: "Cadastro de endereço realizado com sucesso!",
+                    type: "success"
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+                showMessage({
+                    message: `Algo deu errado: ${error}`,
+                    type: "danger",
+                });
+            });
+    }
 
     return (
 
         <View style={styles.container}>
 
-            <View style={styles.headerContent}>
-                <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-                </TouchableOpacity>
+            {local == "sacola" ?
 
-                <View style={{ alignItems: 'flex-end' }}>
-                    <TouchableOpacity style={styles.header} >
-                        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-                        <Text style={styles.endereco}>Camaragibe, PE</Text>
-                        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
+                <View style={styles.headerContent}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
+                        <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                     </TouchableOpacity>
-                </View>
-            </View>
 
-            <br /><br /> <br />
+                </View>
+
+                :
+
+                <View style={styles.headerContent}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
+                        <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                    </TouchableOpacity>
+
+                </View>
+            }
+
+            <Text style={styles.title}>Alterar endereço de entrega</Text>
 
             <View style={{ alignItems: 'center' }}>
 
@@ -33,6 +131,8 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>Logradouro</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setLogradouro(text)}
+                        value={logradouro}
                     />
                 </View>
 
@@ -40,6 +140,8 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>Bairro</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setBairro(text)}
+                        value={bairro}
                     />
                 </View>
 
@@ -47,6 +149,8 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>Cidade</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setCidade(text)}
+                        value={cidade}
                     />
                 </View>
 
@@ -57,18 +161,22 @@ export default function FormEndereco({ navigation }) {
                         selectedValue={selectedUF}
                         onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
                     >
-                        <Picker.Item label="Selecione..." value="" />
-                        <Picker.Item label="PE" value="PE" />
-                        <Picker.Item label="PB" value="PB" />
-                        <Picker.Item label="BA" value="BA" />
-                        <Picker.Item label="RN" value="RN" />
-                    </Picker>
+                        {estados.map((estado) => (
+                            <Picker.Item key={estado.value} label={estado.label} value={estado.value} />
+                        ))}
+                    </ Picker>
                 </View>
 
                 <View>
                     <Text style={styles.label}>CEP</Text>
-                    <TextInput
+                    <TextInputMask
                         style={styles.input}
+                        type={'custom'}
+                        options={{
+                            mask: '99999-999'
+                          }}
+                        onChangeText={(text) => setCep(text)}
+                        value={cep}
                     />
                 </View>
 
@@ -76,17 +184,20 @@ export default function FormEndereco({ navigation }) {
                     <Text style={styles.label}>Complemento</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text) => setComplemento(text)}
+                        value={complemento}
                     />
                 </View>
 
                 <Button
                     buttonStyle={styles.button}
                     title="Use este endereço"
-                    onPress={() => navigation.navigate('Menu')}
+                    onPress={() => {
+                        inserirDados();
+                    }}
                 />
 
             </View>
-
         </View>
     )
 
@@ -112,6 +223,15 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         tintColor: '#FF9431',
+    },
+    title: {
+
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#FF9431',
+        textAlign: 'center',
+        paddingBottom: 20
+
     },
     header: {
         flexDirection: 'row',
@@ -140,7 +260,6 @@ const styles = StyleSheet.create({
         width: 300,
         height: 40,
         paddingHorizontal: 10,
-        color: '#C4C4CC',
         backgroundColor: '#dbdbe749',
         marginBottom: 10,
         borderRadius: 5,
