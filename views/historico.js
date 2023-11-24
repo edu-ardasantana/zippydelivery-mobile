@@ -21,7 +21,6 @@ export default function Historico({ navigation }) {
         })
     }
 
-    console.log(lista)
     return (
         <View style={styles.container}>
             <View style={styles.headerContent}>

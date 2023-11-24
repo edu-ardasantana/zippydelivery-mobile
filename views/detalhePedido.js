@@ -58,7 +58,7 @@ export default function DetalhePedido({ route, navigation }) {
             </View>
 
             <View>
-                <Text style={styles.h1}>Resumo de valores</Text>
+                <Text style={styles.h1}>Resumo de valores:</Text>
             </View>
 
             <View style={styles.resumo}>
@@ -68,7 +68,7 @@ export default function DetalhePedido({ route, navigation }) {
 
             <View style={styles.resumo}>
                 <Text>Taxa de entrega</Text> 
-                <Text>{pedido.empresa.taxaFrete}</Text>
+                <Text>R$ {pedido.empresa.taxaFrete}</Text>
             </View>
 
             <View style={styles.resumo}>
