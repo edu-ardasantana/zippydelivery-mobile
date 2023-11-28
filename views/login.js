@@ -18,8 +18,10 @@ export default function Login({ navigation }) {
         axios.post('http://localhost:8080/api/login', credentials)
             .then(function (response) {
 
-                    navigation.navigate('Home')
-                 
+                console.log(response.data)
+
+                // navigation.navigate('Home', { id: response.data.id })
+
             })
             .catch(function (error) {
                 showMessage({

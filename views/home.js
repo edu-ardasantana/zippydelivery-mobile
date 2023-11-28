@@ -4,14 +4,14 @@ import Footer from './component/footer';
 import Loja from './component/loja'
 import axios from 'axios';
 
-export default function Home({ navigation }) {
+export default function Home({ route, navigation }) {
 
-  const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
-  const id = 1;
+  console.log(route.params)
 
   const [empresas, setEmpresas] = useState([]);
+  const [id, setId] = useState();
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
@@ -24,6 +24,8 @@ export default function Home({ navigation }) {
         console.log(error);
       });
 
+    setId(route.params.id);
+
     axios.get(`http://localhost:8080/api/cliente/${id}`)
       .then(function (response) {
         const data = response.data;
@@ -34,11 +36,15 @@ export default function Home({ navigation }) {
         console.log(error);
         console.log(error)
       });
+
+
   }, [])
+
+  console.log(cidade)
 
   let endereco;
 
-  if (cidade == null) {
+  if (cidade == null || cidade == "") {
     endereco = null;
   } else {
     endereco = `${cidade}, ${estado}`
@@ -98,17 +104,6 @@ export default function Home({ navigation }) {
 
           return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} />
         })}
-
-        {/* /*<Text style={styles.title2}>Lojas</Text>
-        <View style={styles.cards}>
-          {listagemLojas.map((index) => (
-            <View key={index}>
-              <TouchableOpacity onPress={() => navigation.navigate('HomeLoja')}>
-                <Loja />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View> */}
 
       </ScrollView>
       <Footer />
