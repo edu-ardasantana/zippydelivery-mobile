@@ -4,12 +4,13 @@ import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View 
 import Footer from './component/footer';
 import Loja from './component/loja';
 
-export default function Home({ navigation }) {
+export default function Home({ route, navigation }) {
 
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-  const id = 2;
+  console.log(route.params);
 
   const [empresas, setEmpresas] = useState([]);
+  const [id, setId] = useState();
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
@@ -21,6 +22,8 @@ export default function Home({ navigation }) {
         console.log(error);
       });
 
+    setId(route.params.id);
+
     axios.get(`http://localhost:8080/api/cliente/${id}`)
       .then(function (response) {
         const data = response.data;
@@ -31,6 +34,8 @@ export default function Home({ navigation }) {
         console.log(error);
         console.log(error)
       });
+
+
   }, [])
 
   let endereco = cidade == null ? null : `${cidade}, ${estado}`;
