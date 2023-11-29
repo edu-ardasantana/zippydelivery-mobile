@@ -2,10 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Item() {
+export default function Item({titulo, descricao, preco, imagem}) {
 
     const navigation = useNavigation();
 
+    
     const [quantity, setQuantity] = useState(1);
 
     function incrementQuantity() { setQuantity(quantity + 1) }
@@ -20,13 +21,13 @@ export default function Item() {
     return (
         <TouchableOpacity onPress={() => navigation.navigate('DetalheItem')} style={styles.slide}>
             <View style={styles.colum1}> 
-                <Text style={styles.nomeItem}>Salada Ravanello </Text>
-                <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>
-                <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(44.90)}</Text>
+                <Text style={styles.nomeItem}>{titulo}</Text>
+                <Text style={styles.descricao}>{descricao}</Text>
+                <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(preco)}</Text>
             </View>
 
             <View style={styles.colum2}> 
-                <Image style={styles.itemImage} source={require('/views/img/item.png')} />
+                <Image style={styles.itemImage} source={(imagem)} />
             </View>
 
             {/* 
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
         flex:2,
         flexDirection: 'column',
         alignItems: 'flex-start',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
         marginHorizontal: 25,
     },
     colum2: {
@@ -87,18 +88,18 @@ const styles = StyleSheet.create({
 
     },
     title2: {
-        fontSize: 14,
+        fontSize: 18,
         letterSpacing: 1.2,
         fontWeight: '550',
     },
     nomeItem: {
         color: '#0D0D0D',
-        fontSize: 15,
+        fontSize: 18,
         fontWeight: '600',
     },
     descricao:{
         color: '#7C7C8A',
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '400',
     },
     icon: {
