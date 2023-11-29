@@ -26,8 +26,7 @@ export default function Loja(props: LojaProps) {
             </View>
             <View style={styles.colum2}>
                 <Text style={styles.nomeItem}>{props.nome}</Text>
-                <Text style={styles.text}>{props.categoria}</Text>
-                <Text style={styles.text}>{formatarMoeda(props.taxaFrete)}</Text>
+                <Text style={styles.text}>{tempoMin}-{tempoMax} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
             </View>
         </View>
     );
@@ -59,6 +58,7 @@ const styles = StyleSheet.create({
         color: '#7C7C8A',
         fontSize: 12,
         fontWeight: '400',
+        marginTop: 6,
     },
     lojaImage: {
         width: 60,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     nomeItem: {
-        color: '#0D0D0D',
+        color: "#FF9431",
         fontSize: 15,
         fontWeight: '600',
         marginBottom: 2,
