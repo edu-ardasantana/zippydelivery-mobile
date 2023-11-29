@@ -8,7 +8,7 @@ import axios from 'axios';
 export default function Historico({ navigation }) {
 
     const [lista, setLista] = useState([]);
-    const id = 27; //aguarda
+    const id = 43; //aguarda
     useEffect(() => {
         carregarLista();
     }, [])
