@@ -5,15 +5,16 @@ import Footer from './component/footer';
 import Loja from './component/loja';
 
 export default function Home({ route, navigation }) {
-
+  
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-  console.log(route.params);
-
+  
   const [empresas, setEmpresas] = useState([]);
   const [id, setId] = useState();
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
-
+  
+  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
+  
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
@@ -24,21 +25,19 @@ export default function Home({ route, navigation }) {
 
     setId(route.params.id);
 
-    axios.get(`http://localhost:8080/api/cliente/${id}`)
-      .then(function (response) {
-        const data = response.data;
-        setCidade(data.cidade);
-        setEstado(data.estado);
-      })
-      .catch(function (error) {
-        console.log(error);
-        console.log(error)
-      });
+    if (id != null) {
+      axios.get(`http://localhost:8080/api/cliente/${id}`)
+        .then(function (response) {
+          const data = response.data;
+          setCidade(data.cidade);
+          setEstado(data.estado);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+  }, [route.params.id, id])
 
-
-  }, [])
-
-  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
   return (
     <View style={styles.container}>
@@ -86,7 +85,7 @@ export default function Home({ route, navigation }) {
         <Text style={styles.title2}>Lojas</Text>
         {empresas.map((empresa, index) => (
           <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={l.tempoEntrega}/>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
           </TouchableOpacity>
         ))}
 
@@ -139,7 +138,6 @@ const styles = StyleSheet.create({
   anuncioImage: {
     width: 300,
     height: 150,
-    marginBottom: 25,
     borderRadius: 10,
     marginRight: 5,
   },
@@ -151,7 +149,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 10,
   },
   search: {
     width: '90%',
@@ -178,7 +175,6 @@ const styles = StyleSheet.create({
     borderColor: '#FF9431',
     borderWidth: 1.4,
     marginLeft: 7,
-    marginTop: 20,
   },
   textoEtiqueta: {
     color: '#0D0D0D',

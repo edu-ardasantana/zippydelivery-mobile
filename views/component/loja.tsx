@@ -10,6 +10,8 @@ interface LojaProps {
 
 export default function Loja(props: LojaProps) {
 
+    let tempoMin = 20;
+
     function formatarMoeda(dataParam: number | string) {
         return dataParam
             ? Number(dataParam).toLocaleString('pt-BR', {
@@ -26,7 +28,7 @@ export default function Loja(props: LojaProps) {
             </View>
             <View style={styles.colum2}>
                 <Text style={styles.nomeItem}>{props.nome}</Text>
-                <Text style={styles.text}>{tempoMin}-{tempoMax} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
+                <Text style={styles.text}>{tempoMin}-{tempoMin+10} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
             </View>
         </View>
     );
@@ -40,7 +42,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#BBB',
         justifyContent: 'space-between',
+        marginVertical: 20,
         paddingHorizontal: 5,
+        paddingBottom: 24,
     },
     colum1: {
         flex: 1.2,
@@ -58,13 +62,13 @@ const styles = StyleSheet.create({
         color: '#7C7C8A',
         fontSize: 12,
         fontWeight: '400',
-        marginTop: 6,
     },
     lojaImage: {
         width: 60,
         height: 60,
         borderRadius: 50,
         marginVertical: 10,
+        marginRight: 7,
     },
     nomeItem: {
         color: "#FF9431",
