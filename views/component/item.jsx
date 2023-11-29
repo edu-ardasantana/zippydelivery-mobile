@@ -18,7 +18,7 @@ export default function Item() {
     }
 
     return (
-        <TouchableOpacity onPress={() => navigation.navigate('DetalheItem')} style={styles.slide}>
+        <TouchableOpacity onPress={() => navigation.navigate('DetalheItem', {item})} style={styles.slide}>
             <View style={styles.colum1}> 
                 <Text style={styles.nomeItem}>Salada Ravanello </Text>
                 <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>

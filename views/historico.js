@@ -8,16 +8,17 @@ import axios from 'axios';
 export default function Historico({ navigation }) {
 
     const [lista, setLista] = useState([]);
-    
+    const id = 27; //aguarda
     useEffect(() => {
         carregarLista();
     }, [])
  
     function carregarLista() {
  
-        axios.get("http://localhost:8080/api/pedido")
+        axios.get(`http://localhost:8080/api/pedido/porcliente/${id}`)
         .then((response) => {
             setLista(response.data)
+            console.log(response.data)
         })
     }
 
@@ -44,7 +45,6 @@ export default function Historico({ navigation }) {
                           orderName={produtos[0]}
                           orderStatus={pedido.statusPedido}
                           orderNumber={pedido.id}
-                          quantityItemsOrder={pedido.itensPedido.length}
                           onPress={()=>navigation.navigate("DetalhePedido", {pedido})}
                         />
                       )

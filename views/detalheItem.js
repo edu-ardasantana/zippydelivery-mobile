@@ -30,7 +30,7 @@ export default function DetalheItem({ route, navigation }) {
   // function formatarMoeda(dataParam) {
   //   return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
   // }
-
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
