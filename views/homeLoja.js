@@ -112,7 +112,7 @@ export default function HomeLoja({ navigation, route }) {
                <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
               {produtosCategoria.map((produto, indexProduto) => (
                 <TouchableOpacity key={indexProduto}>
-                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} />
+                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} imagem={produto.imagem}/>
                 </TouchableOpacity>
               ))}
             </View>
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   title2: {
     color: '#0D0D0D',
-    fontSize: 18,
+    fontSize: 24,
     letterSpacing: 1.2,
     fontWeight: '450',
     marginLeft: 30,

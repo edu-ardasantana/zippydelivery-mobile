@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Item({titulo, descricao, preco}) {
+export default function Item({titulo, descricao, preco, imagem}) {
 
     const navigation = useNavigation();
 
@@ -27,7 +27,7 @@ export default function Item({titulo, descricao, preco}) {
             </View>
 
             <View style={styles.colum2}> 
-                <Image style={styles.itemImage} source={require('/views/img/item.png')} />
+                <Image style={styles.itemImage} source={(imagem)} />
             </View>
 
             {/* 
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
         flex:2,
         flexDirection: 'column',
         alignItems: 'flex-start',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
         marginHorizontal: 25,
     },
     colum2: {
@@ -88,18 +88,18 @@ const styles = StyleSheet.create({
 
     },
     title2: {
-        fontSize: 14,
+        fontSize: 18,
         letterSpacing: 1.2,
         fontWeight: '550',
     },
     nomeItem: {
         color: '#0D0D0D',
-        fontSize: 15,
+        fontSize: 18,
         fontWeight: '600',
     },
     descricao:{
         color: '#7C7C8A',
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '400',
     },
     icon: {
