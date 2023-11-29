@@ -4,40 +4,65 @@ import Item from './component/item';
 import Footer from './component/footer';
 import axios from 'axios';
 
-export default function HomeLoja({ navigation, route  }) {
+export default function HomeLoja({ navigation, route }) {
 
   const listagemProdutos = [1, 2, 3];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
   const [empresa, setEmpresa] = useState('');
+  const [categorias, setCategorias] = useState([]);
+  const [produtos, setProdutos] = useState([]);
 
-  useEffect( () => {
+  useEffect(() => {
 
     console.log(route.params.id)
     consultarEmpresa(route.params.id)
 
   }, [])
 
-  async function consultarEmpresa(idEmpresa){
+  async function consultarEmpresa(idEmpresa) {
 
     await axios.get('http://localhost:8080/api/empresa/' + idEmpresa)
-    .then(function (response) {
-      console.log(response.data);
-      setEmpresa(response.data);
+      .then(function (response) {
+        console.log(response.data);
+        setEmpresa(response.data);
 
-    }).catch(function (error) {
-      console.log(error);
+      }).catch(function (error) {
+        console.log(error);
 
-    });
+      });
   }
 
-  const [produtos, setProdutos] = useState([]);
-
-  useEffect(() => {
+  /*useEffect(() => {
     axios.get('http://localhost:8080/api/produto')
       .then(function (response) {
         console.log(response.data);
         return setEmpresas(...produtos, response.data);
 
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+  }, [])
+  */
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/categoriaproduto/categoriasprodutoporempresa/' + route.params.id)
+      .then(function (response) {
+        console.log(response.data);
+        return setCategorias(...categorias, response.data);
+        console.log(categorias);
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+  }, [])
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/produto/porcategoriaeempresa/' + route.params.id)
+      .then(function (response) {
+        console.log(response.data);
+        return setProdutos(...produtos, response.data);
+        console.log(produtos);
       }).catch(function (error) {
         console.log(error);
 
@@ -67,26 +92,29 @@ export default function HomeLoja({ navigation, route  }) {
           </View>
 
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-            {listagemEtiquetas.map((index) =>
+            {categorias.map((valor, index) =>
+              /*
               index === 1 ? (
-                <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                  <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Etiqueta {index}</Text>
-                </TouchableOpacity>
+
+                  <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
+                  <Text style={[styles.textoEtiqueta, { color: 'white' }]}>{v.descricao}</Text>
+                  </TouchableOpacity>
               ) : (
-                <TouchableOpacity style={styles.etiqueta}>
-                  <Text style={styles.textoEtiqueta}>Etiqueta {index}</Text>
-                </TouchableOpacity>
-              ))}
+                */
+              <TouchableOpacity style={styles.etiqueta}>
+                <Text style={styles.textoEtiqueta}>{valor.descricao}</Text>
+              </TouchableOpacity>
+            )}
           </ScrollView>
 
-          {listagemProdutos.map((index) => (
-            <View key={index}>
-              <Text style={styles.title2}>Categoria {index}</Text>
-              <TouchableOpacity>
-                <Item />
-                <Item />
-                <Item />
-              </TouchableOpacity>
+          {produtos.map((produtosCategoria, indexCategoria) => (
+            <View key={indexCategoria}>
+               <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
+              {produtosCategoria.map((produto, indexProduto) => (
+                <TouchableOpacity key={indexProduto}>
+                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} />
+                </TouchableOpacity>
+              ))}
             </View>
           ))}
         </View>
