@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Footer from './component/footer';
-import Loja from './component/loja'
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Footer from './component/footer';
+import Loja from './component/loja';
 
 export default function Home({ route, navigation }) {
 
@@ -101,8 +101,11 @@ export default function Home({ route, navigation }) {
         </ScrollView>
 
         {empresas.map((l, i) => {
-
-          return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} />
+          return (
+            <TouchableOpacity onPress={() => navigation.navigate('HomeLoja', { id: l.id })} style={styles.cadaRestaurante}>
+              <Loja key={i} categoria={l.categoria.descricao} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} tempoEntrega={l.tempoEntrega} />
+            </TouchableOpacity>
+          )
         })}
 
       </ScrollView>
@@ -137,6 +140,10 @@ const styles = StyleSheet.create({
     flex: 0.5,
     flexDirection: 'column',
     alignItems: 'flex-end',
+  },
+  cadaRestaurante: {
+    flex: 1.6,
+    flexDirection: 'row',
   },
   iconWrapper: {
     padding: 10,
