@@ -7,26 +7,26 @@ import Loja from './component/loja';
 export default function Home({ route, navigation }) {
 
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-
-  console.log(route.params)
-
+  
   const [empresas, setEmpresas] = useState([]);
-  const [id, setId] = useState();
+  // const [id, setId] = useState();
+  const userId = parseInt(localStorage.getItem('userId')); //id do usuário
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
+        console.log(response.data)
         return setEmpresas(...empresas, response.data);
 
       }).catch(function (error) {
         console.log(error);
       });
 
-    setId(route.params.id);
+    // setId(route.params.id);
 
-    axios.get(`http://localhost:8080/api/cliente/${id}`)
+    axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);
@@ -34,13 +34,9 @@ export default function Home({ route, navigation }) {
       })
       .catch(function (error) {
         console.log(error);
-        console.log(error)
       });
-
-
   }, [])
 
-  console.log(cidade)
 
   let endereco;
 

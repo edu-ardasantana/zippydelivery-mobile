@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext } from 'react';
 
 const MyContext = createContext();
 const MyProvider = ({ children }) => {
+    
 const [cart, setCart] = useState([]);
 
 
@@ -20,19 +21,19 @@ const addToCart = (product) => {
 const delToCart = (product) => {
     const existingProductIndex = cart.findIndex((item) => item.id === product.id);
     if (existingProductIndex !== -1) {
-        // Se o produto já está no carrinho, aumenta a quantidade
+        // Se o produto já está no carrinho, verifica a quantidade antes de diminuir
         const updatedCart = [...cart];
-        if (updatedCart[existingProductIndex].quantity >0) {
-        updatedCart[existingProductIndex].quantity -= 1;
-        if(updatedCart[existingProductIndex].quantity == 0){
-        removeFromCart(product.id)
-    }else{
-        setCart(updatedCart);
-    }
-    }
+        if (updatedCart[existingProductIndex].quantity > 1) {
+            updatedCart[existingProductIndex].quantity -= 1;
+            setCart(updatedCart);
+        } else {
+            // Se a quantidade for igual a 1, mantém em 1 e não diminui
+            // Se a quantidade for 0 ou negativa, remove o produto do carrinho
+            removeFromCart(product.id);
+        }
     } else {
         // Se o produto não está no carrinho, adiciona com quantidade 1
-        setCart([...cart, { ...product, quantity: 0 }]);
+        setCart([...cart, { ...product, quantity: 1 }]);
     }
 };
 
@@ -47,6 +48,7 @@ return (
     </MyContext.Provider>
 );
 };
+
 const useMyContext = () => {
     const context = useContext(MyContext);
     if (!context) {

@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Item({titulo, descricao, preco}) {
+export default function Item({titulo, descricao, preco, onPress}) {
 
     const navigation = useNavigation();
 
@@ -19,7 +19,7 @@ export default function Item({titulo, descricao, preco}) {
     }
 
     return (
-        <TouchableOpacity onPress={() => navigation.navigate('DetalheItem', {item})} style={styles.slide}>
+        <TouchableOpacity onPress={(onPress)} style={styles.slide}>
             <View style={styles.colum1}> 
                 <Text style={styles.nomeItem}>{titulo}</Text>
                 <Text style={styles.descricao}>{descricao}</Text>

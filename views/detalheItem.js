@@ -6,15 +6,16 @@ import { useMyContext } from './myContext';
 
 export default function DetalheItem({ route, navigation }) {
 
-  const { item } = route.params;
+  const { produto } = route.params;
+  console.log(produto)
   const { addToCart, delToCart, cart } = useMyContext();
   const [selectedQuantity, _setSelectedQuantity] = useState(1);
 
 
   const getProductQuantity = (productId) => {
-    const cartItem = cart.find((item) => item.id === productId);
-    return cartItem ? cartItem.quantity : 0;
-};
+    const cartItem = cart.find((produto) => produto.id === productId);
+    return cartItem ? cartItem.quantity : 1;
+  };
 
 
   // function incrementQuantity() {
@@ -35,7 +36,7 @@ export default function DetalheItem({ route, navigation }) {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('/views/img/item.png')} /*item.imagem*/
+          source={require('/views/img/item.png')} /*produto.imagem*/
           style={styles.backgroundImage}
         />
         <View style={styles.headerContent}>
@@ -48,17 +49,18 @@ export default function DetalheItem({ route, navigation }) {
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent1}>
-          <Text style={[styles.title1, { marginTop: 30 }]}>{item.titulo}</Text>
-          <Text style={styles.descricao}>{item.descricao}</Text>
-          <Text style={[styles.title2, { color: '#FF9431' }]}>R$ {item.preco.toFixed(2)}</Text>
+          <Text style={[styles.title1, { marginTop: 30 }]}>{produto.titulo}</Text>
+          <Text style={styles.descricao}>{produto.descricao} • 
+            <Text style={[styles.title2, { color: '#FF9431' }]}> R$ {produto.preco.toFixed(2)}</Text>
+          </Text>
         </View>
 
         <View style={styles.bodyContent2}>
           <View style={styles.box}>
-            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} /> {/* item.empresa.imgPerfil*/}
-            <Text style={styles.title3}>{item.empresa.nome}</Text>
+            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} /> {/* produto.empresa.imgPerfil*/}
+            <Text style={styles.title3}>{produto.categoria.empresa.nome}</Text>
           </View>
-          <Text style={styles.text}>{item.tempoEntregaMinimo}-{tempoEntregaMaximo} • {item.categoria.descricao} • <Text style={{ color: '#FF9431' }}>R$ {item.empresa.taxaFrete.toFixed(2)}</Text></Text>
+          <Text style={styles.text}>Tempo de entrega: {produto.categoria.empresa.tempoEntrega} min • {produto.categoria.descricao} • <Text style={{ color: '#FF9431' }}><Text style={styles.text}>Frete:</Text>R$ {produto.categoria.empresa.taxaFrete.toFixed(2)}</Text></Text>
         </View>
         <View style={styles.divider}></View>
 
@@ -76,16 +78,16 @@ export default function DetalheItem({ route, navigation }) {
         </View>
 
         <View style={[styles.line4, { marginTop: 10 }]}>
-          <TouchableOpacity onPress={()=>delToCart({...item, quantity: selectedQuantity })} style={styles.button}>
+          <TouchableOpacity onPress={()=>delToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
           </TouchableOpacity>
-          <Text style={[styles.title2, { color: '#FF9431', margin: 20 }]}>{quantity}</Text>
-          <TouchableOpacity onPress={()=>addToCart({...item, quantity: selectedQuantity })} style={styles.button}>
+          <Text style={[styles.title2, { color: '#FF9431', margin: 20 }]}>{getProductQuantity(produto.id)}</Text>
+          <TouchableOpacity onPress={()=>addToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
           </TouchableOpacity>
           <Button
             style={styles.buttonContainer}
-            title={`Adicionar R$ ${(getProductQuantity(item.id)*item.preco).toFixed(2)}`}
+            title={`Adicionar R$ ${(getProductQuantity(produto.id)*produto.preco).toFixed(2)}`}
             buttonStyle={styles.addButton}
             titleStyle={styles.addButtonTitle}
             onPress={() => navigation.navigate('Sacola')}
@@ -212,6 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
     padding: 10,
+    paddingLeft:0,
     letterSpacing: 1.2,
   },
   input: {
@@ -222,6 +225,7 @@ const styles = StyleSheet.create({
     borderColor: '#E6E6E6',
     borderWidth: 1,
     borderRadius: 5,
+    padding:10
   },
   line4: {
     flexDirection: 'row',

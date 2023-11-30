@@ -111,8 +111,8 @@ export default function HomeLoja({ navigation, route }) {
             <View key={indexCategoria}>
                <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
               {produtosCategoria.map((produto, indexProduto) => (
-                <TouchableOpacity key={indexProduto}>
-                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} />
+                <TouchableOpacity key={indexProduto} >
+                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} onPress={()=>navigation.navigate("DetalheItem", {produto})} />
                 </TouchableOpacity>
               ))}
             </View>
