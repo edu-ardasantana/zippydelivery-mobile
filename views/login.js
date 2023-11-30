@@ -20,7 +20,9 @@ export default function Login({ navigation }) {
 
                 console.log(response.data)
 
-                // navigation.navigate('Home', { id: response.data.id })
+                navigation.navigate('Home')
+                window.localStorage.setItem("id",response.data.id)
+                window.localStorage.setItem("token",response.data.token)
 
             })
             .catch(function (error) {

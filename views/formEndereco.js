@@ -13,15 +13,16 @@ export default function FormEndereco({ navigation }) {
     const [estado, setEstado] = useState('');
     const [cep, setCep] = useState('');
     const [complemento, setComplemento] = useState('');
+    const [idCliente, setIdCliente] = useState('');
 
     const [selectedUF, setSelectedUF] = useState('');
 
-    const id = 1;
+    const id = window.localStorage.getItem("id");
 
     const local = localStorage.getItem("var");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/${id}`)
+        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
             .then(function (response) {
                 const data = response.data;
                 setLogradouro(data.logradouro);
@@ -30,6 +31,7 @@ export default function FormEndereco({ navigation }) {
                 setCep(data.cep);
                 setEstado(data.estado);
                 setComplemento(data.complemento);
+                setIdCliente(data.id);
             })
             .catch(function (error) {
                 console.log(error);
@@ -83,7 +85,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`http://localhost:8080/api/cliente/${id}`, userData)
+        axios.put(`http://localhost:8080/api/cliente/${idCliente}`, userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({
@@ -115,12 +117,24 @@ export default function FormEndereco({ navigation }) {
 
                 :
 
+                local == "menu" ?
+
                 <View style={styles.headerContent}>
                     <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
                         <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                     </TouchableOpacity>
 
                 </View>
+
+                : 
+
+                <View style={styles.headerContent}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
+                        <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                    </TouchableOpacity>
+
+                </View>
+                
             }
 
             <Text style={styles.title}>Alterar endereço de entrega</Text>
@@ -160,6 +174,8 @@ export default function FormEndereco({ navigation }) {
                         style={styles.input}
                         selectedValue={selectedUF}
                         onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
+                        onChangeText={(text) => setEstado(text)}
+                        value={estado}
                     >
                         {estados.map((estado) => (
                             <Picker.Item key={estado.value} label={estado.label} value={estado.value} />

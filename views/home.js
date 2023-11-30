@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
@@ -6,14 +7,16 @@ import axios from 'axios';
 
 export default function Home({ route, navigation }) {
 
+  localStorage.setItem("var", "home");
+
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
-  console.log(route.params)
+  const id = window.localStorage.getItem("id");
 
   const [empresas, setEmpresas] = useState([]);
-  const [id, setId] = useState();
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
@@ -24,9 +27,10 @@ export default function Home({ route, navigation }) {
         console.log(error);
       });
 
-    setId(route.params.id);
+  }, [])
 
-    axios.get(`http://localhost:8080/api/cliente/${id}`)
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);
@@ -36,11 +40,7 @@ export default function Home({ route, navigation }) {
         console.log(error);
         console.log(error)
       });
-
-
-  }, [])
-
-  console.log(cidade)
+  }, [isFocused])
 
   let endereco;
 
@@ -102,7 +102,7 @@ export default function Home({ route, navigation }) {
 
         {empresas.map((l, i) => {
 
-          return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} />
+          return <Loja key={i} categoria={l.categoria.descricao} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} />
         })}
 
       </ScrollView>
