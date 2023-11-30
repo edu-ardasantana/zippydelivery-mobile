@@ -2,12 +2,13 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native';
 import { Button } from 'react-native-elements';
-import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 export default function Login({ navigation }) {
 
     const [getEmail, setEmail] = useState('');
     const [getSenha, setSenha] = useState('');
+    const [getCliente, setCliente] = useState('');
 
     function logar() {
         const credentials = {
@@ -18,12 +19,13 @@ export default function Login({ navigation }) {
         axios.post('http://localhost:8080/api/login', credentials)
             .then(function (response) {
 
+
                 console.log(response.data)
 
                 navigation.navigate('Home')
                 window.localStorage.setItem("id",response.data.id)
                 window.localStorage.setItem("token",response.data.token)
-
+          
             })
             .catch(function (error) {
                 showMessage({
@@ -35,16 +37,9 @@ export default function Login({ navigation }) {
 
     return (
         <View style={styles.container}>
-
             <View style={{ alignItems: 'center' }}>
-
-                <Image
-                    style={styles.logo}
-                    source={require('/views/img/LogoNovo.png')}
-                />
-
+                <Image style={styles.logo} source={require('/views/img/LogoNovo.png')} />
                 <View>
-
                     <Text style={styles.label}>Email</Text>
                     <TextInput
                         style={styles.input}
@@ -53,9 +48,7 @@ export default function Login({ navigation }) {
                         onChangeText={text => setEmail(text)}
                         value={getEmail}
                     />
-
                 </View>
-
 
                 <View>
                     <Text style={styles.label}>Senha</Text>
@@ -69,22 +62,13 @@ export default function Login({ navigation }) {
                     />
                 </View>
 
-                <Button
-                    buttonStyle={styles.button}
-                    title="Entrar"
-                    onPress={() => logar()}
-                />
+                <Button buttonStyle={styles.button} title="Entrar" onPress={() => logar()} />
                 <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
                     <Text style={styles.link}> Criar uma conta</Text>
                 </TouchableOpacity>
-
                 <FlashMessage position="top" />
             </View>
-
-
-
             <br /><br /> <br /><br /><br />
-
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
                 <Text style={styles.dividerText}>ou</Text>
@@ -93,20 +77,13 @@ export default function Login({ navigation }) {
 
             <View style={{ alignItems: 'center' }}>
                 <TouchableOpacity style={styles.googleSignInButton}>
-                    <Image
-                        style={styles.googleIcon}
-                        source={require('/views/img/simbolo-do-google.png')}
-                    />
+                    <Image style={styles.googleIcon} source={require('/views/img/simbolo-do-google.png')} />
                     <Text style={styles.googleButtonText}>Entre com o Google</Text>
                 </TouchableOpacity>
-
                 <FlashMessage position="top" />
-
             </View>
-
         </View>
     )
-
 }
 
 const styles = StyleSheet.create({

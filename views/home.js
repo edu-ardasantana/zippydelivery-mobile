@@ -5,19 +5,24 @@ import Footer from './component/footer';
 import Loja from './component/loja'
 import axios from 'axios';
 
-export default function Home({ route, navigation }) {
+export default function Home({ navigation }) {
 
   localStorage.setItem("var", "home");
 
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
   const id = window.localStorage.getItem("id");
-
+  
+  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+  
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
-  const isFocused = useIsFocused();
 
+  const isFocused = useIsFocused();
+  
+  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
+  
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
@@ -92,10 +97,12 @@ export default function Home({ route, navigation }) {
             ))}
         </ScrollView>
 
-        {empresas.map((l, i) => {
-
-          return <Loja key={i} categoria={l.categoria.descricao} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} />
-        })}
+        <Text style={styles.title2}>Lojas</Text>
+        {empresas.map((empresa, index) => (
+          <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
+          </TouchableOpacity>
+        ))}
 
       </ScrollView>
       <Footer />
@@ -146,7 +153,6 @@ const styles = StyleSheet.create({
   anuncioImage: {
     width: 300,
     height: 150,
-    marginBottom: 25,
     borderRadius: 10,
     marginRight: 5,
   },
@@ -158,7 +164,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 10,
   },
   search: {
     width: '90%',
@@ -185,7 +190,6 @@ const styles = StyleSheet.create({
     borderColor: '#FF9431',
     borderWidth: 1.4,
     marginLeft: 7,
-    marginTop: 20,
   },
   textoEtiqueta: {
     color: '#0D0D0D',
