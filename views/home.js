@@ -1,17 +1,25 @@
-import axios from 'axios';
+import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
-import Loja from './component/loja';
+import Loja from './component/loja'
+import axios from 'axios';
 
-export default function Home({ route, navigation }) {
+export default function Home({ navigation }) {
+
+  localStorage.setItem("var", "home");
+
+  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+
+  const id = window.localStorage.getItem("id");
   
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
   
   const [empresas, setEmpresas] = useState([]);
-  const [id, setId] = useState();
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
+
+  const isFocused = useIsFocused();
   
   let endereco = cidade == null ? null : `${cidade}, ${estado}`;
   
@@ -23,21 +31,28 @@ export default function Home({ route, navigation }) {
         console.log(error);
       });
 
-    setId(route.params.id);
+  }, [])
 
-    if (id != null) {
-      axios.get(`http://localhost:8080/api/cliente/${id}`)
-        .then(function (response) {
-          const data = response.data;
-          setCidade(data.cidade);
-          setEstado(data.estado);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
-  }, [route.params.id, id])
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
+      .then(function (response) {
+        const data = response.data;
+        setCidade(data.cidade);
+        setEstado(data.estado);
+      })
+      .catch(function (error) {
+        console.log(error);
+        console.log(error)
+      });
+  }, [isFocused])
 
+  let endereco;
+
+  if (cidade == null || cidade == "") {
+    endereco = null;
+  } else {
+    endereco = `${cidade}, ${estado}`
+  }
 
   return (
     <View style={styles.container}>

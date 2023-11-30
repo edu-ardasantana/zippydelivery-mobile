@@ -18,14 +18,14 @@ export default function Login({ navigation }) {
 
         axios.post('http://localhost:8080/api/login', credentials)
             .then(function (response) {
-                axios.get(`http://localhost:8080/api/cliente/user/${response.data.username}`)
-                    .then(function (clienteResponse) {
-                        setCliente(clienteResponse.data);
-                        navigation.navigate('Home', { id: clienteResponse.data.id })
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+
+
+                console.log(response.data)
+
+                navigation.navigate('Home')
+                window.localStorage.setItem("id",response.data.id)
+                window.localStorage.setItem("token",response.data.token)
+          
             })
             .catch(function (error) {
                 showMessage({
