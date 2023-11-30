@@ -6,12 +6,15 @@ import Footer from './component/footer';
 export default function Menu({ navigation }) {
 
   const [nome, setNome] = useState("");
-  const id = 1;
+  
+  const id = window.localStorage.getItem("id");
+  console.log(id)
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/${id}`)
+    axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
       .then(function (response) {
-        const data = response.data;
+        console.log(response.data)
+         const data = response.data;
         setNome(data.nome);
 
       })

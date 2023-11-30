@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
@@ -6,25 +7,31 @@ import axios from 'axios';
 
 export default function Home({ navigation }) {
 
-  const listagemLojas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+  localStorage.setItem("var", "home");
 
-  const id = 1;
+  const id = window.localStorage.getItem("id");
+
+  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
+  const isFocused = useIsFocused();
+
+
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
         return setEmpresas(...empresas, response.data);
-
       }).catch(function (error) {
         console.log(error);
       });
 
-    axios.get(`http://localhost:8080/api/cliente/${id}`)
+  }, [])
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);
@@ -34,32 +41,19 @@ export default function Home({ navigation }) {
         console.log(error);
         console.log(error)
       });
-  }, [])
+  }, [isFocused])
 
-  let endereco;
-
-  if (cidade == null) {
-    endereco = null;
-  } else {
-    endereco = `${cidade}, ${estado}`
-  }
+  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
   return (
     <View style={styles.container}>
 
       <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-
-        {endereco == null ?
-
-          <Text style={styles.endereco}>Escolher endereço</Text>
-
-          :
-
-          <Text style={styles.endereco}>{endereco}</Text>
-
+        {endereco == null
+          ? <Text style={styles.endereco}>Escolher endereço</Text>
+          : <Text style={styles.endereco}>{endereco}</Text>
         }
-
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
       </TouchableOpacity>
 
@@ -94,21 +88,12 @@ export default function Home({ navigation }) {
             ))}
         </ScrollView>
 
-        {empresas.map((l, i) => {
-
-          return <Loja key={i} categoria={l.categoria} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} />
-        })}
-
-        {/* /*<Text style={styles.title2}>Lojas</Text>
-        <View style={styles.cards}>
-          {listagemLojas.map((index) => (
-            <View key={index}>
-              <TouchableOpacity onPress={() => navigation.navigate('HomeLoja')}>
-                <Loja />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View> */}
+        <Text style={styles.title2}>Lojas</Text>
+        {empresas.map((empresa, index) => (
+          <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
+          </TouchableOpacity>
+        ))}
 
       </ScrollView>
       <Footer />
@@ -118,43 +103,14 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  slide: {
-    flex: 1,
-    marginHorizontal: 15,
+  cadaRestaurante: {
+    flex: 1.6,
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E6E6E6',
-    justifyContent: 'space-between',
-  },
-  colum1: {
-    flex: 1.2,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    marginLeft: 20,
-  },
-  colum2: {
-    flex: 2.5,
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  colum3: {
-    flex: 0.5,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-  },
-  iconWrapper: {
-    padding: 10,
   },
   icon: {
     width: 20,
     height: 20,
     tintColor: '#ABABAB',
-  },
-  text: {
-    color: '#7C7C8A',
-    fontSize: 12,
-    fontWeight: '400',
   },
   lojaImage: {
     width: 70,
@@ -162,11 +118,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginVertical: 10,
     marginRight: 7,
-  },
-  nomeItem: {
-    color: '#0D0D0D',
-    fontSize: 15,
-    fontWeight: '600',
   },
   container: {
     flex: 1,
@@ -185,10 +136,6 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     marginHorizontal: 15,
   },
-  logo: {
-    width: '30%',
-    height: '75%',
-  },
   endereco: {
     color: '#0D0D0D',
     fontSize: 17,
@@ -197,7 +144,6 @@ const styles = StyleSheet.create({
   anuncioImage: {
     width: 300,
     height: 150,
-    marginBottom: 25,
     borderRadius: 10,
     marginRight: 5,
   },
@@ -209,7 +155,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 10,
   },
   search: {
     width: '90%',
@@ -236,37 +181,11 @@ const styles = StyleSheet.create({
     borderColor: '#FF9431',
     borderWidth: 1.4,
     marginLeft: 7,
-    marginTop: 20,
   },
   textoEtiqueta: {
     color: '#0D0D0D',
     fontWeight: '600',
     padding: 1,
-  },
-  logoLoja: {
-    width: 50,
-    height: 50,
-    marginRight: 20,
-    marginLeft: 10,
-  },
-  infoLoja: {
-    flexDirection: 'row',
-    marginTop: 7,
-  },
-  infoLojaTime: {
-    color: '#E1E1E6',
-    fontSize: 14,
-    fontWeight: '350',
-  },
-  infoLojaStatus: {
-    color: '#82F3FF',
-    fontSize: 14,
-    fontWeight: '450',
-  },
-  nomeLoja: {
-    color: '#E1E1E6',
-    fontSize: 14,
-    fontWeight: '350',
   },
   title2: {
     color: '#0D0D0D',

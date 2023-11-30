@@ -13,12 +13,14 @@ export default function Sacola({ navigation }) {
     const [getEndereco, setEndereco] = useState([]);
     const isFocused = useIsFocused();
 
-    const id = 1
+    const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/${id}`)
+        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
             .then(function (response) {
+                console.log(response.data)
                 setEndereco(response.data)
+
             })
             .catch(function (error) {
                 console.log(error)
@@ -32,7 +34,6 @@ export default function Sacola({ navigation }) {
     } else {
         enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
     }
-
 
     return (
         <View style={styles.container}>
