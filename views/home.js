@@ -9,20 +9,17 @@ export default function Home({ navigation }) {
 
   localStorage.setItem("var", "home");
 
+  const id = window.localStorage.getItem("id");
+
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
 
-  const id = window.localStorage.getItem("id");
-  
-  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-  
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
   const isFocused = useIsFocused();
-  
-  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
-  
+
+
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
@@ -46,21 +43,15 @@ export default function Home({ navigation }) {
       });
   }, [isFocused])
 
-  let endereco;
-
-  if (cidade == null || cidade == "") {
-    endereco = null;
-  } else {
-    endereco = `${cidade}, ${estado}`
-  }
+  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
   return (
     <View style={styles.container}>
 
       <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-        {endereco == null 
-          ? <Text style={styles.endereco}>Escolher endereço</Text>    
+        {endereco == null
+          ? <Text style={styles.endereco}>Escolher endereço</Text>
           : <Text style={styles.endereco}>{endereco}</Text>
         }
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
@@ -100,7 +91,7 @@ export default function Home({ navigation }) {
         <Text style={styles.title2}>Lojas</Text>
         {empresas.map((empresa, index) => (
           <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
           </TouchableOpacity>
         ))}
 
