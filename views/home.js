@@ -4,10 +4,6 @@ import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet 
 import Footer from './component/footer';
 import Loja from './component/loja'
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Footer from './component/footer';
-import Loja from './component/loja';
 
 export default function Home({ route, navigation }) {
 
