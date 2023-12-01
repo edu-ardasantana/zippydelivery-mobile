@@ -1,29 +1,44 @@
 import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
+import { useMyContext } from './myContext';
 import ItemSacola from './component/itemSacola';
 
 export default function Sacola({ navigation }) {
-
-    localStorage.setItem("var", "sacola");
-    const listagemProdutos = [1, 2, 3];
-
+    const userId = parseInt(localStorage.getItem('userId'));
+    // const list  agemProdutos = [1, 2, 3];
     const [getEndereco, setEndereco] = useState([]);
     const isFocused = useIsFocused();
 
-    const id = 1
+    // const id = 1
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/${id}`)
+        axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
             .then(function (response) {
+                console.log(response.data)
                 setEndereco(response.data)
             })
             .catch(function (error) {
                 console.log(error)
             })
     }, [isFocused])
+
+    const { addToCart, delToCart, removeFromCart, cart, setCart } = useMyContext();
+    const [selectedQuantity, _setSelectedQuantity] = useState(1);
+    
+  
+    const getProductQuantity = (productId) => {
+      const cartItem = cart.find((produto) => produto.id === productId);
+      return cartItem ? cartItem.quantity : 1;
+    };
+
+    const limparSacola = () => {
+        setCart([]);
+    };
+
+    console.log(cart)
 
 
     let enderecoCompleto;
@@ -32,20 +47,33 @@ export default function Sacola({ navigation }) {
     } else {
         enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
     }
+    
+    const renderCartItem = ({ item }) =>  (
+        <View>
+            <TouchableOpacity onPress={()=>navigation.navigate("DetalheItem")}>
+                <ItemSacola item={item}/>
+            </TouchableOpacity>
+        </View>
+    )
 
-
+    const cartTotal = cart.reduce((total, cartItem) => {
+        const itemPrice = cartItem.preco * cartItem.quantity;
+        return total + itemPrice;
+      }, 0);      
+   
+    
     return (
         <View style={styles.container}>
 
             <View style={styles.headerContent}>
 
-                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/solar:alt-arrow-down-outline.svg' }} />
+                <TouchableOpacity onPress={() => navigation.navigate('HomeLoja')} style={styles.iconWrapper}>
+                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/solar:alt-arrow-left-outline.svg' }} />
                 </TouchableOpacity>
 
                 <Text style={styles.title}>SACOLA</Text>
 
-                <TouchableOpacity >
+                <TouchableOpacity onPress={limparSacola}>
                     <Text style={styles.limpar}>Limpar</Text>
                 </TouchableOpacity>
 
@@ -57,15 +85,11 @@ export default function Sacola({ navigation }) {
                 {enderecoCompleto == null ?
 
                     <View style={styles.semEndereco}>
-
                         <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
                             <Text style={styles.limpar}>Escolher endereço</Text>
                         </TouchableOpacity>
-
                     </View>
-
                     :
-
                     <View style={styles.endereco}>
                         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
 
@@ -74,45 +98,52 @@ export default function Sacola({ navigation }) {
                         <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
                             <Text style={styles.limpar}>Trocar</Text>
                         </TouchableOpacity>
-
                     </View>
-
-
-
                 }
-
-
                 <View style={styles.dividerContainer}>
                     <View style={styles.dividerLine} />
                 </View>
-
             </TouchableOpacity>
-
-            {listagemProdutos.map((index) => (
+            {/* {listagemProdutos.map((index) => (
                 <View key={index}>
                     <TouchableOpacity>
                         <ItemSacola />
                     </TouchableOpacity>
                 </View>
-            ))}
-
-            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: R$ 6,99</Text>
+            ))} */}
+            {cart.length === 0 &&
+            <View style={{flex:1, flexDirection:'column', justifyContent: 'center', alignContent:'center'}}> 
+                <Image style={{height:200, width:200, alignSelf:'center'}} source={require('/views/img/emptyCar.png')}></Image>
+                <Text style={{padding:10,textAlign:'center', fontWeight:'bold'}}>O seu carrinho está vazio!</Text>
+            </View>}
+            {/*<Text style={{flex:1, justifyContent:'center', textAlign:'center', textAlignVertical:'center'}}>O carrinho está vazio!</Text>*/}
+            {cart.length > 0 && (
+            <FlatList
+            data={cart}
+            keyExtractor={(item => item.id.toString())}
+            renderItem={renderCartItem}
+            />
+            )}
+            {cart.length > 0 && (
+            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: {cart[0].categoria.empresa.taxaFrete}</Text>
+            )}
 
             <br />
 
             <View style={styles.footerContainer}>
-
+            {cart.length > 0 && (
                 <View style={styles.footer2}>
 
                     <Text style={styles.footerText}>Total com a entrega</Text>
 
-                    <Text style={styles.preco}>R$ 31,90</Text>
+                    <Text style={styles.preco}>R$ {(cartTotal + cart[0].categoria.empresa.taxaFrete).toFixed(2)}</Text>
 
                 </View>
-
+            )}
                 <Button
                     buttonStyle={styles.button}
                     title="Continuar"
+                    disabled={cart.length === 0}
                     onPress={() => navigation.navigate('ResumoSacola')}
                 />
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 import { useMyContext } from './myContext';
@@ -14,9 +14,13 @@ export default function DetalheItem({ route, navigation }) {
 
   const getProductQuantity = (productId) => {
     const cartItem = cart.find((produto) => produto.id === productId);
-    return cartItem ? cartItem.quantity : 1;
+    return cartItem ? cartItem.quantity   : 1;  
   };
 
+
+  useEffect(() => {
+    addToCart({...produto, quantity: 1 });
+}, [])
 
   // function incrementQuantity() {
   //   setQuantity(quantity + 1);
