@@ -6,6 +6,7 @@ interface LojaProps {
     categoria: string;
     imgPerfil: string;
     taxaFrete: string;
+    tempoEntrega: string;
 }
 
 export default function Loja(props: LojaProps) {
@@ -26,7 +27,7 @@ export default function Loja(props: LojaProps) {
             </View>
             <View style={styles.colum2}>
                 <Text style={styles.nomeItem}>{props.nome}</Text>
-                <Text style={styles.text}>{tempoMin}-{tempoMax} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
+                <Text style={styles.text}>{props.tempoEntrega}-{props.tempoEntrega + 10} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
             </View>
         </View>
     );

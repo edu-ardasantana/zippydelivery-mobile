@@ -7,7 +7,7 @@ import Loja from './component/loja';
 export default function Home({ navigation }) {
 
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-  const id = 2;
+  const id = 9;
 
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
@@ -81,7 +81,7 @@ export default function Home({ navigation }) {
         <Text style={styles.title2}>Lojas</Text>
         {empresas.map((empresa, index) => (
           <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={l.tempoEntrega}/>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
           </TouchableOpacity>
         ))}
 
@@ -94,8 +94,9 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
   cadaRestaurante: {
-    flex: 1.6,
+    flex: 6,
     flexDirection: 'row',
+    paddingVertical: 6,
   },
   icon: {
     width: 20,
@@ -186,7 +187,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     fontWeight: '450',
     marginLeft: 30,
-    marginBottom: 15,
     marginTop: 30,
     fontWeight: '650',
   },
