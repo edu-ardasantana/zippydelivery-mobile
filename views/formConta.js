@@ -14,15 +14,18 @@ export default function FormConta({ navigation }) {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const id = 2
+    const [idCliente, setIdCliente] = useState('');
+
+    const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/${id}`)
+        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
             .then(function (response) {
                 const data = response.data;
                 setNome(data.nome);
                 setEmail(data.email);
                 setSenha(data.senha);
+                setIdCliente(data.id);
 
             })
             .catch(function (error) {
@@ -38,7 +41,7 @@ export default function FormConta({ navigation }) {
 
 
         axios
-            .put(`http://localhost:8080/api/cliente/${id}`, {
+            .put(`http://localhost:8080/api/cliente/`+idCliente, {
 
                 nome: nome,
                 email: email,
@@ -51,6 +54,7 @@ export default function FormConta({ navigation }) {
                     message: "Alteração realizada com sucesso!",
                     type: "success"
                 });
+                navigation.navigate('ConfirmaAlteracao')
             })
             .catch(function (error) {
                 console.log(error);
@@ -63,7 +67,7 @@ export default function FormConta({ navigation }) {
 
     const excluirDados = () => {
 
-        axios.delete(`http://localhost:8080/api/cliente/${id}`)
+        axios.delete(`http://localhost:8080/api/cliente/`+idCliente)
 
             .then(function (response) {
                 console.log(response);
@@ -89,7 +93,6 @@ export default function FormConta({ navigation }) {
             <View style={{ alignItems: 'center' }}>
                 <View style={{ marginBottom: 40 }}>
                     <Input style={{ paddingLeft: 20 }}
-                        placeholder='Gabriela Albuquerque'
                         leftIcon={<Image style={styles.icon} source={{ uri: 'https://api.iconify.design/grommet-icons:edit.svg' }} />}
                         onChangeText={(text) => setNome(text)}
                         value={nome}
@@ -99,19 +102,8 @@ export default function FormConta({ navigation }) {
                     <Text style={styles.label}>Email</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder='gabi_102@gmail.com'
                         onChangeText={(text) => setEmail(text)}
                         value={email}
-                    />
-                </View>
-                <View>
-                    <Text style={styles.label}>Senha atual</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder='******'
-                        secureTextEntry={true}
-                        onChangeText={(text) => setSenha(text)}
-                        value={senha}
                     />
                 </View>
 
@@ -120,7 +112,10 @@ export default function FormConta({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder='No mínimo 6 caracteres'
+                        placeholderTextColor='#C4C4CC'
                         secureTextEntry={true}
+                        onChangeText={(text) => setSenha(text)}
+                        value={senha}
                     />
                 </View>
 
@@ -129,7 +124,6 @@ export default function FormConta({ navigation }) {
                     title="Atualizar dados"
                     onPress={() => {
                         alterarDados();
-                        navigation.navigate('ConfirmaAlteracao')
                     }}
                 />
 
@@ -165,16 +159,8 @@ export default function FormConta({ navigation }) {
                         }}
                     />
 
-                    
+
                 </View>
-
-
-
-                {/* <Button
-                    buttonStyle={styles.button}
-                    title="Excluir conta"
-                    onPress={() => excluirDados()}
-                /> */}
 
                 <FlashMessage position="top" />
 
@@ -231,7 +217,6 @@ const styles = StyleSheet.create({
         width: 300,
         height: 40,
         paddingHorizontal: 10,
-        color: '#C4C4CC',
         backgroundColor: '#dbdbe749',
         marginBottom: 10,
         borderRadius: 5,
@@ -277,7 +262,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     buttonCancel: {
-        backgroundColor: '#2196F3',
+        backgroundColor: '#FF9431',
         height: 40,
         width: 90,
         borderRadius: 5,

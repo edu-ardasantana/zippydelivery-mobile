@@ -1,10 +1,32 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
 
 export default function Menu({ navigation }) {
 
-  var nomeUser = 'Gabriela Albuquerque';
+  const [nome, setNome] = useState("");
+  
+  const id = window.localStorage.getItem("id");
+  console.log(id)
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+      .then(function (response) {
+        console.log(response.data)
+         const data = response.data;
+        setNome(data.nome);
+
+      })
+      .catch(function (error) {
+        console.log(error);
+        console.log(error)
+      });
+  }, []);
+
+
+  var nomeUser = nome;
+  localStorage.setItem("var", "menu");
 
   return (
     <View style={styles.container}>
