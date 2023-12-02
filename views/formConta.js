@@ -114,6 +114,8 @@ export default function FormConta({ navigation }) {
                         placeholder='No mínimo 6 caracteres'
                         placeholderTextColor='#C4C4CC'
                         secureTextEntry={true}
+                        onChangeText={(text) => setSenha(text)}
+                        value={senha}
                     />
                 </View>
 
