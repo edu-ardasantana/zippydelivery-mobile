@@ -5,7 +5,7 @@ import { Button } from "react-native-elements";
 import { useIsFocused } from '@react-navigation/native';
 
 export default function ResumoSacola({ navigation }) {
-
+  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
   const isFocused = useIsFocused();
   const id = window.localStorage.getItem("id");
