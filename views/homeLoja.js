@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Item from './component/item';
 import Footer from './component/footer';
 
-export default function HomeLoja({ navigation }) {
+export default function HomeLoja({ route, navigation }) {
+
+  window.localStorage.setItem("idEmpresa",route.params.id)
 
   const listagemProdutos = [1, 2, 3];
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-
-
 
   return (
     <View style={styles.container}>

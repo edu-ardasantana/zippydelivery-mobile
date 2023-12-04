@@ -14,16 +14,18 @@ export default function FormConta({ navigation }) {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [idCliente, setIdCliente] = useState('');
 
-    const id = 1;
+    const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/${id}`)
+        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
             .then(function (response) {
                 const data = response.data;
                 setNome(data.nome);
                 setEmail(data.email);
                 setSenha(data.senha);
+                setIdCliente(data.id);
 
             })
             .catch(function (error) {
@@ -39,7 +41,7 @@ export default function FormConta({ navigation }) {
 
 
         axios
-            .put(`http://localhost:8080/api/cliente/${id}`, {
+            .put(`http://localhost:8080/api/cliente/`+idCliente, {
 
                 nome: nome,
                 email: email,
@@ -52,6 +54,7 @@ export default function FormConta({ navigation }) {
                     message: "Alteração realizada com sucesso!",
                     type: "success"
                 });
+                navigation.navigate('ConfirmaAlteracao')
             })
             .catch(function (error) {
                 console.log(error);
@@ -64,7 +67,7 @@ export default function FormConta({ navigation }) {
 
     const excluirDados = () => {
 
-        axios.delete(`http://localhost:8080/api/cliente/${id}`)
+        axios.delete(`http://localhost:8080/api/cliente/`+idCliente)
 
             .then(function (response) {
                 console.log(response);
@@ -111,6 +114,8 @@ export default function FormConta({ navigation }) {
                         placeholder='No mínimo 6 caracteres'
                         placeholderTextColor='#C4C4CC'
                         secureTextEntry={true}
+                        onChangeText={(text) => setSenha(text)}
+                        value={senha}
                     />
                 </View>
 
@@ -119,7 +124,6 @@ export default function FormConta({ navigation }) {
                     title="Atualizar dados"
                     onPress={() => {
                         alterarDados();
-                        navigation.navigate('ConfirmaAlteracao')
                     }}
                 />
 
@@ -258,7 +262,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     buttonCancel: {
-        backgroundColor: '#2196F3',
+        backgroundColor: '#FF9431',
         height: 40,
         width: 90,
         borderRadius: 5,

@@ -11,20 +11,32 @@ export default function Sacola({ navigation }) {
     const listagemProdutos = [1, 2, 3];
 
     const [getEndereco, setEndereco] = useState([]);
-    const isFocused = useIsFocused();
+    const [taxaFrete, setTaxaFrete] = useState();
 
-    const id = 1
+    const isFocused = useIsFocused();
+    const idEmpresa = window.localStorage.getItem("idEmpresa");
+    const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/${id}`)
+        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
             .then(function (response) {
                 setEndereco(response.data)
+
             })
             .catch(function (error) {
                 console.log(error)
             })
     }, [isFocused])
 
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
+          .then(function (response) {
+            setTaxaFrete(response.data.taxaFrete)
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+      }, [])
 
     let enderecoCompleto;
     if (getEndereco.logradouro == null) {
@@ -32,7 +44,6 @@ export default function Sacola({ navigation }) {
     } else {
         enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
     }
-
 
     return (
         <View style={styles.container}>
@@ -96,7 +107,19 @@ export default function Sacola({ navigation }) {
                 </View>
             ))}
 
-            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: R$ 6,99</Text>
+            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: <Text>
+          {(() => {
+            try {
+              return taxaFrete.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              });
+            } catch (error) {
+              console.error('Erro ao formatar taxaFrete:', error);
+              return 'Erro de formatação';
+            }
+          })()}
+        </Text></Text>
 
             <br />
 
