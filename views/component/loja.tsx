@@ -1,35 +1,41 @@
-import React from 'react';
+import { type } from 'os';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-interface LojaProps {
+interface LojaProps  {
     nome: string;
     categoria: string;
-    imgPerfil: string;
+    imagem: string;
     taxaFrete: string;
-}
+  };
+  
 
 export default function Loja(props: LojaProps) {
+    const tempoMin = 40;
+    const tempoMax = 50;
+    const categoria = 'Bebidas';
+    const frete = formatarMoeda(6.99);
 
-    let tempoMin = 20;
 
-    function formatarMoeda(dataParam: number | string) {
+    function formatarMoeda(dataParam) {
         return dataParam
-            ? Number(dataParam).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-            })
+            ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
             : '';
     }
 
     return (
         <View style={styles.slide}>
+
             <View style={styles.colum1}>
-                <Image style={styles.lojaImage} source={{ uri: `${props.imgPerfil}` }} />
+                <Image style={styles.lojaImage} source={{uri:props.imagem}} />
             </View>
+
             <View style={styles.colum2}>
                 <Text style={styles.nomeItem}>{props.nome}</Text>
-                <Text style={styles.text}>{tempoMin}-{tempoMin+10} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
+                <Text style={styles.text}>{props.categoria}</Text>
+                <Text style={styles.text}>{props.taxaFrete}</Text>
             </View>
+            
         </View>
     );
 }
@@ -54,9 +60,22 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     },
     colum2: {
-        flex: 3,
+        flex: 2.5,
         flexDirection: 'column',
         justifyContent: 'center',
+    },
+    colum3: {
+        flex: 0.5,
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+    },
+    iconWrapper: {
+        padding: 10,
+    },
+    icon: {
+        width: 20,
+        height: 20,
+        tintColor: '#ABABAB',
     },
     text: {
         color: '#7C7C8A',
@@ -64,14 +83,14 @@ const styles = StyleSheet.create({
         fontWeight: '400',
     },
     lojaImage: {
-        width: 60,
-        height: 60,
+        width: 70,
+        height: 70,
         borderRadius: 50,
         marginVertical: 10,
         marginRight: 7,
     },
     nomeItem: {
-        color: "#FF9431",
+        color: '#0D0D0D',
         fontSize: 15,
         fontWeight: '600',
         marginBottom: 2,
