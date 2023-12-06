@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
@@ -6,12 +7,19 @@ import axios from 'axios';
 
 export default function Home({ navigation }) {
 
+  localStorage.setItem("var", "home");
+
+  const id = window.localStorage.getItem("id");
+
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-  const id = 2;
+
 
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
+
+  const isFocused = useIsFocused();
+
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
@@ -21,7 +29,10 @@ export default function Home({ navigation }) {
         console.log(error);
       });
 
-    axios.get(`http://localhost:8080/api/cliente/${id}`)
+  }, [])
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);
@@ -31,7 +42,7 @@ export default function Home({ navigation }) {
         console.log(error);
         console.log(error)
       });
-  }, [])
+  }, [isFocused])
 
   let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
@@ -40,8 +51,8 @@ export default function Home({ navigation }) {
 
       <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-        {endereco == null 
-          ? <Text style={styles.endereco}>Escolher endereço</Text>    
+        {endereco == null
+          ? <Text style={styles.endereco}>Escolher endereço</Text>
           : <Text style={styles.endereco}>{endereco}</Text>
         }
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
@@ -80,8 +91,8 @@ export default function Home({ navigation }) {
 
         <Text style={styles.title2}>Lojas</Text>
         {empresas.map((empresa, index) => (
-          <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja')}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} />
+          <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
           </TouchableOpacity>
         ))}
 
@@ -93,6 +104,11 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  cadaRestaurante: {
+    flex: 6,
+    flexDirection: 'row',
+    paddingVertical: 6,
+  },
   icon: {
     width: 20,
     height: 20,
@@ -130,7 +146,6 @@ const styles = StyleSheet.create({
   anuncioImage: {
     width: 300,
     height: 150,
-    marginBottom: 25,
     borderRadius: 10,
     marginRight: 5,
   },
@@ -142,7 +157,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 10,
   },
   search: {
     width: '90%',
@@ -169,7 +183,6 @@ const styles = StyleSheet.create({
     borderColor: '#FF9431',
     borderWidth: 1.4,
     marginLeft: 7,
-    marginTop: 20,
   },
   textoEtiqueta: {
     color: '#0D0D0D',
@@ -182,7 +195,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     fontWeight: '450',
     marginLeft: 30,
-    marginBottom: 15,
     marginTop: 30,
     fontWeight: '650',
   },
