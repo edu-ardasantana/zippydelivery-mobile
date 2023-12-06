@@ -1,4 +1,4 @@
-import { useIsFocused } from '@react-navigation/native';
+import { Link, useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -51,6 +51,8 @@ export default function Sacola({ navigation }) {
     } else {
         enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
     }
+
+
     
     const renderCartItem = ({ item }) =>  (
         <View>
@@ -141,10 +143,14 @@ export default function Sacola({ navigation }) {
 
                 </View>
             )}
+                {enderecoCompleto === null && (
+                    <Text style={{paddingTop:20, alignSelf:'center', fontWeight:'bold'}}>Para continuar, informe um <Link to='/FormEndereco' style={{color:'#FF9431'}}>endereço</Link> para entrega</Text>
+                )}
                 <Button
                     buttonStyle={styles.button}
                     title= {buttonTitle}
                     onPress={() => navigation.navigate(buttonAction)}
+                    disabled = {enderecoCompleto===null}                    
                 />
 
             </View>
