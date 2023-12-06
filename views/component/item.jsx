@@ -2,10 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Item() {
+export default function Item({titulo, descricao, preco, onPress, imagem}) {
 
     const navigation = useNavigation();
 
+    
     const [quantity, setQuantity] = useState(1);
 
     function incrementQuantity() { setQuantity(quantity + 1) }
@@ -18,15 +19,15 @@ export default function Item() {
     }
 
     return (
-        <TouchableOpacity onPress={() => navigation.navigate('DetalheItem')} style={styles.slide}>
+        <TouchableOpacity onPress={(onPress)} style={styles.slide}>
             <View style={styles.colum1}> 
-                <Text style={styles.nomeItem}>Salada Ravanello </Text>
-                <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>
-                <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(44.90)}</Text>
+                <Text style={styles.nomeItem}>{titulo}</Text>
+                <Text style={styles.descricao}>{descricao}</Text>
+                <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(preco)}</Text>
             </View>
 
             <View style={styles.colum2}> 
-                <Image style={styles.itemImage} source={require('/views/img/item.png')} />
+                <Image style={styles.itemImage} source={imagem} />
             </View>
 
             {/* 
