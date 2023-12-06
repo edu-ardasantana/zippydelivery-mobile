@@ -8,7 +8,7 @@ import ItemSacola from './component/itemSacola';
 
 export default function Sacola({ navigation }) {
     const userId = parseInt(localStorage.getItem('userId'));
-    // const list  agemProdutos = [1, 2, 3];
+    // const listagemProdutos = [1, 2, 3];
     const [getEndereco, setEndereco] = useState([]);
     const isFocused = useIsFocused();
     const [buttonTitle, setButtonTitle] = useState('Continuar');
@@ -37,7 +37,7 @@ export default function Sacola({ navigation }) {
     
     useEffect(() => {
         if (cart.length === 0) {
-            setButtonTitle('Home');
+            setButtonTitle('Ir às compras');
             setButtonAction('Home');
         } else {
             setButtonTitle('Continuar');
@@ -51,8 +51,6 @@ export default function Sacola({ navigation }) {
     } else {
         enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
     }
-
-
     
     const renderCartItem = ({ item }) =>  (
         <View>
@@ -83,13 +81,15 @@ export default function Sacola({ navigation }) {
             </View>
 
             {/* <Text style={styles.enderecoTitle}>Entregar no endereço</Text> */}
-            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
+            {/* <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} > */}
 
                 {enderecoCompleto == null ?
 
                     <View style={styles.semEndereco}>
-                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco', {origin:'Sacola'})}>
+                            {cart.length !== 0 &&
                             <Text style={styles.limpar}>Escolher endereço</Text>
+                            }
                         </TouchableOpacity>
                     </View>
                     :
@@ -106,7 +106,7 @@ export default function Sacola({ navigation }) {
                 <View style={styles.dividerContainer}>
                     <View style={styles.dividerLine} />
                 </View>
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
             {/* {listagemProdutos.map((index) => (
                 <View key={index}>
                     <TouchableOpacity>
@@ -143,14 +143,14 @@ export default function Sacola({ navigation }) {
 
                 </View>
             )}
-                {enderecoCompleto === null && (
-                    <Text style={{paddingTop:20, alignSelf:'center', fontWeight:'bold'}}>Para continuar, informe um <Link to='/FormEndereco' style={{color:'#FF9431'}}>endereço</Link> para entrega</Text>
+                {(enderecoCompleto === null && cart.length > 0) && (
+                    <Text style={{paddingTop:20, alignSelf:'center', fontWeight:'bold'}}>Para continuar, informe um <Link to= '/FormEndereco' state={{origin:'Sacola'}} style={{color:'#FF9431'}} >endereço</Link> para entrega</Text>
                 )}
                 <Button
                     buttonStyle={styles.button}
                     title= {buttonTitle}
                     onPress={() => navigation.navigate(buttonAction)}
-                    disabled = {enderecoCompleto===null}                    
+                    disabled = {enderecoCompleto===null && cart.length > 0}                    
                 />
 
             </View>

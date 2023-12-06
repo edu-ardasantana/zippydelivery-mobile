@@ -5,8 +5,9 @@ import { Button } from 'react-native-elements';
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from 'react-native-masked-text';
 
-export default function FormEndereco({ navigation }) {
+export default function FormEndereco({ navigation, route }) {
 
+    const { origin }  = route.params;
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
@@ -17,8 +18,6 @@ export default function FormEndereco({ navigation }) {
     const [selectedUF, setSelectedUF] = useState('');
 
     const id = 1;
-
-    const local = localStorage.getItem("var");
 
     useEffect(() => {
         axios.get(`http://localhost:8080/api/cliente/${id}`)
@@ -91,6 +90,12 @@ export default function FormEndereco({ navigation }) {
                     type: "success"
                 });
             })
+            .then( () => {
+                if (origin === "Sacola" || origin === undefined){
+                navigation.navigate('ResumoSacola')
+                }else{
+                navigation.navigate('Menu')
+            }})
             .catch(function (error) {
                 console.log(error);
                 showMessage({
@@ -104,10 +109,10 @@ export default function FormEndereco({ navigation }) {
 
         <View style={styles.container}>
 
-            {local == "sacola" ?
+            {origin === "Sacola" || origin === undefined  ?
 
                 <View style={styles.headerContent}>
-                    <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Sacola")} style={styles.iconWrapper}>
                         <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                     </TouchableOpacity>
 

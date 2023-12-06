@@ -37,7 +37,7 @@ export default function ItemSacola({item}) {
             <View style={styles.colum2}>
                 <Text style={styles.nomeItem}>{item.titulo} • {item.descricao}</Text>
                
-                <Text style={[styles.title2, { color:  '#FF9431' }]}>R$ {item.preco.toFixed(2)}</Text>
+                <Text style={[styles.title2, { color:  '#FF9431' }]}>R$ {(getProductQuantity(item.id)*item.preco).toFixed(2)}</Text>
             </View>
 
             <View style={styles.line4 }>

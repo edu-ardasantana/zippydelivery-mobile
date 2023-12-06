@@ -36,7 +36,7 @@ export default function Menu({ navigation }) {
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormConta')}>
             <Text style={styles.optionText}>Configuração da conta</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormEndereco')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormEndereco', {origin:'Menu'})}>
             <Text style={styles.optionText}>Endereço de entrega</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Home')}>
