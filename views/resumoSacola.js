@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
+import { useMyContext } from './myContext';
 
 export default function ResumoSacola({ navigation }) {
 
     const [selectedPayment, setSelectedPayment] = useState(null);
+    const { cart, setCart } = useMyContext();
+    console.log(cart)
+
+    const calcularTotalCompras = (carrinho) => {
+        let total = 0;
+
+        carrinho.forEach((item) => {
+          const precoTotalItem = item.preco * item.quantity;
+          total += precoTotalItem;
+        });
+      
+        return total;
+      };
+    
+    const valorTotal = calcularTotalCompras(cart)
 
     return (
         <View style={styles.container}>
@@ -26,15 +42,15 @@ export default function ResumoSacola({ navigation }) {
             <Text style={styles.subTitle}>Resumo de valores</Text><br />
 
             <View style={styles.resumo}>
-                <Text>Subtotal</Text> <Text>R$ 31,90</Text>
+                <Text>Subtotal</Text> <Text>R$ {valorTotal.toFixed(2)}</Text>
             </View>
 
             <View style={styles.resumo}>
-                <Text>Taxa de entrega</Text> <Text>Grátis</Text>
+                <Text>Taxa de entrega</Text> <Text>{cart[0].categoria.empresa.taxaFrete}</Text>
             </View>
 
             <View style={styles.resumo}>
-                <Text><strong>Total</strong></Text> <Text><strong>R$ 31,90</strong></Text>
+                <Text><strong>Total</strong></Text> <Text><strong>R$ {(valorTotal+ cart[0].categoria.empresa.taxaFrete).toFixed(2)}</strong></Text>
             </View><br />
 
             <View style={styles.dividerContainer}>
@@ -78,7 +94,7 @@ export default function ResumoSacola({ navigation }) {
 
                 <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/ic:outline-delivery-dining.svg', }} />
 
-                <Text style={styles.blocoText}><span style={styles.span}>Entrega Hoje</span><br />Hoje, 40 - 50 min
+                <Text style={styles.blocoText}><span style={styles.span}>Entrega Hoje</span><br />Hoje, {cart[0].categoria.empresa.tempoEntrega}min
                 </Text>
 
             </View>

@@ -6,8 +6,8 @@ import axios from 'axios';
 
 export default function HomeLoja({ navigation, route }) {
 
-  const listagemProdutos = [1, 2, 3];
-  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+  // const listagemProdutos = [1, 2, 3];
+  // const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
   const [empresa, setEmpresa] = useState('');
   const [categorias, setCategorias] = useState([]);
   const [produtos, setProdutos] = useState([]);
@@ -112,7 +112,7 @@ export default function HomeLoja({ navigation, route }) {
                <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
               {produtosCategoria.map((produto, indexProduto) => (
                 <TouchableOpacity key={indexProduto} >
-                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} onPress={()=>navigation.navigate("DetalheItem", {produto})} />
+                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} onPress={()=>navigation.navigate("DetalheItem", {produto, origin:'HomeLoja'})} />
                 </TouchableOpacity>
               ))}
             </View>

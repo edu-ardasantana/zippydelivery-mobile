@@ -11,36 +11,40 @@ export default function Sacola({ navigation }) {
     // const list  agemProdutos = [1, 2, 3];
     const [getEndereco, setEndereco] = useState([]);
     const isFocused = useIsFocused();
+    const [buttonTitle, setButtonTitle] = useState('Continuar');
+    const [buttonAction, setButtonAction] = useState('ResumoSacola');
 
-    // const id = 1
-
-    useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
-            .then(function (response) {
-                console.log(response.data)
-                setEndereco(response.data)
-            })
-            .catch(function (error) {
-                console.log(error)
-            })
-    }, [isFocused])
-
-    const { addToCart, delToCart, removeFromCart, cart, setCart } = useMyContext();
-    const [selectedQuantity, _setSelectedQuantity] = useState(1);
+    const { cart, setCart } = useMyContext();
     
-  
-    const getProductQuantity = (productId) => {
-      const cartItem = cart.find((produto) => produto.id === productId);
-      return cartItem ? cartItem.quantity : 1;
-    };
-
     const limparSacola = () => {
         setCart([]);
     };
 
     console.log(cart)
-
-
+    
+    // const id = 1
+    
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
+        .then(function (response) {
+            console.log(response.data)
+            setEndereco(response.data)
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
+    }, [isFocused])       
+    
+    useEffect(() => {
+        if (cart.length === 0) {
+            setButtonTitle('Home');
+            setButtonAction('Home');
+        } else {
+            setButtonTitle('Continuar');
+            setButtonAction('ResumoSacola');
+        }
+    }, [cart]);
+    
     let enderecoCompleto;
     if (getEndereco.logradouro == null) {
         enderecoCompleto = null;
@@ -50,27 +54,24 @@ export default function Sacola({ navigation }) {
     
     const renderCartItem = ({ item }) =>  (
         <View>
-            <TouchableOpacity onPress={()=>navigation.navigate("DetalheItem")}>
+            <TouchableOpacity onPress={()=>navigation.navigate("DetalheItem", {produto: item, origin:'Sacola'})}>
                 <ItemSacola item={item}/>
             </TouchableOpacity>
         </View>
-    )
+    )   
 
     const cartTotal = cart.reduce((total, cartItem) => {
         const itemPrice = cartItem.preco * cartItem.quantity;
         return total + itemPrice;
       }, 0);      
    
-    
     return (
         <View style={styles.container}>
 
             <View style={styles.headerContent}>
-
-                <TouchableOpacity onPress={() => navigation.navigate('HomeLoja')} style={styles.iconWrapper}>
+                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
                     <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/solar:alt-arrow-left-outline.svg' }} />
                 </TouchableOpacity>
-
                 <Text style={styles.title}>SACOLA</Text>
 
                 <TouchableOpacity onPress={limparSacola}>
@@ -79,8 +80,8 @@ export default function Sacola({ navigation }) {
 
             </View>
 
+            {/* <Text style={styles.enderecoTitle}>Entregar no endereço</Text> */}
             <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
-                <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
 
                 {enderecoCompleto == null ?
 
@@ -111,11 +112,11 @@ export default function Sacola({ navigation }) {
                     </TouchableOpacity>
                 </View>
             ))} */}
-            {cart.length === 0 &&
+            {cart.length === 0 && (
             <View style={{flex:1, flexDirection:'column', justifyContent: 'center', alignContent:'center'}}> 
                 <Image style={{height:200, width:200, alignSelf:'center'}} source={require('/views/img/emptyCar.png')}></Image>
                 <Text style={{padding:10,textAlign:'center', fontWeight:'bold'}}>O seu carrinho está vazio!</Text>
-            </View>}
+            </View>)}
             {/*<Text style={{flex:1, justifyContent:'center', textAlign:'center', textAlignVertical:'center'}}>O carrinho está vazio!</Text>*/}
             {cart.length > 0 && (
             <FlatList
@@ -142,9 +143,8 @@ export default function Sacola({ navigation }) {
             )}
                 <Button
                     buttonStyle={styles.button}
-                    title="Continuar"
-                    disabled={cart.length === 0}
-                    onPress={() => navigation.navigate('ResumoSacola')}
+                    title= {buttonTitle}
+                    onPress={() => navigation.navigate(buttonAction)}
                 />
 
             </View>

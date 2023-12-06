@@ -5,22 +5,20 @@ import { useMyContext } from './myContext';
 
 
 export default function DetalheItem({ route, navigation }) {
-
-  const { produto } = route.params;
-  console.log(produto)
+  
+  const { produto, origin } = route.params;
+  console.log(produto, origin)
   const { addToCart, delToCart, cart } = useMyContext();
-  const [selectedQuantity, _setSelectedQuantity] = useState(1);
-
-
+  const [selectedQuantity, _setSelectedQuantity] = useState(1);  
+  
   const getProductQuantity = (productId) => {
     const cartItem = cart.find((produto) => produto.id === productId);
-    return cartItem ? cartItem.quantity   : 1;  
+    return cartItem ? cartItem.quantity : 1;  
   };
-
 
   useEffect(() => {
     addToCart({...produto, quantity: 1 });
-}, [])
+  }, [])
 
   // function incrementQuantity() {
   //   setQuantity(quantity + 1);

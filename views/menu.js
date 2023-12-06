@@ -1,18 +1,18 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Footer from './component/footer';
 
 export default function Menu({ navigation }) {
 
-  const [nome, setNome] = useState("");
-  const id = 1;
+  const [user, setUser] = useState("");
+  const userId = parseInt(localStorage.getItem('userId'));
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/${id}`)
+    axios.get(`http://localhost:8080/api/cliente/${userId+1}`)
       .then(function (response) {
         const data = response.data;
-        setNome(data.nome);
+        setUser(data);
 
       })
       .catch(function (error) {
@@ -22,14 +22,14 @@ export default function Menu({ navigation }) {
   }, []);
 
 
-  var nomeUser = nome;
-  localStorage.setItem("var", "menu");
+  // var nomeUser = nome;
+  // localStorage.setItem("var", "menu");
 
   return (
     <View style={styles.container}>
       <View style={styles.body}>
         <View style={styles.info}>
-          <Text style={styles.infoNameUser}>{nomeUser},</Text>
+          <Text style={styles.infoNameUser}>{user.nome},</Text>
           <Text style={styles.infoText}>o que você quer fazer agora?</Text>
         </View>
         <View style={styles.options}>
@@ -38,6 +38,9 @@ export default function Menu({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormEndereco')}>
             <Text style={styles.optionText}>Endereço de entrega</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Home')}>
+            <Text style={styles.optionText}>Voltar</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Exit')}>
             <Text style={styles.optionText}>Sair</Text>
@@ -91,5 +94,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#4D585E',
     paddingLeft: 5,
-  }
+  },
+  icon: {
+    width: 30,
+    height: 30,
+    tintColor: '#FF9431',
+},
+  iconWrapper: {
+    paddingVertical: 10,
+  },
 });
