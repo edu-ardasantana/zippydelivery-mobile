@@ -8,7 +8,6 @@ export default function Login({ navigation }) {
 
     const [getEmail, setEmail] = useState('');
     const [getSenha, setSenha] = useState('');
-    const [getCliente, setCliente] = useState('');
 
     function logar() {
         const credentials = {

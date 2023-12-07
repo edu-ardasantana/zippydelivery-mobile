@@ -1,16 +1,53 @@
-import React, { useState } from "react";
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
 import { Button } from "react-native-elements";
+import { useIsFocused } from '@react-navigation/native';
 
 export default function ResumoSacola({ navigation }) {
+  
+  const idEmpresa = window.localStorage.getItem("idEmpresa");
+  const isFocused = useIsFocused();
+  const id = window.localStorage.getItem("id");
+
+  const [getEndereco, setEndereco] = useState([]);
+  const [taxaFrete, setTaxaFrete] = useState();
+  const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
 
-  const [selectedUF, setSelectedUF] = useState('');
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
+      .then(function (response) {
+        setFormasPagamento(response.data.formasPagamento)
+        setTaxaFrete(response.data.taxaFrete)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }, [])
 
-  const formasPagamento = [
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/findByUser/` + id)
+      .then(function (response) {
+        setEndereco(response.data)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }, [isFocused])
+
+  let enderecoCompleto;
+  if (getEndereco.logradouro == null) {
+    enderecoCompleto = null;
+  } else {
+    enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
+  }
+
+  const listaFormasPagamentos = [
     { label: "Selecione...", value: "" },
-    { label: "Acre", value: "AC" },
+    ...formasPagamento.map(formaPgmt => ({ label: formaPgmt, value: formaPgmt })),
   ];
+
 
   return (
     <View style={styles.container}>
@@ -42,7 +79,20 @@ export default function ResumoSacola({ navigation }) {
       </View>
 
       <View style={styles.resumo}>
-        <Text>Taxa de entrega</Text> <Text>Grátis</Text>
+        <Text>Taxa de entrega</Text>
+        <Text style={{ color: "#39cd39" }}>
+          {(() => {
+            try {
+              return taxaFrete.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              });
+            } catch (error) {
+              console.error('Erro ao formatar taxaFrete:', error);
+              return 'Erro de formatação';
+            }
+          })()}
+        </Text>
       </View>
 
       <View style={styles.resumo}>
@@ -60,71 +110,24 @@ export default function ResumoSacola({ navigation }) {
       </View>
 
       <Text style={styles.subTitle}>Escolha a forma de pagamento</Text>
-
       <View style={{ alignItems: 'center' }}>
 
-      <View>
-        <Picker
-          style={styles.input}
-          selectedValue={selectedUF}
-          onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
-        >
-          {formasPagamento.map((formasPagamento) => (
-            <Picker.Item
-              key={formasPagamento.value}
-              label={formasPagamento.label}
-              value={formasPagamento.value}
-            />
-          ))}
-        </Picker>
-      </View>
+        <View>
+          <Picker
+            style={styles.input}
+            selectedValue={selectedPayment}
+            onValueChange={(itemValue, itemIndex) => setSelectedPayment(itemValue)}
+          >
+            {listaFormasPagamentos.map((formaPagamento) => (
+              <Picker.Item
+                key={formaPagamento.value}
+                label={formaPagamento.label}
+                value={formaPagamento.value}
+              />
+            ))}
+          </Picker>
+        </View>
 
-      </View>
-
-      <View style={styles.bloco}>
-        <TouchableOpacity
-          onPress={() => setSelectedPayment("creditCard")}
-          style={[
-            styles.blocoTouchable,
-            selectedPayment === "creditCard" && styles.selectedPaymentTouchable,
-          ]}
-        >
-          <View style={styles.blocoContent}>
-            <Image
-              style={styles.logoCartao}
-              source={{
-                uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/langpt-1500px-Mastercard_2019_logo.svg.png",
-              }}
-            />
-            <Text style={styles.blocoText}>
-              <span style={styles.span}>Crédito</span>
-              <br />
-              Mastecard **** 0987
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.bloco}>
-        <TouchableOpacity
-          onPress={() => setSelectedPayment("cash")}
-          style={[
-            styles.blocoTouchable,
-            selectedPayment === "cash" && styles.selectedPaymentTouchable,
-          ]}
-        >
-          <View style={styles.blocoContent}>
-            <Image
-              style={styles.logoCash}
-              source={{
-                uri: "https://api.iconify.design/iconoir:lot-of-cash.svg",
-              }}
-            />
-            <Text style={styles.blocoText}>
-              <span style={styles.span}>Pagar na entrega</span>
-            </Text>
-          </View>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.dividerContainer}>
@@ -157,9 +160,7 @@ export default function ResumoSacola({ navigation }) {
         />
 
         <Text style={styles.blocoText}>
-          Avenida do príncipe mimado, 267
-          <br />
-          Caxangá - Condomínio das flores bloco 02 apto 505
+          {enderecoCompleto}
         </Text>
       </View>
 
@@ -318,12 +319,12 @@ const styles = StyleSheet.create({
     borderColor: "#FF9431",
   },
   input: {
-      width: 300,
-      height: 40,
-      paddingHorizontal: 10,
-      backgroundColor: '#dbdbe749',
-      marginBottom: 10,
-      borderRadius: 5,
+    width: 300,
+    height: 40,
+    paddingHorizontal: 10,
+    backgroundColor: '#dbdbe749',
+    marginVertical: 30,
+    borderRadius: 5,
 
   },
 });

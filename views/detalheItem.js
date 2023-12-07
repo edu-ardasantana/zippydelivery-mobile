@@ -4,6 +4,8 @@ import { Button } from 'react-native-elements';
 
 
 export default function DetalheItem({ navigation }) {
+
+  
     
   const [quantity, setQuantity] = useState(1);
 

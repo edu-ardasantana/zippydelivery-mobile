@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Item({titulo, descricao, preco, imagem}) {
+export default function Item({titulo, descricao, preco, onPress, imagem}) {
 
     const navigation = useNavigation();
 
@@ -19,7 +19,7 @@ export default function Item({titulo, descricao, preco, imagem}) {
     }
 
     return (
-        <TouchableOpacity onPress={() => navigation.navigate('DetalheItem')} style={styles.slide}>
+        <TouchableOpacity onPress={(onPress)} style={styles.slide}>
             <View style={styles.colum1}> 
                 <Text style={styles.nomeItem}>{titulo}</Text>
                 <Text style={styles.descricao}>{descricao}</Text>
@@ -27,7 +27,7 @@ export default function Item({titulo, descricao, preco, imagem}) {
             </View>
 
             <View style={styles.colum2}> 
-                <Image style={styles.itemImage} source={(imagem)} />
+                <Image style={styles.itemImage} source={imagem} />
             </View>
 
             {/* 
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
         flex:2,
         flexDirection: 'column',
         alignItems: 'flex-start',
-        justifyContent: 'space-evenly',
+        justifyContent: 'center',
         marginHorizontal: 25,
     },
     colum2: {
@@ -88,18 +88,18 @@ const styles = StyleSheet.create({
 
     },
     title2: {
-        fontSize: 18,
+        fontSize: 14,
         letterSpacing: 1.2,
         fontWeight: '550',
     },
     nomeItem: {
         color: '#0D0D0D',
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: '600',
     },
     descricao:{
         color: '#7C7C8A',
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '400',
     },
     icon: {
