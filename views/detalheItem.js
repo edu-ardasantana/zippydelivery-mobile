@@ -3,7 +3,6 @@ import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet 
 import { Button } from 'react-native-elements';
 import { useMyContext } from './myContext';
 
-
 export default function DetalheItem({ route, navigation }) {
   
   const { produto, origin } = route.params;

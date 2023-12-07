@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Item({titulo, descricao, preco, onPress}) {
+export default function Item({titulo, descricao, preco, onPress, imagem}) {
 
     const navigation = useNavigation();
 
@@ -27,7 +27,7 @@ export default function Item({titulo, descricao, preco, onPress}) {
             </View>
 
             <View style={styles.colum2}> 
-                <Image style={styles.itemImage} source={require('/views/img/item.png')} />
+                <Image style={styles.itemImage} source={imagem} />
             </View>
 
             {/* 

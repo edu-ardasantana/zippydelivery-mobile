@@ -1,31 +1,35 @@
-import axios from 'axios';
+import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from './component/footer';
-import Loja from './component/loja';
+import Loja from './component/loja'
+import axios from 'axios';
 
 export default function Home({ route, navigation }) {
 
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
   
+  localStorage.setItem("var", "home");
+
+  const id = window.localStorage.getItem("id");
+
   const [empresas, setEmpresas] = useState([]);
   // const [id, setId] = useState();
   const userId = parseInt(localStorage.getItem('userId')); //id do usuário
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
         console.log(response.data)
         return setEmpresas(...empresas, response.data);
-
       }).catch(function (error) {
         console.log(error);
       });
-
     // setId(route.params.id);
-
     axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
       .then(function (response) {
         const data = response.data;
@@ -36,7 +40,6 @@ export default function Home({ route, navigation }) {
         console.log(error);
       });
   }, [])
-
 
   let endereco;
 
@@ -51,17 +54,10 @@ export default function Home({ route, navigation }) {
 
       <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-
-        {endereco == null ?
-
-          <Text style={styles.endereco}>Escolher endereço</Text>
-
-          :
-
-          <Text style={styles.endereco}>{endereco}</Text>
-
+        {endereco == null
+          ? <Text style={styles.endereco}>Escolher endereço</Text>
+          : <Text style={styles.endereco}>{endereco}</Text>
         }
-
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
       </TouchableOpacity>
 
@@ -96,13 +92,12 @@ export default function Home({ route, navigation }) {
             ))}
         </ScrollView>
 
-        {empresas.map((l, i) => {
-          return (
-            <TouchableOpacity onPress={() => navigation.navigate('HomeLoja', { id: l.id })} style={styles.cadaRestaurante}>
-              <Loja key={i} categoria={l.categoria.descricao} nome={l.nome} taxaFrete={l.taxaFrete} imagem={l.imgPerfil} tempoEntrega={l.tempoEntrega} />
-            </TouchableOpacity>
-          )
-        })}
+        <Text style={styles.title2}>Lojas</Text>
+        {empresas.map((empresa, index) => (
+          <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
+          </TouchableOpacity>
+        ))}
 
       </ScrollView>
       <Footer />
@@ -112,47 +107,15 @@ export default function Home({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  slide: {
-    flex: 1,
-    marginHorizontal: 15,
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E6E6E6',
-    justifyContent: 'space-between',
-  },
-  colum1: {
-    flex: 1.2,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    marginLeft: 20,
-  },
-  colum2: {
-    flex: 2.5,
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  colum3: {
-    flex: 0.5,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-  },
   cadaRestaurante: {
-    flex: 1.6,
+    flex: 6,
     flexDirection: 'row',
-  },
-  iconWrapper: {
-    padding: 10,
+    paddingVertical: 6,
   },
   icon: {
     width: 20,
     height: 20,
     tintColor: '#ABABAB',
-  },
-  text: {
-    color: '#7C7C8A',
-    fontSize: 12,
-    fontWeight: '400',
   },
   lojaImage: {
     width: 70,
@@ -160,11 +123,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginVertical: 10,
     marginRight: 7,
-  },
-  nomeItem: {
-    color: '#0D0D0D',
-    fontSize: 15,
-    fontWeight: '600',
   },
   container: {
     flex: 1,
@@ -183,10 +141,6 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     marginHorizontal: 15,
   },
-  logo: {
-    width: '30%',
-    height: '75%',
-  },
   endereco: {
     color: '#0D0D0D',
     fontSize: 17,
@@ -195,7 +149,6 @@ const styles = StyleSheet.create({
   anuncioImage: {
     width: 300,
     height: 150,
-    marginBottom: 25,
     borderRadius: 10,
     marginRight: 5,
   },
@@ -207,7 +160,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 10,
   },
   search: {
     width: '90%',
@@ -234,37 +186,11 @@ const styles = StyleSheet.create({
     borderColor: '#FF9431',
     borderWidth: 1.4,
     marginLeft: 7,
-    marginTop: 20,
   },
   textoEtiqueta: {
     color: '#0D0D0D',
     fontWeight: '600',
     padding: 1,
-  },
-  logoLoja: {
-    width: 50,
-    height: 50,
-    marginRight: 20,
-    marginLeft: 10,
-  },
-  infoLoja: {
-    flexDirection: 'row',
-    marginTop: 7,
-  },
-  infoLojaTime: {
-    color: '#E1E1E6',
-    fontSize: 14,
-    fontWeight: '350',
-  },
-  infoLojaStatus: {
-    color: '#82F3FF',
-    fontSize: 14,
-    fontWeight: '450',
-  },
-  nomeLoja: {
-    color: '#E1E1E6',
-    fontSize: 14,
-    fontWeight: '350',
   },
   title2: {
     color: '#0D0D0D',
@@ -272,7 +198,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     fontWeight: '450',
     marginLeft: 30,
-    marginBottom: 15,
     marginTop: 30,
     fontWeight: '650',
   },

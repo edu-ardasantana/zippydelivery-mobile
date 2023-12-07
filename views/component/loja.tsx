@@ -5,10 +5,10 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 interface LojaProps  {
     nome: string;
     categoria: string;
-    imagem: string;
+    imgPerfil: string;
     taxaFrete: string;
-  };
-  
+    tempoEntrega: string;
+}
 
 export default function Loja(props: LojaProps) {
     const tempoMin = 40;
@@ -27,12 +27,14 @@ export default function Loja(props: LojaProps) {
         <View style={styles.slide}>
 
             <View style={styles.colum1}>
-                <Image style={styles.lojaImage} source={{uri:props.imagem}} />
+                <Image style={styles.lojaImage} source={{uri:props.imgPerfil}} />
             </View>
 
             <View style={styles.colum2}>
                 <Text style={styles.nomeItem}>{props.nome}</Text>
-                <Text style={styles.text}>{tempoMin}-{tempoMax} min • {props.categoria} • R${props.taxaFrete}</Text>
+
+                <Text style={styles.text}>{props.tempoEntrega}-{props.tempoEntrega + 10} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
+
             </View>
             
         </View>
@@ -80,7 +82,6 @@ const styles = StyleSheet.create({
         color: '#7C7C8A',
         fontSize: 12,
         fontWeight: '400',
-        marginTop: 6,
     },
     lojaImage: {
         width: 70,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
         marginRight: 7,
     },
     nomeItem: {
-        color: "#FF9431",
+        color: '#0D0D0D',
         fontSize: 15,
         fontWeight: '600',
         marginBottom: 2,

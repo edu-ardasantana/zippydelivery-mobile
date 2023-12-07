@@ -13,7 +13,6 @@ export default function Menu({ navigation }) {
       .then(function (response) {
         const data = response.data;
         setUser(data);
-
       })
       .catch(function (error) {
         console.log(error);
@@ -104,3 +103,4 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 });
+
