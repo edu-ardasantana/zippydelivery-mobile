@@ -60,31 +60,6 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
                         value={getSenha}
                     />
 
-                    <View>
-
-                        <Text style={styles.label}>Email</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder='exemplo@email.com'
-                            placeholderTextColor='#C4C4CC'
-                            onChangeText={text => setEmail(text)}
-                            value={getEmail}
-                        />
-
-                    </View>
-
-
-                    <View>
-                        <Text style={styles.label}>Senha</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder='No mínimo 6 caracteres'
-                            placeholderTextColor='#C4C4CC'
-                            secureTextEntry={true}
-                            onChangeText={text => setSenha(text)}
-                            value={getSenha}
-                        />
-                    </View>
                 <Button buttonStyle={styles.button} title="Entrar" onPress={() => logar()} />
                 <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
                     <Text style={styles.link}> Criar uma conta</Text>
@@ -105,6 +80,7 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
                 </TouchableOpacity>
                 <FlashMessage position="top" />
             </View>
+        </View>
         </View>
     )
 }
@@ -145,6 +121,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 500,
         marginTop: 30,
+        alignSelf:'center'
     },
     dividerContainer: {
         flexDirection: 'row',
@@ -167,7 +144,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 20,
         borderRadius: 5,
-        marginTop: 20,
         height: 50
     },
     googleIcon: {
@@ -180,4 +156,3 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 })
-

@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
   },
   limpar: {
     paddingHorizontal: 20,
-    color: "#FF9431",
+    color: "#FFFFFF",
   },
   bloco: {
     flexDirection: "row",

@@ -1,3 +1,4 @@
+
 import { Link, useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -83,7 +84,7 @@ export default function Sacola({ navigation }) {
             {/* <Text style={styles.enderecoTitle}>Entregar no endereço</Text> */}
             {/* <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} > */}
 
-                {enderecoCompleto == null ?
+                {enderecoCompleto === null ?
 
                     <View style={styles.semEndereco}>
                         <TouchableOpacity onPress={() => navigation.navigate('FormEndereco', {origin:'Sacola'})}>
@@ -94,13 +95,16 @@ export default function Sacola({ navigation }) {
                     </View>
                     :
                     <View style={styles.endereco}>
+                        {cart.length > 0 ? (
+                        <>
                         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-
                         <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
 
-                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco', {origin:'Sacola'})}>
                             <Text style={styles.limpar}>Trocar</Text>
                         </TouchableOpacity>
+                        </>
+                        ) : null}
                     </View>
                 }
                 <View style={styles.dividerContainer}>
