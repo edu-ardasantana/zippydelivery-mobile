@@ -1,20 +1,79 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Item from './component/item';
 import Footer from './component/footer';
+import axios from 'axios';
 
-export default function HomeLoja({ route, navigation }) {
+export default function HomeLoja({ navigation, route }) {
 
-  window.localStorage.setItem("idEmpresa",route.params.id)
+  // const listagemProdutos = [1, 2, 3];
+  // const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+  const [empresa, setEmpresa] = useState('');
+  const [categorias, setCategorias] = useState([]);
+  const [produtos, setProdutos] = useState([]);
 
-  const listagemProdutos = [1, 2, 3];
-  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+  useEffect(() => {
+
+    console.log(route.params.id)
+    consultarEmpresa(route.params.id)
+
+  }, [])
+
+  async function consultarEmpresa(idEmpresa) {
+
+    await axios.get('http://localhost:8080/api/empresa/' + idEmpresa)
+      .then(function (response) {
+        console.log(response.data);
+        setEmpresa(response.data);
+
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+  }
+
+  /*useEffect(() => {
+    axios.get('http://localhost:8080/api/produto')
+      .then(function (response) {
+        console.log(response.data);
+        return setEmpresas(...produtos, response.data);
+
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+  }, [])
+  */
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/categoriaproduto/categoriasprodutoporempresa/' + route.params.id)
+      .then(function (response) {
+        console.log(response.data);
+        return setCategorias(...categorias, response.data);
+        console.log(categorias);
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+  }, [])
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/produto/porcategoriaeempresa/' + route.params.id)
+      .then(function (response) {
+        console.log(response.data);
+        return setProdutos(...produtos, response.data);
+        console.log(produtos);
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+  }, [])
 
   return (
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
-          <Image source={require('/views/img/imgLoja.png')} style={styles.backgroundImage} />
+          <Image source={empresa.imgCapa} style={styles.backgroundImage} />
           <View style={styles.headerContent}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
               <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} /></View>
@@ -29,35 +88,38 @@ export default function HomeLoja({ route, navigation }) {
 
         <View>
           <View style={styles.topo}>
-            <Text style={[styles.title1, { marginTop: 20 }]}>Nome Restaurante</Text>
+            <Text style={[styles.title1, { marginTop: 20 }]}>{empresa.nome}</Text>
           </View>
 
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-            {listagemEtiquetas.map((index) =>
+            {categorias.map((valor, index) =>
+              /*
               index === 1 ? (
-                <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                  <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Etiqueta {index}</Text>
-                </TouchableOpacity>
+
+                  <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
+                  <Text style={[styles.textoEtiqueta, { color: 'white' }]}>{v.descricao}</Text>
+                  </TouchableOpacity>
               ) : (
-                <TouchableOpacity style={styles.etiqueta}>
-                  <Text style={styles.textoEtiqueta}>Etiqueta {index}</Text>
-                </TouchableOpacity>
-              ))}
+                */
+              <TouchableOpacity style={styles.etiqueta}>
+                <Text style={styles.textoEtiqueta}>{valor.descricao}</Text>
+              </TouchableOpacity>
+            )}
           </ScrollView>
 
-          {listagemProdutos.map((index) => (
-            <View key={index}>
-              <Text style={styles.title2}>Categoria {index}</Text>
-              <TouchableOpacity>
-                <Item />
-                <Item />
-                <Item />
-              </TouchableOpacity>
+          {produtos.map((produtosCategoria, indexCategoria) => (
+            <View key={indexCategoria}>
+               <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
+              {produtosCategoria.map((produto, indexProduto) => (
+                <TouchableOpacity key={indexProduto} >
+                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} imagem={produto.imagem} onPress={()=>navigation.navigate("DetalheItem", {produto, origin:'HomeLoja'})} />
+                </TouchableOpacity>
+              ))}
             </View>
           ))}
         </View>
       </ScrollView>
-      <Footer />
+      {/*<Footer />*/}
     </View>
   );
 }

@@ -5,7 +5,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 interface LojaProps  {
     nome: string;
     categoria: string;
-    imagem: string;
+    imgPerfil: string;
     taxaFrete: string;
     tempoEntrega: string;
 }
@@ -27,7 +27,7 @@ export default function Loja(props: LojaProps) {
         <View style={styles.slide}>
 
             <View style={styles.colum1}>
-                <Image style={styles.lojaImage} source={{uri:props.imagem}} />
+                <Image style={styles.lojaImage} source={{uri:props.imgPerfil}} />
             </View>
 
             <View style={styles.colum2}>
