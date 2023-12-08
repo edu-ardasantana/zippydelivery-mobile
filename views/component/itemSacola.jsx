@@ -1,48 +1,58 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useMyContext } from '../myContext';
 
-export default function Item() {
+export default function ItemSacola({item}) {
 
     const navigation = useNavigation();
 
-    const [quantity, setQuantity] = useState(1);
+    const { addToCart, delToCart, removeFromCart, cart } = useMyContext();
+    const [selectedQuantity, _setSelectedQuantity] = useState(1);
+  
+  
+    const getProductQuantity = (productId) => {
+      const cartItem = cart.find((produto) => produto.id === productId);
+      return cartItem ? cartItem.quantity : 1;
+    };
 
-    function incrementQuantity() { setQuantity(quantity + 1) }
-    function decrementQuantity() { quantity > 0 && setQuantity(quantity - 1) }
+    // const [quantity, setQuantity] = useState(1);
 
-    function formatarMoeda(dataParam) {
-        return dataParam
-            ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-            : '';
-    }
+    // function incrementQuantity() { setQuantity(quantity + 1) }
+    // function decrementQuantity() { quantity > 0 && setQuantity(quantity - 1) }
+
+    // function formatarMoeda(dataParam) {
+    //     return dataParam
+    //         ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    //         : '';
+    // }
 
     return (
-        <TouchableOpacity onPress={() => navigation.navigate('DetalheItem')} style={styles.slide}>
+        <View style={styles.slide}>
 
             <View style={styles.colum1}>
                 <Image style={styles.itemImage} source={require('/views/img/item.png')} />
             </View>
 
             <View style={styles.colum2}>
-                <Text style={styles.nomeItem}>Salada Ravanello </Text>
+                <Text style={styles.nomeItem}>{item.titulo} • {item.descricao}</Text>
                
-                <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(44.90)}</Text>
+                <Text style={[styles.title2, { color:  '#FF9431' }]}>R$ {(getProductQuantity(item.id)*item.preco).toFixed(2)}</Text>
             </View>
 
             <View style={styles.line4 }>
-                <TouchableOpacity onPress={decrementQuantity} style={styles.button}>
+                <TouchableOpacity onPress={()=>delToCart({...item, quantity: selectedQuantity })} style={styles.button}>
                     <Image style={[styles.icon, { width: 16 }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
                 </TouchableOpacity>
 
-                <Text style={[styles.title2, { marginLeft: 20, marginRight: 20 }]}>{quantity}</Text>
+                <Text style={[styles.title2, { marginLeft: 20, marginRight: 20 }]}>{getProductQuantity(item.id)}</Text>
 
-                <TouchableOpacity onPress={incrementQuantity} style={styles.button}>
+                <TouchableOpacity onPress={()=>addToCart({...item, quantity: selectedQuantity })} style={styles.button}>
                     <Image style={[styles.icon, { width: 16 }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
                 </TouchableOpacity>
             </View>
 
-        </TouchableOpacity>
+        </View>
     );
 }
 

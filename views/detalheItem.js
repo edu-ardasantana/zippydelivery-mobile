@@ -1,33 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
+import { useMyContext } from './myContext';
 
-
-export default function DetalheItem({ navigation }) {
-
+export default function DetalheItem({ route, navigation }) {
   
-    
-  const [quantity, setQuantity] = useState(1);
+  const { produto, origin } = route.params;
+  console.log(produto, origin)
+  const { addToCart, delToCart, cart } = useMyContext();
+  const [selectedQuantity, _setSelectedQuantity] = useState(1);  
+  
+  const getProductQuantity = (productId) => {
+    const cartItem = cart.find((produto) => produto.id === productId);
+    return cartItem ? cartItem.quantity : 1;  
+  };
 
-  function incrementQuantity() {
-    setQuantity(quantity + 1);
-  }
+  useEffect(() => {
+    addToCart({...produto, quantity: 1 });
+  }, [])
 
-  function decrementQuantity() {
-    if (quantity > 0) {
-      setQuantity(quantity - 1);
-    }
-  }
+  // function incrementQuantity() {
+  //   setQuantity(quantity + 1);
+  // }
 
-  function formatarMoeda(dataParam) {
-    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
-  }
+  // function decrementQuantity() {
+  //   if (quantity > 0) {
+  //     setQuantity(quantity - 1);
+  //   }
+  // }
 
+  // function formatarMoeda(dataParam) {
+  //   return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+  // }
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('/views/img/item.png')}
+          source={require('/views/img/item.png')} /*produto.imagem*/
           style={styles.backgroundImage}
         />
         <View style={styles.headerContent}>
@@ -40,17 +50,18 @@ export default function DetalheItem({ navigation }) {
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent1}>
-          <Text style={[styles.title1, { marginTop: 30 }]}>Salada Ravanello</Text>
-          <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>
-          <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(44.90)}</Text>
+          <Text style={[styles.title1, { marginTop: 30 }]}>{produto.titulo}</Text>
+          <Text style={styles.descricao}>{produto.descricao} • 
+            <Text style={[styles.title2, { color: '#FF9431' }]}> R$ {produto.preco.toFixed(2)}</Text>
+          </Text>
         </View>
 
         <View style={styles.bodyContent2}>
           <View style={styles.box}>
-            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} />
-            <Text style={styles.title3}>Nome do Restaurante</Text>
+            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} /> {/* produto.empresa.imgPerfil*/}
+            <Text style={styles.title3}>{produto.categoria.empresa.nome}</Text>
           </View>
-          <Text style={styles.text}>40-50 min • Categoria • <Text style={{ color: '#FF9431' }}>Grátis</Text></Text>
+          <Text style={styles.text}>Tempo de entrega: {produto.categoria.empresa.tempoEntrega} min • {produto.categoria.descricao} • <Text style={{ color: '#FF9431' }}><Text style={styles.text}>Frete:</Text>R$ {produto.categoria.empresa.taxaFrete.toFixed(2)}</Text></Text>
         </View>
         <View style={styles.divider}></View>
 
@@ -68,16 +79,16 @@ export default function DetalheItem({ navigation }) {
         </View>
 
         <View style={[styles.line4, { marginTop: 10 }]}>
-          <TouchableOpacity onPress={decrementQuantity} style={styles.button}>
+          <TouchableOpacity onPress={()=>delToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
           </TouchableOpacity>
-          <Text style={[styles.title2, { color: '#FF9431', margin: 20 }]}>{quantity}</Text>
-          <TouchableOpacity onPress={incrementQuantity} style={styles.button}>
+          <Text style={[styles.title2, { color: '#FF9431', margin: 20 }]}>{getProductQuantity(produto.id)}</Text>
+          <TouchableOpacity onPress={()=>addToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
           </TouchableOpacity>
           <Button
             style={styles.buttonContainer}
-            title="Adicionar"
+            title={`Adicionar R$ ${(getProductQuantity(produto.id)*produto.preco).toFixed(2)}`}
             buttonStyle={styles.addButton}
             titleStyle={styles.addButtonTitle}
             onPress={() => navigation.navigate('Sacola')}
@@ -204,6 +215,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
     padding: 10,
+    paddingLeft:0,
     letterSpacing: 1.2,
   },
   input: {
@@ -214,6 +226,7 @@ const styles = StyleSheet.create({
     borderColor: '#E6E6E6',
     borderWidth: 1,
     borderRadius: 5,
+    padding:10
   },
   line4: {
     flexDirection: 'row',

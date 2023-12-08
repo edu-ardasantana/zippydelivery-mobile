@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'reac
 import { Button } from 'react-native-elements';
 import FlashMessage, { showMessage } from "react-native-flash-message";
 
-export default function Login({ navigation }) {
+    export default function Login({ navigation }) {
 
     const [getEmail, setEmail] = useState('');
     const [getSenha, setSenha] = useState('');
@@ -59,7 +59,6 @@ export default function Login({ navigation }) {
                         onChangeText={text => setSenha(text)}
                         value={getSenha}
                     />
-                </View>
 
                 <Button buttonStyle={styles.button} title="Entrar" onPress={() => logar()} />
                 <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
@@ -81,6 +80,7 @@ export default function Login({ navigation }) {
                 </TouchableOpacity>
                 <FlashMessage position="top" />
             </View>
+        </View>
         </View>
     )
 }
@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 500,
         marginTop: 30,
+        alignSelf:'center'
     },
     dividerContainer: {
         flexDirection: 'row',
@@ -143,7 +144,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 20,
         borderRadius: 5,
-        marginTop: 20,
         height: 50
     },
     googleIcon: {
