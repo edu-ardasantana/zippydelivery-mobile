@@ -6,10 +6,10 @@ import Footer from './component/footer';
 export default function Menu({ navigation }) {
 
   const [user, setUser] = useState("");
-  const userId = parseInt(localStorage.getItem('userId'));
+  const userId = parseInt(localStorage.getItem('id'));
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/${userId+1}`)
+    axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
       .then(function (response) {
         const data = response.data;
         setUser(data);

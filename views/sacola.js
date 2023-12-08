@@ -8,7 +8,7 @@ import { useMyContext } from './myContext';
 import ItemSacola from './component/itemSacola';
 
 export default function Sacola({ navigation }) {
-    const userId = parseInt(localStorage.getItem('userId'));
+    const userId = parseInt(localStorage.getItem('id'));
     // const listagemProdutos = [1, 2, 3];
     const [getEndereco, setEndereco] = useState([]);
     const isFocused = useIsFocused();

@@ -10,7 +10,7 @@ export default function FormEndereco({ route }) {
 
     const { origin }  = route.params;
     const navigation = useNavigation();
-    const userId = parseInt(localStorage.getItem('userId'));
+    const userId = parseInt(localStorage.getItem('id'));
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');

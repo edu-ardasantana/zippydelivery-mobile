@@ -279,7 +279,7 @@ export default function ResumoSacola({ navigation }) {
   
   // const id = window.localStorage.getItem("id");  
   // const idEmpresa = window.localStorage.getItem("idEmpresa");
-  const userId = parseInt(localStorage.getItem('userId'));
+  const userId = parseInt(localStorage.getItem('id'));
   const { cart, setCart } = useMyContext();
   console.log(cart)
 

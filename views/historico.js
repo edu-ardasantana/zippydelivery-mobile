@@ -8,7 +8,7 @@ import axios from 'axios';
 export default function Historico({ navigation }) {
 
     const [lista, setLista] = useState([]);
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem('id');
     useEffect(() => {
         carregarLista();
     }, [])
