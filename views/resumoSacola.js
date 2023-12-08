@@ -124,8 +124,7 @@ export default function ResumoSacola({ navigation }) {
     }
     ) .then(function (response) {
  console.log("ok ok houve ok")
-     
-
+ navigation.navigate('ConfirmaPedido')
   })
   .catch(function (error) {
      
