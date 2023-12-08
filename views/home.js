@@ -10,7 +10,7 @@ export default function Home({ route, navigation }) {
   
   const [empresas, setEmpresas] = useState([]);
   // const [id, setId] = useState();
-  const userId = parseInt(localStorage.getItem('userId')); //id do usuário
+  const userId = parseInt(localStorage.getItem('id'));
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 

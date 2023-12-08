@@ -21,9 +21,9 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
 
                 console.log(response.data)
 
+                localStorage.setItem("id", response.data.id);
+                localStorage.setItem("token", response.data.token);
                 navigation.navigate('Home')
-                window.localStorage.setItem("id",response.data.id)
-                window.localStorage.setItem("token",response.data.token)
           
             })
             .catch(function (error) {
