@@ -5,6 +5,7 @@ import { Button } from "react-native-elements";
 import { useIsFocused } from '@react-navigation/native';
 import { useMyContext } from './myContext';
 
+
 export default function ResumoSacola({ navigation }) {
   
   const id = window.localStorage.getItem("id");  
@@ -32,6 +33,7 @@ export default function ResumoSacola({ navigation }) {
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
 
+
   useEffect(() => {
     axios.get(`http://localhost:8080/api/cliente/user/` + id)
       .then(function (response) {
@@ -45,6 +47,7 @@ export default function ResumoSacola({ navigation }) {
   useEffect(() => {
     axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
       .then(function (response) {
+        console.log(response.data.formaPagamento)
         setFormasPagamento(response.data.formasPagamento)
         setTaxaFrete(response.data.taxaFrete)
       })
@@ -64,6 +67,71 @@ export default function ResumoSacola({ navigation }) {
     { label: "Selecione...", value: "" },
     ...formasPagamento.map(formaPgmt => ({ label: formaPgmt, value: formaPgmt })),
   ];
+
+  function montaitens(cart){
+
+    var listaItens = []
+
+    cart.forEach(element => {
+      
+      let item = {
+        id_produto: element.id,
+        qtdProduto: element.quantity,
+        valorUnitario: element.preco
+      }
+
+      listaItens.push(item)
+    });
+
+    return listaItens;
+  }
+  
+  function formatarDataHora(data) {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    const hora = String(data.getHours()).padStart(2, '0');
+    const minuto = String(data.getMinutes()).padStart(2, '0');
+    const segundo = String(data.getSeconds()).padStart(2, '0');
+  
+    return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
+  }
+  
+  const agora = new Date();
+  const dataHoraFormatada = formatarDataHora(agora);
+  
+  console.log(dataHoraFormatada);
+
+
+  function fazerPedido(cart){
+    axios.post('http://localhost:8080/api/pedido', {
+      id_cliente: Number(id)+1,
+      id_empresa: idEmpresa,
+      codigoCupom: null,
+      dataHora: dataHoraFormatada,
+      formaPagamento: selectedPayment,
+      statusPagamento: "Aguardando Confirmação",
+      statusPedido: "Em Processamento",
+      taxaEntrega: taxaFrete,
+      logradouro: getEndereco.logradouro,
+      bairro: getEndereco.bairro,
+      cidade: getEndereco.cidade,
+      estado: getEndereco.estado,
+      cep: getEndereco.cep,
+      complemento: getEndereco.complemento,
+      numeroEndereco: '12',
+      itens: montaitens(cart)
+    }
+    ) .then(function (response) {
+ console.log("ok ok houve ok")
+     
+
+  })
+  .catch(function (error) {
+     
+  });
+
+  }
 
 
   return (
@@ -195,7 +263,7 @@ export default function ResumoSacola({ navigation }) {
         <Button
           buttonStyle={styles.button}
           title="Fazer pedido"
-          onPress={() => navigation.navigate("ConfirmaPedido")}
+          onPress={() => fazerPedido(cart)}
         />
       </View>
     </View>
