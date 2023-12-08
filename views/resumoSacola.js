@@ -3,17 +3,44 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
 import { Button } from "react-native-elements";
 import { useIsFocused } from '@react-navigation/native';
+import { useMyContext } from './myContext';
 
 export default function ResumoSacola({ navigation }) {
   
+  const id = window.localStorage.getItem("id");  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
-  const isFocused = useIsFocused();
-  const id = window.localStorage.getItem("id");
 
+  const { cart, setCart } = useMyContext();
+
+  const calcularTotalCompras = (carrinho) => {
+    let total = 0;
+
+    carrinho.forEach((item) => {
+      const precoTotalItem = item.preco * item.quantity;
+      total += precoTotalItem;
+    });
+      
+    return total;
+  };
+    
+  const valorTotal = calcularTotalCompras(cart)
+  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete.toFixed(2))
+  const isFocused = useIsFocused();
+  
+  const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
   const [getEndereco, setEndereco] = useState([]);
-  const [taxaFrete, setTaxaFrete] = useState();
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/user/` + id)
+      .then(function (response) {
+        setEndereco(response.data)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }, [isFocused])
 
   useEffect(() => {
     axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
@@ -25,16 +52,6 @@ export default function ResumoSacola({ navigation }) {
         console.log(error)
       })
   }, [])
-
-  useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/` + id)
-      .then(function (response) {
-        setEndereco(response.data)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [isFocused])
 
   let enderecoCompleto;
   if (getEndereco.logradouro == null) {
@@ -75,18 +92,15 @@ export default function ResumoSacola({ navigation }) {
       <br />
 
       <View style={styles.resumo}>
-        <Text>Subtotal</Text> <Text>R$ 31,90</Text>
+        <Text>Subtotal</Text> <Text>R$ {valorTotal.toFixed(2)}</Text>
       </View>
 
       <View style={styles.resumo}>
         <Text>Taxa de entrega</Text>
-        <Text style={{ color: "#39cd39" }}>
+        <Text style={{ color: `${color}` }}>
           {(() => {
             try {
-              return taxaFrete.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              });
+              return taxaFrete === 0.00 ? `${cart[0].categoria.empresa.taxaFrete.toFixed(2)}` : `R$ ${cart[0].categoria.empresa.taxaFrete.toFixed(2)}`;
             } catch (error) {
               console.error('Erro ao formatar taxaFrete:', error);
               return 'Erro de formatação';
@@ -100,7 +114,7 @@ export default function ResumoSacola({ navigation }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>R$ 31,90</strong>
+          <strong>R$ {parseFloat(valorTotal + parseFloat(taxaFrete)).toFixed(2)}</strong>
         </Text>
       </View>
       <br />
@@ -147,7 +161,7 @@ export default function ResumoSacola({ navigation }) {
         <Text style={styles.blocoText}>
           <span style={styles.span}>Entrega Hoje</span>
           <br />
-          Hoje, 40 - 50 min
+          Hoje, {cart[0].categoria.empresa.tempoEntrega} min
         </Text>
       </View>
 
@@ -215,7 +229,7 @@ const styles = StyleSheet.create({
   },
   limpar: {
     paddingHorizontal: 20,
-    color: "#FF9431",
+    color: "#FFFFFF",
   },
   bloco: {
     flexDirection: "row",
@@ -223,7 +237,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   blocoText: {
-    fontSize: 10,
+    fontSize: 14,
   },
   subTitle: {
     fontWeight: "bold",
