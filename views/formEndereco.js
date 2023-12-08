@@ -10,7 +10,7 @@ export default function FormEndereco({ route }) {
 
     const { origin }  = route.params;
     const navigation = useNavigation();
-    const userId = localStorage.getItem('id');
+    const userId = parseInt(localStorage.getItem('id'));
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
@@ -23,7 +23,7 @@ export default function FormEndereco({ route }) {
     const id = 1;
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/${userId}`)
+        axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
             .then(function (response) {
                 const data = response.data;
                 setLogradouro(data.logradouro);

@@ -31,7 +31,7 @@ export default function ItemSacola({item}) {
         <View style={styles.slide}>
 
             <View style={styles.colum1}>
-                <Image style={styles.itemImage} source={require('/views/img/item.png')} />
+                <Image style={styles.itemImage} source={{uri:(item.imagem)}} />
             </View>
 
             <View style={styles.colum2}>

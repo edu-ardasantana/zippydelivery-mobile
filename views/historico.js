@@ -8,14 +8,14 @@ import axios from 'axios';
 export default function Historico({ navigation }) {
 
     const [lista, setLista] = useState([]);
-    const userId = localStorage.getItem('id');
+    const userId = parseInt(localStorage.getItem('id'));
     useEffect(() => {
         carregarLista();
     }, [])
  
     function carregarLista() {
  
-        axios.get(`http://localhost:8080/api/pedido/porcliente/${userId}`)
+        axios.get(`http://localhost:8080/api/pedido/porcliente/${userId+1}`)
         .then((response) => {
             setLista(response.data)
             console.log(response.data)

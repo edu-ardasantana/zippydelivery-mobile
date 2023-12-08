@@ -132,7 +132,7 @@ export default function Sacola({ navigation }) {
             />
             )}
             {cart.length > 0 && (
-            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: {cart[0].categoria.empresa.taxaFrete}</Text>
+            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: R$ {(cart[0].categoria.empresa.taxaFrete).toFixed(2)}</Text>
             )}
 
             <br />

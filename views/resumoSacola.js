@@ -278,7 +278,7 @@ import { useMyContext } from './myContext';
 export default function ResumoSacola({ navigation }) {
   
   // const id = window.localStorage.getItem("id");  
-  // const idEmpresa = window.localStorage.getItem("idEmpresa");
+  const idEmpresa = window.localStorage.getItem("idEmpresa");
   const userId = parseInt(localStorage.getItem('id'));
   const { cart, setCart } = useMyContext();
   console.log(cart)
@@ -304,16 +304,16 @@ export default function ResumoSacola({ navigation }) {
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
 
-  // useEffect(() => {
-  //   axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
-  //     .then(function (response) {
-  //       setFormasPagamento(response.data.formasPagamento)
-  //       setTaxaFrete(response.data.taxaFrete)
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error)
-  //     })
-  // }, [])
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
+      .then(function (response) {
+        setFormasPagamento(response.data.formasPagamento)
+        setTaxaFrete(response.data.taxaFrete)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }, [])
 
   useEffect(() => {
     axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
@@ -337,6 +337,24 @@ export default function ResumoSacola({ navigation }) {
     ...formasPagamento.map(formaPgmt => ({ label: formaPgmt, value: formaPgmt })),
   ];
 
+  function montaitens(cart){
+
+    var listaItens = []
+
+    cart.forEach(element => {
+      
+      let item = {
+        id_produto: element.id,
+        qtdProduto: element.quantity,
+        valorUnitario: element.preco
+      }
+
+      listaItens.push(item)
+    });
+
+    return listaItens;
+  }
+
   function formatarDataHora(data) {
     const ano = data.getFullYear();
     const mes = String(data.getMonth() + 1).padStart(2, '0');
@@ -355,7 +373,7 @@ export default function ResumoSacola({ navigation }) {
 
   function fazerPedido(cart){
     axios.post('http://localhost:8080/api/pedido', {
-      id_cliente: Number(id)+1,
+      id_cliente: userId+1,
       id_empresa: idEmpresa,
       codigoCupom: null,
       dataHora: dataHoraFormatada,
@@ -377,6 +395,7 @@ export default function ResumoSacola({ navigation }) {
         navigation.navigate('ConfirmaPedido')
     })
     .catch(function (error) {
+      console.log('Erro: ', error)
      
   });
 

@@ -59,11 +59,16 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'center',
         marginLeft: 5,
+        maxWidth: 100,
+        maxHeight: 'auto',
+        overflow: 'visible'
+        
     },
     colum2: {
         flex: 2.5,
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'center',     
+        
     },
     colum3: {
         flex: 0.5,
@@ -77,6 +82,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         tintColor: '#ABABAB',
+
     },
     text: {
         color: '#7C7C8A',
@@ -87,7 +93,7 @@ const styles = StyleSheet.create({
         width: 70,
         height: 70,
         borderRadius: 50,
-        marginVertical: 10,
+        marginVertical: 50,
         marginRight: 7,
     },
     nomeItem: {
