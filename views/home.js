@@ -3,49 +3,46 @@ import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Footer from './component/footer';
 import Loja from './component/loja';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Home({ route, navigation }) {
+
+  localStorage.setItem("var", "home");
+
+  const id = window.localStorage.getItem("id");
+  const isFocused = useIsFocused();
 
   const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
   
   const [empresas, setEmpresas] = useState([]);
-  // const [id, setId] = useState();
-  const userId = parseInt(localStorage.getItem('userId')); //id do usuário
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
       .then(function (response) {
-        console.log(response.data)
         return setEmpresas(...empresas, response.data);
 
       }).catch(function (error) {
         console.log(error);
       });
     }, [])
-    // setId(route.params.id);
 
-  useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
-      .then(function (response) {
-        const data = response.data;
-        setCidade(data.cidade);
-        setEstado(data.estado);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, [])
+    useEffect(() => {
+      axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+        .then(function (response) {
+          const data = response.data;
+          setCidade(data.cidade);
+          setEstado(data.estado);
+        })
+        .catch(function (error) {
+          console.log(error);
+          console.log(error)
+        });
+    }, [isFocused])
 
 
-  let endereco;
-
-  if (cidade == null || cidade == "") {
-    endereco = null;
-  } else {
-    endereco = `${cidade}, ${estado}`
-  }
+    let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
   return (
     <View style={styles.container}>

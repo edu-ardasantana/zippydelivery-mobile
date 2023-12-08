@@ -6,7 +6,6 @@ import { useMyContext } from './myContext';
 export default function DetalheItem({ route, navigation }) {
   
   const { produto, origin } = route.params;
-  console.log(produto, origin)
   const { addToCart, delToCart, cart } = useMyContext();
   const [selectedQuantity, _setSelectedQuantity] = useState(1);  
   

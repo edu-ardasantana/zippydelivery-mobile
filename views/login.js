@@ -18,9 +18,6 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
         axios.post('http://localhost:8080/api/login', credentials)
             .then(function (response) {
 
-
-                console.log(response.data)
-
                 navigation.navigate('Home')
                 window.localStorage.setItem("id",response.data.id)
                 window.localStorage.setItem("token",response.data.token)
