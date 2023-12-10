@@ -1,65 +1,60 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Footer from './component/footer';
 import Loja from './component/loja';
+import Footer from './component/footer';
+import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function Home({ route, navigation }) {
+export default function Home({ navigation }) {
 
   localStorage.setItem("var", "home");
 
   const id = window.localStorage.getItem("id");
   const isFocused = useIsFocused();
 
-  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-  
+  const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/empresa')
-      .then(function (response) {
-        return setEmpresas(...empresas, response.data);
+    axios.get('http://localhost:8080/api/categoriaempresa')
+      .then(function (response) { return setCategoriasEmpresas(...categoriasEmpresas, response.data); })
+      .catch(function (error) { console.log(error); });
+  }, [])
 
-      }).catch(function (error) {
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/empresa')
+      .then(function (response) { return setEmpresas(...empresas, response.data); })
+      .catch(function (error) { console.log(error); });
+  }, [])
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+      .then(function (response) {
+        const data = response.data;
+        setCidade(data.cidade);
+        setEstado(data.estado);
+      })
+      .catch(function (error) {
         console.log(error);
       });
-    }, [])
+  }, [isFocused])
 
-    useEffect(() => {
-      axios.get(`http://localhost:8080/api/cliente/user/${id}`)
-        .then(function (response) {
-          const data = response.data;
-          setCidade(data.cidade);
-          setEstado(data.estado);
-        })
-        .catch(function (error) {
-          console.log(error);
-          console.log(error)
-        });
-    }, [isFocused])
+  function filtarEmpresas(){}
 
 
-    let endereco = cidade == null ? null : `${cidade}, ${estado}`;
+  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
   return (
     <View style={styles.container}>
 
-      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco', {origin: 'Home'})} >
+      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-
-        {endereco === null ?
-
-          <Text style={styles.endereco}>Escolher endereço</Text>
-
-          :
-
-          <Text style={styles.endereco}>{endereco}</Text>
-
+        {endereco === null
+          ? <Text style={styles.endereco}>Escolher endereço</Text>
+          : <Text style={styles.endereco}>{endereco}</Text>
         }
-
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
       </TouchableOpacity>
 
@@ -82,25 +77,19 @@ export default function Home({ route, navigation }) {
         </View>
 
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-          {listagemEtiquetas.map((index) =>
-            index === 1 ? (
-              <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Etiqueta {index}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={styles.etiqueta}>
-                <Text style={styles.textoEtiqueta}>Etiqueta {index}</Text>
-              </TouchableOpacity>
-            ))}
+          {categoriasEmpresas.map((c, index) =>
+            <TouchableOpacity style={styles.etiqueta} onPress={filtarEmpresas}>
+              <Text style={styles.textoEtiqueta}>{c.descricao}</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
 
         <Text style={styles.title2}>Lojas</Text>
         {empresas.map((empresa, index) => (
           <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
           </TouchableOpacity>
         ))}
-
       </ScrollView>
       <Footer />
     </View>
@@ -110,32 +99,16 @@ export default function Home({ route, navigation }) {
 
 const styles = StyleSheet.create({
   slide: {
-    flex: 1,
+    flex: 2,
     marginHorizontal: 15,
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#E6E6E6',
     justifyContent: 'space-between',
   },
-  colum1: {
-    flex: 1.2,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    marginLeft: 20,
-  },
-  colum2: {
-    flex: 2.5,
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  colum3: {
-    flex: 0.5,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-  },
   cadaRestaurante: {
-    flex: 1.6,
+    flex: 4,
+    height: 100,
     flexDirection: 'row',
   },
   iconWrapper: {
@@ -186,13 +159,12 @@ const styles = StyleSheet.create({
   },
   endereco: {
     color: '#0D0D0D',
-    fontSize: 17,
+    fontSize: 14,
     fontWeight: '600',
   },
   anuncioImage: {
     width: 300,
     height: 150,
-    marginBottom: 25,
     borderRadius: 10,
     marginRight: 5,
   },
@@ -204,7 +176,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 10,
   },
   search: {
     width: '90%',
@@ -216,6 +187,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderColor: '#E6E6E6',
     borderWidth: 1.4,
+    marginBottom: 10,
+    marginTop: 5,
   },
   input: {
     width: '100%',
@@ -231,12 +204,13 @@ const styles = StyleSheet.create({
     borderColor: '#FF9431',
     borderWidth: 1.4,
     marginLeft: 7,
-    marginTop: 20,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textoEtiqueta: {
     color: '#0D0D0D',
-    fontWeight: '600',
-    padding: 1,
+    fontWeight: 500,
   },
   logoLoja: {
     width: 50,
@@ -264,14 +238,12 @@ const styles = StyleSheet.create({
     fontWeight: '350',
   },
   title2: {
-    color: '#0D0D0D',
-    fontSize: 18,
-    letterSpacing: 1.2,
-    fontWeight: '450',
+    color: '#0D1D25',
+    fontSize: 17,
+    fontWeight: 500,
     marginLeft: 30,
-    marginBottom: 15,
-    marginTop: 30,
-    fontWeight: '650',
+    marginBottom: 20,
+    marginTop: 10,
   },
   carouselContainer: {
     flexDirection: 'row',
