@@ -16,6 +16,9 @@ export default function ItemSacola({item}) {
       return cartItem ? cartItem.quantity : 1;
     };
 
+    function formatarMoeda(dataParam) {
+        return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+    }
     return (
         <View style={styles.slide}>
 
@@ -24,9 +27,8 @@ export default function ItemSacola({item}) {
             </View>
 
             <View style={styles.colum2}>
-                <Text style={styles.nomeItem}>{item.titulo}</Text>
-               
-                <Text style={[styles.title2, { color:  '#FF9431' }]}>R$ {(getProductQuantity(item.id)*item.preco).toFixed(2)}</Text>
+                <Text style={styles.nomeItem}>{item.titulo}</Text>   
+                <Text style={[styles.title2, { color:  '#FF9431' }]}>{formatarMoeda(getProductQuantity(item.id)*item.preco)}</Text>
             </View>
 
             <View style={styles.line4 }>

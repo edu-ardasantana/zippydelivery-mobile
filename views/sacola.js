@@ -67,6 +67,10 @@ export default function Sacola({ navigation }) {
         return total + itemPrice;
     }, 0);
 
+    function formatarMoeda(dataParam) {
+        return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+    }
+
     return (
         <View style={styles.container}>
 
@@ -128,7 +132,7 @@ export default function Sacola({ navigation }) {
                 {cart.length > 0 && (
                     <View style={styles.footer2}>
                         <Text style={styles.footerText}>Total com a entrega</Text>
-                        <Text style={styles.preco}>R$ {(cartTotal + cart[0].categoria.empresa.taxaFrete).toFixed(2)}</Text>
+                        <Text style={styles.preco}>{formatarMoeda((cartTotal + cart[0].categoria.empresa.taxaFrete))}</Text>
                     </View>
                 )}
                 {(enderecoCompleto === null && cart.length > 0) && (
