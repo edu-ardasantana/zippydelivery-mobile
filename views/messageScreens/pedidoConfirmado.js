@@ -141,9 +141,6 @@ export default function PedidoConfirmado({ route, navigation }) {
                                     <Text style={styles.text}>{getNomeEmpresa}</Text>
                                     <Text style={styles.textinho}>Pedido Nº {getNumeroPedido}</Text>
                                 </View>
-                                <TouchableOpacity onPress={() => navigation.navigate('DetalhePedido', idPedido)} style={styles.iconWrapper}>
-                                    <Image style={[styles.icon, { rotate: '180deg', marginEnd: 10 }]} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-                                </TouchableOpacity>
                             </View>
                             <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
                             <View style={styles.infoPagamento}>
