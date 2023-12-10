@@ -12,37 +12,39 @@ export default function Home({ navigation }) {
   const id = window.localStorage.getItem("id");
   const isFocused = useIsFocused();
 
-  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-  
+  const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/empresa')
-      .then(function (response) {
-        return setEmpresas(...empresas, response.data);
+    axios.get('http://localhost:8080/api/categoriaempresa')
+      .then(function (response) { return setCategoriasEmpresas(...categoriasEmpresas, response.data); })
+      .catch(function (error) { console.log(error); });
+  }, [])
 
-      }).catch(function (error) {
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/empresa')
+      .then(function (response) { return setEmpresas(...empresas, response.data); })
+      .catch(function (error) { console.log(error); });
+  }, [])
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+      .then(function (response) {
+        const data = response.data;
+        setCidade(data.cidade);
+        setEstado(data.estado);
+      })
+      .catch(function (error) {
         console.log(error);
       });
-    }, [])
+  }, [isFocused])
 
-    useEffect(() => {
-      axios.get(`http://localhost:8080/api/cliente/user/${id}`)
-        .then(function (response) {
-          const data = response.data;
-          setCidade(data.cidade);
-          setEstado(data.estado);
-        })
-        .catch(function (error) {
-          console.log(error);
-          console.log(error)
-        });
-    }, [isFocused])
+  function filtarEmpresas(){}
 
 
-    let endereco = cidade == null ? null : `${cidade}, ${estado}`;
+  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
   return (
     <View style={styles.container}>
@@ -75,22 +77,17 @@ export default function Home({ navigation }) {
         </View>
 
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-          {listagemEtiquetas.map((index) =>
-            index === 1 ? (
-              <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Etiqueta {index}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={styles.etiqueta}>
-                <Text style={styles.textoEtiqueta}>Etiqueta {index}</Text>
-              </TouchableOpacity>
-            ))}
+          {categoriasEmpresas.map((c, index) =>
+            <TouchableOpacity style={styles.etiqueta} onPress={filtarEmpresas}>
+              <Text style={styles.textoEtiqueta}>{c.descricao}</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
 
         <Text style={styles.title2}>Lojas</Text>
         {empresas.map((empresa, index) => (
           <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
           </TouchableOpacity>
         ))}
       </ScrollView>

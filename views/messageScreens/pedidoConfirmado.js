@@ -6,6 +6,12 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'rea
 
 export default function PedidoConfirmado({ route, navigation }) {
 
+    const [pedidoExiste, setPedidoExiste] = useState(true);
+
+    useEffect(() => {
+        setPedidoExiste(true);
+    }, []);
+
     const idPedido = parseInt(route.params);
     const [getStatusPedido, setStatusPedido] = useState();
     const [getTempoEntrega, setTempoEntrega] = useState();
@@ -42,75 +48,115 @@ export default function PedidoConfirmado({ route, navigation }) {
     }, [])
 
     function cancelarPedido() {
-
+        setPedidoExiste(false);
     }
 
     function formatarMoeda(dataParam) {
         return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
     }
-    
+
 
     return (
         <View style={styles.container}>
-            <ScrollView >
-                <View style={styles.headerContent}>
-                    <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-                        <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.body}>
-                    <View style={styles.cabeca}>
-                        <Image style={styles.iconMessage} source={require('/views/img/successIcon.png')} />
-                        <Text style={styles.title1}>Pedido realizado!</Text>
-                        <Text style={styles.title2}>O restaurante foi notificado do seu pedido</Text>
-                    </View><br />
-                    <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
-                    <View style={styles.statusContainer}>
-                        <Text style={styles.subTitle}>Status do Pedido</Text>
-                        <View style={styles.statusPedido}>
-                            <Text style={styles.text}>{getStatusPedido}</Text>
-                            <Text style={styles.text}>Entrega hoje, {getTempoEntrega} min</Text>
-                        </View>
-                    </View><br />
-                    <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
-                    <View style={styles.enderecoContainer}>
-                        <Text style={styles.subTitle}>Entrega em</Text>
-                        <Text style={styles.textEndereco}>{getLogradouro} {'\n'}{getBairro} - {getCidade}, {getEstado} {'\n'}{getComplemento}</Text>
+            {pedidoExiste ? (
+                <ScrollView >
+                    <View style={styles.headerContent}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
+                            <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.enderecoContainer}>
-                        <Text style={styles.subTitle}>Detalhes do pedido</Text>
-                        <View style={styles.infoLoja}>
-                            <Image style={styles.lojaImage} source={getImgEmpresa} />
-                            <View style={styles.infoPedido}>
-                                <Text style={styles.text}>{getNomeEmpresa}</Text>
-                                <Text style={styles.textinho}>Pedido Nº {getNumeroPedido}</Text>
-                            </View>
-                            <TouchableOpacity onPress={() => navigation.navigate('DetalhePedido', idPedido)} style={styles.iconWrapper}>
-                                <Image style={[styles.icon, { rotate: '180deg', marginEnd: 10 }]} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-                            </TouchableOpacity>
-                        </View>
+                    <View style={styles.body}>
+                        <View style={styles.cabeca}>
+                            <Image style={styles.iconMessage} source={require('/views/img/responseIconSuccess.png')} />
+                            <Text style={styles.title1}>Pedido realizado!</Text>
+                            <Text style={styles.title2}>O restaurante foi notificado do seu pedido</Text>
+                        </View><br />
                         <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
-                        <View style={styles.infoPagamento}>
-                            <View style={styles.infoPagamentoLine}>
-                                <Text style={styles.text}>Forma de pagamento</Text>
-                                <Text style={styles.textinho}>{getFormaPagamento}</Text>
+                        <View style={styles.statusContainer}>
+                            <Text style={styles.subTitle}>Status do Pedido</Text>
+                            <View style={styles.statusPedido}>
+                                <Text style={styles.text}>{getStatusPedido}</Text>
+                                <Text style={styles.text}>Entrega hoje, {getTempoEntrega} min</Text>
                             </View>
-                            <View style={styles.infoPagamentoLine}>
-                                <Text style={styles.text}>Total</Text>
-                                <Text style={styles.text}>{formatarMoeda(getValorTotal)}</Text>
+                        </View><br />
+                        <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
+                        <View style={styles.enderecoContainer}>
+                            <Text style={styles.subTitle}>Entrega em</Text>
+                            <Text style={styles.textEndereco}>{getLogradouro} {'\n'}{getBairro} - {getCidade}, {getEstado} {'\n'}{getComplemento}</Text>
+                        </View>
+                        <View style={styles.enderecoContainer}>
+                            <Text style={styles.subTitle}>Detalhes do pedido</Text>
+                            <View style={styles.infoLoja}>
+                                <Image style={styles.lojaImage} source={getImgEmpresa} />
+                                <View style={styles.infoPedido}>
+                                    <Text style={styles.text}>{getNomeEmpresa}</Text>
+                                    <Text style={styles.textinho}>Pedido Nº {getNumeroPedido}</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => navigation.navigate('DetalhePedido', idPedido)} style={styles.iconWrapper}>
+                                    <Image style={[styles.icon, { rotate: '180deg', marginEnd: 10 }]} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
+                            <View style={styles.infoPagamento}>
+                                <View style={styles.infoPagamentoLine}>
+                                    <Text style={styles.text}>Forma de pagamento</Text>
+                                    <Text style={styles.textinho}>{getFormaPagamento}</Text>
+                                </View>
+                                <View style={styles.infoPagamentoLine}>
+                                    <Text style={styles.text}>Total</Text>
+                                    <Text style={styles.text}>{formatarMoeda(getValorTotal)}</Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Button
+                                title={"Cancelar pedido"}
+                                buttonStyle={styles.addButton}
+                                titleStyle={styles.addButtonTitle}
+                                onPress={cancelarPedido}
+                            />
+                        </View>
+                    </View>
+                </ScrollView>
+            ) : (
+                <ScrollView >
+                    <View style={styles.headerContent}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
+                            <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.body}>
+                        <View style={styles.cabeca}>
+                            <Image style={styles.iconMessage} source={require('/views/img/responseIconFailure.png')} />
+                            <Text style={[styles.title1,{ color: '#92000E'}]}>Pedido cancelado</Text>
+                            <Text style={styles.title2}>Fique tranquilo, nenhuma cobrança será feita</Text>
+                        </View><br />
+                        <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
+                        
+                        <View style={styles.enderecoContainer}>
+                            <Text style={styles.subTitle}>Detalhes do pedido</Text>
+                            <View style={styles.infoLoja}>
+                                <Image style={styles.lojaImage} source={getImgEmpresa} />
+                                <View style={styles.infoPedido}>
+                                    <Text style={styles.text}>{getNomeEmpresa}</Text>
+                                    <Text style={styles.textinho}>Pedido Nº {getNumeroPedido}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
+                            <View style={styles.infoPagamento}>
+                                <View style={styles.infoPagamentoLine}>
+                                    <Text style={styles.text}>Forma de pagamento</Text>
+                                    <Text style={styles.textinho}>{getFormaPagamento}</Text>
+                                </View>
+                                <View style={styles.infoPagamentoLine}>
+                                    <Text style={styles.text}>Total</Text>
+                                    <Text style={styles.text}>{formatarMoeda(getValorTotal)}</Text>
+                                </View>
                             </View>
                         </View>
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <Button
-                            title={"Cancelar pedido"}
-                            buttonStyle={styles.addButton}
-                            titleStyle={styles.addButtonTitle}
-                            onPress={cancelarPedido}
-                        />
-                    </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            )}
             <Footer />
         </View>
     )
