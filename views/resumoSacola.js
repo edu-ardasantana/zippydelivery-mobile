@@ -8,7 +8,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-n
 
 export default function ResumoSacola({ navigation }) {
 
-  const id = window.localStorage.getItem("id");
+  const userId = parseInt(localStorage.getItem("id"), 10);
   const idEmpresa = window.localStorage.getItem("idEmpresa");
 
   const { cart, setCart } = useMyContext();
@@ -23,7 +23,7 @@ export default function ResumoSacola({ navigation }) {
   };
 
   const valorTotal = calcularTotalCompras(cart)
-  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : formatarMoeda(cart[0].categoria.empresa.taxaFrete))
+  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete)
   const isFocused = useIsFocused();
 
   const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
@@ -33,7 +33,7 @@ export default function ResumoSacola({ navigation }) {
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/` + id)
+    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -98,13 +98,14 @@ export default function ResumoSacola({ navigation }) {
 
   function fazerPedido(cart) {
     axios.post('http://localhost:8080/api/pedido', {
-      id_cliente: Number(id) + 1,
+      id_cliente: userId + 1,
       id_empresa: idEmpresa,
-      codigoCupom: null,
+      codigoCupom: "",
       dataHora: dataHoraFormatada,
       formaPagamento: selectedPayment,
-      statusPagamento: "Aguardando Confirmação",
       statusPedido: "Em Processamento",
+      statusPagamento: "Aguardando Confirmação",
+      valorTotal: valorTotal,
       taxaEntrega: taxaFrete,
       logradouro: getEndereco.logradouro,
       bairro: getEndereco.bairro,
@@ -112,12 +113,12 @@ export default function ResumoSacola({ navigation }) {
       estado: getEndereco.estado,
       cep: getEndereco.cep,
       complemento: getEndereco.complemento,
-      numeroEndereco: '12',
+      numeroEndereco: "12",
       itens: montaitens(cart)
     }
     ).then(function (response) {
-      console.log("ok ok houve ok")
-      navigation.navigate('ConfirmaPedido')
+      console.log("Pedido realizado com sucesso!")
+      navigation.navigate('PedidoConfirmado', response.data.id)
     })
       .catch(function (error) {});
   }
@@ -149,7 +150,7 @@ export default function ResumoSacola({ navigation }) {
       <br />
 
       <View style={styles.resumo}>
-        <Text>Subtotal</Text> <Text> {formatarMoeda(valorTotal)}</Text>
+        <Text>Subtotal</Text> <Text>{formatarMoeda(valorTotal)}</Text>
       </View>
 
       <View style={styles.resumo}>
@@ -171,7 +172,7 @@ export default function ResumoSacola({ navigation }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>{formatarMoeda(parseFloat(valorTotal + parseFloat(taxaFrete)))}</strong>
+          <strong>{formatarMoeda((valorTotal + taxaFrete))}</strong>
         </Text>
       </View>
       <br />
@@ -285,12 +286,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 20,
     fontSize: 15,
-  },
-  subTitleF: {
-    fontWeight: 500,
-    paddingHorizontal: 20,
-    fontSize: 15,
-  },
+  }, 
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -299,7 +295,7 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#dbdbe7",
+    backgroundColor: "#F3F3F3",
   },
   menuIcon: {
     width: 20,
