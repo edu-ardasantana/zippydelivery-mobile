@@ -43,7 +43,6 @@ export default function Home({ navigation }) {
 
   function filtarEmpresas(){}
 
-
   let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
   return (

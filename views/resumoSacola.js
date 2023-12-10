@@ -92,8 +92,60 @@ export default function ResumoSacola({ navigation }) {
   const agora = new Date();
   const dataHoraFormatada = formatarDataHora(agora);
 
+
   function formatarMoeda(dataParam) {
     return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer APP_USR-1980238996971813-112320-8d04c96e13a81ac5d6c8e1a31397f802-1561790253'
+  }
+  const [produto, setProduto] = useState();
+
+  function mercadoPago(cart){
+
+    const itensC = montaitens(cart)
+
+    const itensM = []
+
+    itensC.forEach( e => {
+
+      axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( async function (response) {
+        await setProduto(response.data);
+         console.log(produto)
+      })
+
+      //console.log(produto)
+      let item = {
+        title: produto.titulo,
+        description: produto.descricao,
+        category_id: produto.categoria.descricao,
+        quantity: e.qtdProduto,
+        currency_id: "BRL",
+        unit_price: e.valorUnitario
+      }
+
+      itensM.push(item)
+    })
+    
+    console.log(itensM);
+
+    axios.post('https://api.mercadopago.com/checkout/preferences',
+    {
+      "items": itensM
+      // [
+      //   {
+      //     "title": "Dummy Title",
+      //     "description": "Dummy description",
+      //     "category_id": "car_electronics",
+      //     "quantity": 2,
+      //     "currency_id": "BRL",
+      //     "unit_price": 1000
+      //   }
+      // ]
+    }, {headers: headers}).then( function (response) {
+      console.log(response.data)
+    })
   }
 
   function fazerPedido(cart) {
@@ -238,7 +290,13 @@ export default function ResumoSacola({ navigation }) {
             <Text>Alterar dados</Text>
           </TouchableOpacity>
         </View>
-        <Button buttonStyle={styles.button} title="Fazer pedido" onPress={() => fazerPedido(cart)}/>
+        
+        <Button
+          buttonStyle={styles.button}
+          title="Fazer pedido"
+          onPress={() => mercadoPago(cart)}
+          //onPress={() => fazerPedido(cart)}
+        />
       </View>
     </View>
   );
