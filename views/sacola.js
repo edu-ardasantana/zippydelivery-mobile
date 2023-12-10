@@ -113,8 +113,8 @@ export default function Sacola({ navigation }) {
             </View>
             {cart.length === 0 && (
                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center' }}>
-                    <Image style={{ height: 200, width: 200, alignSelf: 'center' }} source={require('/views/img/emptyCar.png')}></Image>
-                    <Text style={{ padding: 10, textAlign: 'center', fontWeight: 'bold' }}>O seu carrinho está vazio!</Text>
+                    <Image style={{ height: 200, width: 200, alignSelf: 'center' }} source={ { uri: 'https://api.iconify.design/material-symbols:shopping-cart-outline-sharp.svg?color=%23e6e6e6', }}></Image>
+                    <Text style={{ padding: 10, textAlign: 'center', fontWeight: '500', color: '#4D585E' }}>O seu carrinho está vazio!</Text>
                 </View>)}
             {/*<Text style={{flex:1, justifyContent:'center', textAlign:'center', textAlignVertical:'center'}}>O carrinho está vazio!</Text>*/}
             {cart.length > 0 && (
