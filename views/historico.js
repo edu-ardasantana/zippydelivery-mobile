@@ -1,12 +1,25 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import axios from 'axios';
 import Footer from './component/footer';
 import Pedido from './component/pedido';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+
 
 export default function Historico({ navigation }) {
 
-    //const listagemPedidos = [];
-    const listagemPedidos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
+    const [lista, setLista] = useState([]);
+    const userId = parseInt(localStorage.getItem("id"), 10);
+    useEffect(() => {
+        carregarLista();
+    }, [])
+ 
+    function carregarLista() {
+        axios.get(`http://localhost:8080/api/pedido/porcliente/${userId + 1}`)
+        .then((response) => {
+            setLista(response.data)
+            console.log(response.data)
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -15,17 +28,28 @@ export default function Historico({ navigation }) {
             </View>
             <ScrollView >
                 {
-                    listagemPedidos.length != 0 ? (
-                        <View style={styles.body}>
-                            {listagemPedidos.map((index) => (
-                                <Pedido />
-                            ))}
-                        </View>
-                    ) : (
-                        <View style={styles.body}>
-                            { navigation.navigate('SemPedidos')}
-                        </View>
-                    )
+                    <View style={styles.body}>
+                    {lista.map((pedido, index) => {
+                        let qtd = 0;
+                        let produtos = []
+                      pedido.itensPedido.map(item => {
+                        qtd += item.qtdProduto;
+                        produtos.push(item.produto.titulo);
+                      });
+                      return(
+                        <Pedido
+                          key={index} 
+                          quantity={qtd}
+                          restaurantName={pedido.empresa.nome}
+                          orderName={produtos[0]}
+                          orderStatus={pedido.statusPedido}
+                          orderNumber={pedido.id}
+                          onPress={()=>navigation.navigate("DetalhePedido", {pedido})}
+                        />
+                      )
+                    })}
+                  </View>
+                  
                 }
             </ScrollView>
             <Footer />
