@@ -29,7 +29,7 @@ export default function Home({ route, navigation }) {
     }, [])
 
     useEffect(() => {
-      axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+      axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
         .then(function (response) {
           const data = response.data;
           setCidade(data.cidade);
