@@ -1,8 +1,8 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native';
 import { Button } from 'react-native-elements';
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native';
 
 export default function Login({ navigation }) {
 
@@ -17,14 +17,9 @@ export default function Login({ navigation }) {
 
         axios.post('http://localhost:8080/api/login', credentials)
             .then(function (response) {
-
-
-                console.log(response.data)
-
                 navigation.navigate('Home')
-                window.localStorage.setItem("id",response.data.id)
-                window.localStorage.setItem("token",response.data.token)
-          
+                window.localStorage.setItem("id", response.data.id)
+                window.localStorage.setItem("token", response.data.token)
             })
             .catch(function (error) {
                 showMessage({
@@ -59,27 +54,27 @@ export default function Login({ navigation }) {
                         onChangeText={text => setSenha(text)}
                         value={getSenha}
                     />
+
+                    <Button buttonStyle={styles.button} title="Entrar" onPress={() => logar()} />
+                    <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
+                        <Text style={styles.link}> Criar uma conta</Text>
+                    </TouchableOpacity>
+                    <FlashMessage position="top" />
                 </View>
 
-                <Button buttonStyle={styles.button} title="Entrar" onPress={() => logar()} />
-                <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
-                    <Text style={styles.link}> Criar uma conta</Text>
-                </TouchableOpacity>
-                <FlashMessage position="top" />
-            </View>
-            <br /><br /> <br /><br /><br />
-            <View style={styles.dividerContainer}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>ou</Text>
-                <View style={styles.dividerLine} />
-            </View>
+                <View style={styles.dividerContainer}>
+                    <View style={styles.dividerLine} />
+                    <Text style={styles.dividerText}>ou</Text>
+                    <View style={styles.dividerLine} />
+                </View>
 
-            <View style={{ alignItems: 'center' }}>
-                <TouchableOpacity style={styles.googleSignInButton}>
-                    <Image style={styles.googleIcon} source={require('/views/img/simbolo-do-google.png')} />
-                    <Text style={styles.googleButtonText}>Entre com o Google</Text>
-                </TouchableOpacity>
-                <FlashMessage position="top" />
+                <View style={{ alignItems: 'center' }}>
+                    <TouchableOpacity style={styles.googleSignInButton}>
+                        <Image style={styles.googleIcon} source={require('/views/img/simbolo-do-google.png')} />
+                        <Text style={styles.googleButtonText}>Entre com o Google</Text>
+                    </TouchableOpacity>
+                    <FlashMessage position="top" />
+                </View>
             </View>
         </View>
     )
@@ -121,6 +116,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 500,
         marginTop: 30,
+        alignSelf: 'center'
     },
     dividerContainer: {
         flexDirection: 'row',
@@ -143,7 +139,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 20,
         borderRadius: 5,
-        marginTop: 20,
         height: 50
     },
     googleIcon: {

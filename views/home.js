@@ -1,37 +1,36 @@
-import { useIsFocused } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Footer from './component/footer';
-import Loja from './component/loja'
 import axios from 'axios';
+import Loja from './component/loja';
+import Footer from './component/footer';
+import React, { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function Home({ navigation }) {
 
   localStorage.setItem("var", "home");
 
   const id = window.localStorage.getItem("id");
+  const isFocused = useIsFocused();
 
-  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-
+  const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
-  const isFocused = useIsFocused();
-
-
   useEffect(() => {
-    axios.get('http://localhost:8080/api/empresa')
-      .then(function (response) {
-        return setEmpresas(...empresas, response.data);
-      }).catch(function (error) {
-        console.log(error);
-      });
-
+    axios.get('http://localhost:8080/api/categoriaempresa')
+      .then(function (response) { return setCategoriasEmpresas(...categoriasEmpresas, response.data); })
+      .catch(function (error) { console.log(error); });
   }, [])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
+    axios.get('http://localhost:8080/api/empresa')
+      .then(function (response) { return setEmpresas(...empresas, response.data); })
+      .catch(function (error) { console.log(error); });
+  }, [])
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);
@@ -39,18 +38,20 @@ export default function Home({ navigation }) {
       })
       .catch(function (error) {
         console.log(error);
-        console.log(error)
       });
   }, [isFocused])
+
+  function filtarEmpresas(){}
+
 
   let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
   return (
     <View style={styles.container}>
 
-      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
+      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-        {endereco == null
+        {endereco === null
           ? <Text style={styles.endereco}>Escolher endereço</Text>
           : <Text style={styles.endereco}>{endereco}</Text>
         }
@@ -76,16 +77,11 @@ export default function Home({ navigation }) {
         </View>
 
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-          {listagemEtiquetas.map((index) =>
-            index === 1 ? (
-              <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Etiqueta {index}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={styles.etiqueta}>
-                <Text style={styles.textoEtiqueta}>Etiqueta {index}</Text>
-              </TouchableOpacity>
-            ))}
+          {categoriasEmpresas.map((c, index) =>
+            <TouchableOpacity style={styles.etiqueta} onPress={filtarEmpresas}>
+              <Text style={styles.textoEtiqueta}>{c.descricao}</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
 
         <Text style={styles.title2}>Lojas</Text>
@@ -94,7 +90,6 @@ export default function Home({ navigation }) {
             <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
           </TouchableOpacity>
         ))}
-
       </ScrollView>
       <Footer />
     </View>
@@ -103,14 +98,31 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  cadaRestaurante: {
-    flex: 1.6,
+  slide: {
+    flex: 2,
+    marginHorizontal: 15,
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6E6E6',
+    justifyContent: 'space-between',
+  },
+  cadaRestaurante: {
+    flex: 4,
+    height: 100,
+    flexDirection: 'row',
+  },
+  iconWrapper: {
+    padding: 10,
   },
   icon: {
     width: 20,
     height: 20,
     tintColor: '#ABABAB',
+  },
+  text: {
+    color: '#7C7C8A',
+    fontSize: 12,
+    fontWeight: '400',
   },
   lojaImage: {
     width: 70,
@@ -118,6 +130,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginVertical: 10,
     marginRight: 7,
+  },
+  nomeItem: {
+    color: '#0D0D0D',
+    fontSize: 15,
+    fontWeight: '600',
   },
   container: {
     flex: 1,
@@ -136,9 +153,13 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     marginHorizontal: 15,
   },
+  logo: {
+    width: '30%',
+    height: '75%',
+  },
   endereco: {
     color: '#0D0D0D',
-    fontSize: 17,
+    fontSize: 14,
     fontWeight: '600',
   },
   anuncioImage: {
@@ -166,6 +187,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderColor: '#E6E6E6',
     borderWidth: 1.4,
+    marginBottom: 10,
+    marginTop: 5,
   },
   input: {
     width: '100%',
@@ -181,21 +204,46 @@ const styles = StyleSheet.create({
     borderColor: '#FF9431',
     borderWidth: 1.4,
     marginLeft: 7,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textoEtiqueta: {
     color: '#0D0D0D',
-    fontWeight: '600',
-    padding: 1,
+    fontWeight: 500,
+  },
+  logoLoja: {
+    width: 50,
+    height: 50,
+    marginRight: 20,
+    marginLeft: 10,
+  },
+  infoLoja: {
+    flexDirection: 'row',
+    marginTop: 7,
+  },
+  infoLojaTime: {
+    color: '#E1E1E6',
+    fontSize: 14,
+    fontWeight: '350',
+  },
+  infoLojaStatus: {
+    color: '#82F3FF',
+    fontSize: 14,
+    fontWeight: '450',
+  },
+  nomeLoja: {
+    color: '#E1E1E6',
+    fontSize: 14,
+    fontWeight: '350',
   },
   title2: {
-    color: '#0D0D0D',
-    fontSize: 18,
-    letterSpacing: 1.2,
-    fontWeight: '450',
+    color: '#0D1D25',
+    fontSize: 17,
+    fontWeight: 500,
     marginLeft: 30,
-    marginBottom: 15,
-    marginTop: 30,
-    fontWeight: '650',
+    marginBottom: 20,
+    marginTop: 10,
   },
   carouselContainer: {
     flexDirection: 'row',

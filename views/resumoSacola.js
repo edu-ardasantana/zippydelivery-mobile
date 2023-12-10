@@ -1,19 +1,46 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
+import { useMyContext } from './myContext';
 import { Button } from "react-native-elements";
+import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
+
 
 export default function ResumoSacola({ navigation }) {
-  
-  const idEmpresa = window.localStorage.getItem("idEmpresa");
-  const isFocused = useIsFocused();
-  const id = window.localStorage.getItem("id");
 
+  const userId = parseInt(localStorage.getItem("id"), 10);
+  const idEmpresa = window.localStorage.getItem("idEmpresa");
+
+  const { cart, setCart } = useMyContext();
+
+  const calcularTotalCompras = (carrinho) => {
+    let total = 0;
+    carrinho.forEach((item) => {
+      const precoTotalItem = item.preco * item.quantity;
+      total += precoTotalItem;
+    });
+    return total;
+  };
+
+  const valorTotal = calcularTotalCompras(cart)
+  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete)
+  const isFocused = useIsFocused();
+
+  const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
   const [getEndereco, setEndereco] = useState([]);
-  const [taxaFrete, setTaxaFrete] = useState();
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
+
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
+      .then(function (response) {
+        setEndereco(response.data)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }, [isFocused])
 
   useEffect(() => {
     axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
@@ -26,16 +53,6 @@ export default function ResumoSacola({ navigation }) {
       })
   }, [])
 
-  useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/` + id)
-      .then(function (response) {
-        setEndereco(response.data)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [isFocused])
-
   let enderecoCompleto;
   if (getEndereco.logradouro == null) {
     enderecoCompleto = null;
@@ -47,6 +64,64 @@ export default function ResumoSacola({ navigation }) {
     { label: "Selecione...", value: "" },
     ...formasPagamento.map(formaPgmt => ({ label: formaPgmt, value: formaPgmt })),
   ];
+
+  function montaitens(cart) {
+    var listaItens = []
+    cart.forEach(element => {
+      let item = {
+        id_produto: element.id,
+        qtdProduto: element.quantity,
+        valorUnitario: element.preco
+      }
+      listaItens.push(item)
+    });
+    return listaItens;
+  }
+
+  function formatarDataHora(data) {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    const hora = String(data.getHours()).padStart(2, '0');
+    const minuto = String(data.getMinutes()).padStart(2, '0');
+    const segundo = String(data.getSeconds()).padStart(2, '0');
+
+    return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
+  }
+
+  const agora = new Date();
+  const dataHoraFormatada = formatarDataHora(agora);
+
+  function formatarMoeda(dataParam) {
+    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+  }
+
+  function fazerPedido(cart) {
+    axios.post('http://localhost:8080/api/pedido', {
+      id_cliente: userId + 1,
+      id_empresa: idEmpresa,
+      codigoCupom: "",
+      dataHora: dataHoraFormatada,
+      formaPagamento: selectedPayment,
+      statusPedido: "Em Processamento",
+      statusPagamento: "Aguardando Confirmação",
+      valorTotal: valorTotal,
+      taxaEntrega: taxaFrete,
+      logradouro: getEndereco.logradouro,
+      bairro: getEndereco.bairro,
+      cidade: getEndereco.cidade,
+      estado: getEndereco.estado,
+      cep: getEndereco.cep,
+      complemento: getEndereco.complemento,
+      numeroEndereco: "12",
+      itens: montaitens(cart)
+    }
+    ).then(function (response) {
+      console.log("Pedido realizado com sucesso!")
+      navigation.navigate('PedidoConfirmado', response.data.id)
+    })
+      .catch(function (error) {});
+  }
 
 
   return (
@@ -75,18 +150,15 @@ export default function ResumoSacola({ navigation }) {
       <br />
 
       <View style={styles.resumo}>
-        <Text>Subtotal</Text> <Text>R$ 31,90</Text>
+        <Text>Subtotal</Text> <Text>{formatarMoeda(valorTotal)}</Text>
       </View>
 
       <View style={styles.resumo}>
         <Text>Taxa de entrega</Text>
-        <Text style={{ color: "#39cd39" }}>
+        <Text style={{ color: `${color}` }}>
           {(() => {
             try {
-              return taxaFrete.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              });
+              return taxaFrete === 0.00 ? `${formatarMoeda(cart[0].categoria.empresa.taxaFrete)}` : ` ${formatarMoeda(cart[0].categoria.empresa.taxaFrete)}`;
             } catch (error) {
               console.error('Erro ao formatar taxaFrete:', error);
               return 'Erro de formatação';
@@ -100,7 +172,7 @@ export default function ResumoSacola({ navigation }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>R$ 31,90</strong>
+          <strong>{formatarMoeda((valorTotal + taxaFrete))}</strong>
         </Text>
       </View>
       <br />
@@ -109,25 +181,25 @@ export default function ResumoSacola({ navigation }) {
         <View style={styles.dividerLine} />
       </View>
 
-      <Text style={styles.subTitle}>Escolha a forma de pagamento</Text>
-      <View style={{ alignItems: 'center' }}>
-
+      
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.subTitleF}>Forma de pagamento</Text>
         <View>
           <Picker
             style={styles.input}
+            mode="dropdown"
             selectedValue={selectedPayment}
             onValueChange={(itemValue, itemIndex) => setSelectedPayment(itemValue)}
           >
             {listaFormasPagamentos.map((formaPagamento) => (
               <Picker.Item
                 key={formaPagamento.value}
-                label={formaPagamento.label}
+                label={(formaPagamento.label.toLowerCase()).charAt(0).toUpperCase() + formaPagamento.label.slice(1)}
                 value={formaPagamento.value}
               />
             ))}
           </Picker>
         </View>
-
       </View>
 
       <View style={styles.dividerContainer}>
@@ -147,21 +219,13 @@ export default function ResumoSacola({ navigation }) {
         <Text style={styles.blocoText}>
           <span style={styles.span}>Entrega Hoje</span>
           <br />
-          Hoje, 40 - 50 min
+          Hoje, {cart[0].categoria.empresa.tempoEntrega} min
         </Text>
       </View>
 
       <View style={styles.bloco}>
-        <Image
-          style={styles.menuIcon}
-          source={{
-            uri: "https://api.iconify.design/material-symbols:location-on-rounded.svg",
-          }}
-        />
-
-        <Text style={styles.blocoText}>
-          {enderecoCompleto}
-        </Text>
+        <Image style={styles.menuIcon} source={{ uri: "https://api.iconify.design/material-symbols:location-on-rounded.svg"}}/>
+        <Text style={styles.blocoText}>{enderecoCompleto}</Text>
       </View>
 
       <View style={styles.dividerContainer}>
@@ -170,19 +234,11 @@ export default function ResumoSacola({ navigation }) {
 
       <View style={styles.footerContainer}>
         <View style={styles.footer2}>
-          <TouchableOpacity
-            style={styles.footerLink}
-            onPress={() => navigation.navigate("Sacola")}
-          >
+          <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate("Sacola")}>
             <Text>Alterar dados</Text>
           </TouchableOpacity>
         </View>
-
-        <Button
-          buttonStyle={styles.button}
-          title="Fazer pedido"
-          onPress={() => navigation.navigate("ConfirmaPedido")}
-        />
+        <Button buttonStyle={styles.button} title="Fazer pedido" onPress={() => fazerPedido(cart)}/>
       </View>
     </View>
   );
@@ -215,7 +271,7 @@ const styles = StyleSheet.create({
   },
   limpar: {
     paddingHorizontal: 20,
-    color: "#FF9431",
+    color: "#FFFFFF",
   },
   bloco: {
     flexDirection: "row",
@@ -223,14 +279,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   blocoText: {
-    fontSize: 10,
+    fontSize: 12,
   },
   subTitle: {
-    fontWeight: "bold",
+    fontWeight: 500,
     paddingTop: 20,
     paddingHorizontal: 20,
     fontSize: 15,
-  },
+  }, 
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -239,7 +295,7 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#dbdbe7",
+    backgroundColor: "#F3F3F3",
   },
   menuIcon: {
     width: 20,
@@ -319,12 +375,14 @@ const styles = StyleSheet.create({
     borderColor: "#FF9431",
   },
   input: {
-    width: 300,
+    width: 130,
     height: 40,
+    fontSize: 13,
     paddingHorizontal: 10,
-    backgroundColor: '#dbdbe749',
     marginVertical: 30,
-    borderRadius: 5,
-
+    color: "#4D585E",
+    borderColor: 'transparent',
+    borderWidth: 1,
+    borderBottomColor: "#FF9431"
   },
 });
