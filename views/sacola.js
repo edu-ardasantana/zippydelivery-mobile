@@ -1,22 +1,21 @@
 
-import { Link, useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button } from 'react-native-elements';
 import { useMyContext } from './myContext';
+import { Button } from 'react-native-elements';
 import ItemSacola from './component/itemSacola';
+import React, { useEffect, useState } from 'react';
+import { Link, useIsFocused } from '@react-navigation/native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Sacola({ navigation }) {
 
     localStorage.setItem("var", "sacola");
 
+    const [buttonTitle, setButtonTitle] = useState('Continuar');
+    const [buttonAction, setButtonAction] = useState('ResumoSacola');
     const [getEndereco, setEndereco] = useState([]);
 
     const isFocused = useIsFocused();
-
-    const [buttonTitle, setButtonTitle] = useState('Continuar');
-    const [buttonAction, setButtonAction] = useState('ResumoSacola');
 
     const id = window.localStorage.getItem("id");
 
@@ -25,8 +24,6 @@ export default function Sacola({ navigation }) {
     const limparSacola = () => {
         setCart([]);
     };
-
-    console.log(cart)
 
 
     useEffect(() => {
@@ -54,7 +51,7 @@ export default function Sacola({ navigation }) {
     if (getEndereco.logradouro == null) {
         enderecoCompleto = null;
     } else {
-        enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
+        enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} ${getEndereco.complemento} `;
     }
 
     const renderCartItem = ({ item }) => (
@@ -70,6 +67,10 @@ export default function Sacola({ navigation }) {
         return total + itemPrice;
     }, 0);
 
+    function formatarMoeda(dataParam) {
+        return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+    }
+
     return (
         <View style={styles.container}>
 
@@ -82,14 +83,11 @@ export default function Sacola({ navigation }) {
                 <TouchableOpacity onPress={limparSacola}>
                     <Text style={styles.limpar}>Limpar</Text>
                 </TouchableOpacity>
-
             </View>
 
-            {/* <Text style={styles.enderecoTitle}>Entregar no endereço</Text> */}
-            {/* <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} > */}
-
+            <Text style={styles.enderecoTitle}>Entregar no endereço</Text> 
+           
             {enderecoCompleto === null ?
-
                 <View style={styles.semEndereco}>
                     <TouchableOpacity onPress={() => navigation.navigate('FormEndereco', { origin: 'Sacola' })}>
                         {cart.length !== 0 &&
@@ -103,7 +101,6 @@ export default function Sacola({ navigation }) {
                         <>
                             <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
                             <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
-
                             <TouchableOpacity onPress={() => navigation.navigate('FormEndereco', { origin: 'Sacola' })}>
                                 <Text style={styles.limpar}>Trocar</Text>
                             </TouchableOpacity>
@@ -114,14 +111,6 @@ export default function Sacola({ navigation }) {
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
             </View>
-            {/* </TouchableOpacity> */}
-            {/* {listagemProdutos.map((index) => (
-                <View key={index}>
-                    <TouchableOpacity>
-                        <ItemSacola />
-                    </TouchableOpacity>
-                </View>
-            ))} */}
             {cart.length === 0 && (
                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center' }}>
                     <Image style={{ height: 200, width: 200, alignSelf: 'center' }} source={require('/views/img/emptyCar.png')}></Image>
@@ -138,17 +127,12 @@ export default function Sacola({ navigation }) {
             {cart.length > 0 && (
                 <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: {cart[0].categoria.empresa.taxaFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
             )}
-
             <br />
-
             <View style={styles.footerContainer}>
                 {cart.length > 0 && (
                     <View style={styles.footer2}>
-
                         <Text style={styles.footerText}>Total com a entrega</Text>
-
-                        <Text style={styles.preco}>R$ {(cartTotal + cart[0].categoria.empresa.taxaFrete).toFixed(2)}</Text>
-
+                        <Text style={styles.preco}>{formatarMoeda((cartTotal + cart[0].categoria.empresa.taxaFrete))}</Text>
                     </View>
                 )}
                 {(enderecoCompleto === null && cart.length > 0) && (
@@ -160,9 +144,7 @@ export default function Sacola({ navigation }) {
                     onPress={() => navigation.navigate(buttonAction)}
                     disabled={enderecoCompleto === null && cart.length > 0}
                 />
-
             </View>
-
         </View>
     );
 }
@@ -211,14 +193,14 @@ const styles = StyleSheet.create({
     },
     enderecoText: {
         marginStart: 5,
-        fontSize: 14,
+        fontSize: 12,
         justifyContent: 'space-between',
     },
     enderecoTitle: {
         fontWeight: 500,
         paddingTop: 20,
         paddingHorizontal: 20,
-        fontSize: 20,
+        fontSize: 16,
     },
     dividerContainer: {
         flexDirection: 'row',
