@@ -58,17 +58,17 @@ export default function DetalhePedido({ route, navigation }) {
             </View>
 
             <View>
-                <Text style={styles.h1}>Resumo de valores</Text>
+                <Text style={styles.h1}>Resumo de valores:</Text>
             </View>
 
             <View style={styles.resumo}>
                 <Text>Subtotal</Text> 
-                <Text>{`R${calcularSubtotal(pedido.itensPedido).toFixed(2)}`}</Text>
+                <Text>{`R$ ${calcularSubtotal(pedido.itensPedido).toFixed(2)}`}</Text>
             </View>
 
             <View style={styles.resumo}>
                 <Text>Taxa de entrega</Text> 
-                <Text>{pedido.empresa.taxaFrete}</Text>
+                <Text>R$ {pedido.empresa.taxaFrete}</Text>
             </View>
 
             <View style={styles.resumo}>
@@ -96,7 +96,7 @@ export default function DetalhePedido({ route, navigation }) {
             <View style={styles.bloco}>
                 <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
 
-                <Text style={styles.blocoText}>{pedido.cliente.logradouro}, {pedido.cliente.bairo} - <br /> {pedido.cliente.complemento}
+                <Text style={styles.blocoText}>{pedido.cliente.logradouro}, {pedido.cliente.bairro} - {pedido.cliente.cidade} / {pedido.cliente.estado}<br/>Ponto de referência: {pedido.cliente.complemento}
                 </Text>
 
             </View>
