@@ -9,7 +9,7 @@ export default function Home({ navigation }) {
 
   localStorage.setItem("var", "home");
 
-  const id = window.localStorage.getItem("id");
+  const userId = parseInt(localStorage.getItem('id'));
   const isFocused = useIsFocused();
 
   const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
@@ -42,7 +42,6 @@ export default function Home({ navigation }) {
   }, [isFocused])
 
   function filtarEmpresas(){}
-
 
   let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
