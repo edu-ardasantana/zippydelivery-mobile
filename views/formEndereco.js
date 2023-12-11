@@ -1,12 +1,17 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
-import { showMessage } from "react-native-flash-message";
+import React, { useEffect, useState } from 'react';
 import { TextInputMask } from 'react-native-masked-text';
+import { showMessage } from "react-native-flash-message";
+import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
 
 export default function FormEndereco({ navigation }) {
 
+    const { origin }  = route.params;
+    const navigation = useNavigation();
+    const id = parseInt(localStorage.getItem('id'));
+  
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
@@ -16,9 +21,6 @@ export default function FormEndereco({ navigation }) {
     const [idCliente, setIdCliente] = useState('');
 
     const [selectedUF, setSelectedUF] = useState('');
-
-    const id = window.localStorage.getItem("id");
-
     const local = localStorage.getItem("var");
 
     useEffect(() => {
