@@ -5,14 +5,15 @@ import Footer from './component/footer';
 
 export default function Menu({ navigation }) {
 
-  const [user, setUser] = useState("");
-  const userId = parseInt(localStorage.getItem('id'));
+  const [nome, setNome] = useState("");
+  const id = window.localStorage.getItem("id");
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/${userId + 1}`)
+    axios.get(`http://localhost:8080/api/cliente/user/`+id)
       .then(function (response) {
-        const data = response.data;
-        setUser(data);
+        console.log(response.data)
+         const data = response.data;
+        setNome(data.nome);
       })
       .catch(function (error) {
         console.log(error);
@@ -20,22 +21,21 @@ export default function Menu({ navigation }) {
       });
   }, []);
 
-
-  // var nomeUser = nome;
-  // localStorage.setItem("var", "menu");
+  var nomeUser = nome;
+  localStorage.setItem("var", "menu");
 
   return (
     <View style={styles.container}>
       <View style={styles.body}>
         <View style={styles.info}>
-          <Text style={styles.infoNameUser}>{user.nome},</Text>
+          <Text style={styles.infoNameUser}>{nomeUser},</Text>
           <Text style={styles.infoText}>o que você quer fazer agora?</Text>
         </View>
         <View style={styles.options}>
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormConta')}>
             <Text style={styles.optionText}>Configuração da conta</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormEndereco', {origin:'Menu'})}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormEndereco', { origin: 'Menu' })}>
             <Text style={styles.optionText}>Endereço de entrega</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Home')}>
@@ -93,14 +93,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#4D585E',
     paddingLeft: 5,
-  },
-  icon: {
-    width: 30,
-    height: 30,
-    tintColor: '#FF9431',
-},
-  iconWrapper: {
-    paddingVertical: 10,
-  },
+  }
 });
-

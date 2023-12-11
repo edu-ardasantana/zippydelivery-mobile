@@ -1,74 +1,44 @@
+import axios from 'axios';
+import Item from './component/item';
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Item from './component/item';
-import Footer from './component/footer';
-import axios from 'axios';
 
 export default function HomeLoja({ navigation, route }) {
 
-  // const listagemProdutos = [1, 2, 3];
-  // const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
   const [empresa, setEmpresa] = useState('');
   const [categorias, setCategorias] = useState([]);
   const [produtos, setProdutos] = useState([]);
 
   useEffect(() => {
-
-    console.log(route.params.id)
     consultarEmpresa(route.params.id)
-
   }, [])
 
-
-  localStorage.setItem('idEmpresa', route.params.id)
+   localStorage.setItem('idEmpresa', route.params.id)
   
   async function consultarEmpresa(idEmpresa) {
-
-    await axios.get('http://localhost:8080/api/empresa/' + idEmpresa)
+    await axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
       .then(function (response) {
-        console.log(response.data);
         setEmpresa(response.data);
-
       }).catch(function (error) {
         console.log(error);
-
       });
   }
 
-  /*useEffect(() => {
-    axios.get('http://localhost:8080/api/produto')
-      .then(function (response) {
-        console.log(response.data);
-        return setEmpresas(...produtos, response.data);
-
-      }).catch(function (error) {
-        console.log(error);
-
-      });
-  }, [])
-  */
-
   useEffect(() => {
-    axios.get('http://localhost:8080/api/categoriaproduto/categoriasprodutoporempresa/' + route.params.id)
+    axios.get(`http://localhost:8080/api/categoriaproduto/categoriasprodutoporempresa/${route.params.id}`)
       .then(function (response) {
-        console.log(response.data);
         return setCategorias(...categorias, response.data);
-        console.log(categorias);
       }).catch(function (error) {
         console.log(error);
-
       });
   }, [])
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/produto/porcategoriaeempresa/' + route.params.id)
+    axios.get(`http://localhost:8080/api/produto/porcategoriaeempresa/${route.params.id}`)
       .then(function (response) {
-        console.log(response.data);
         return setProdutos(...produtos, response.data);
-        console.log(produtos);
       }).catch(function (error) {
         console.log(error);
-
       });
   }, [])
 
@@ -96,14 +66,6 @@ export default function HomeLoja({ navigation, route }) {
 
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
             {categorias.map((valor, index) =>
-              /*
-              index === 1 ? (
-
-                  <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                  <Text style={[styles.textoEtiqueta, { color: 'white' }]}>{v.descricao}</Text>
-                  </TouchableOpacity>
-              ) : (
-                */
               <TouchableOpacity style={styles.etiqueta}>
                 <Text style={styles.textoEtiqueta}>{valor.descricao}</Text>
               </TouchableOpacity>
@@ -122,7 +84,6 @@ export default function HomeLoja({ navigation, route }) {
           ))}
         </View>
       </ScrollView>
-      {/*<Footer />*/}
     </View>
   );
 }
@@ -169,6 +130,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.4,
     marginLeft: 7,
     marginTop: 20,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textoEtiqueta: {
     color: '#0D0D0D',

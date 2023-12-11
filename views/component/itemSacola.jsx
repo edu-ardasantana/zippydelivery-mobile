@@ -16,28 +16,20 @@ export default function ItemSacola({item}) {
       return cartItem ? cartItem.quantity : 1;
     };
 
-    // const [quantity, setQuantity] = useState(1);
-
-    // function incrementQuantity() { setQuantity(quantity + 1) }
-    // function decrementQuantity() { quantity > 0 && setQuantity(quantity - 1) }
-
-    // function formatarMoeda(dataParam) {
-    //     return dataParam
-    //         ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-    //         : '';
-    // }
-
+    function formatarMoeda(dataParam) {
+        return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+    }
     return (
         <View style={styles.slide}>
 
             <View style={styles.colum1}>
-                <Image style={styles.itemImage} source={{uri:(item.imagem)}} />
+                <Image style={styles.itemImage} source={item.imagem} />
+                {/*<Image style={styles.itemImage} source={{uri:(item.imagem)}} />*/}
             </View>
 
             <View style={styles.colum2}>
-                <Text style={styles.nomeItem}>{item.titulo} • {item.descricao}</Text>
-               
-                <Text style={[styles.title2, { color:  '#FF9431' }]}>R$ {(getProductQuantity(item.id)*item.preco).toFixed(2)}</Text>
+                <Text style={styles.nomeItem}>{item.titulo}</Text>   
+                <Text style={[styles.title2, { color:  '#FF9431' }]}>{formatarMoeda(getProductQuantity(item.id)*item.preco)}</Text>
             </View>
 
             <View style={styles.line4 }>
@@ -77,11 +69,10 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-end',
         justifyContent: 'center',
-        marginLeft:30
     },
     itemImage: {
-        width: 90,
-        height: 90,
+        width: 60,
+        height: 60,
         borderRadius: 7,
         marginVertical: 10,
         marginRight: 7,
@@ -95,7 +86,7 @@ const styles = StyleSheet.create({
     },
     nomeItem: {
         color: '#0D0D0D',
-        fontSize: 15,
+        fontSize: 13,
         fontWeight: '600',
     },
     descricao: {

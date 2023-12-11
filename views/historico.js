@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import axios from 'axios';
 import Footer from './component/footer';
 import Pedido from './component/pedido';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 
 export default function Historico({ navigation }) {
 
     const [lista, setLista] = useState([]);
     const userId = parseInt(localStorage.getItem('id'));
+
     useEffect(() => {
         carregarLista();
     }, [])
  
     function carregarLista() {
- 
-        axios.get(`http://localhost:8080/api/pedido/porcliente/${userId+1}`)
+        axios.get(`http://localhost:8080/api/pedido/porcliente/${userId + 1}`)
         .then((response) => {
             setLista(response.data)
             console.log(response.data)

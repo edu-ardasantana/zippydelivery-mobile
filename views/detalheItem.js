@@ -1,12 +1,11 @@
+import { useMyContext } from './myContext';
+import { Button } from 'react-native-elements';
 import React, { useState, useEffect } from 'react';
 import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { Button } from 'react-native-elements';
-import { useMyContext } from './myContext';
 
 export default function DetalheItem({ route, navigation }) {
   
   const { produto, origin } = route.params;
-  console.log(produto, origin)
   const { addToCart, delToCart, cart } = useMyContext();
   const [selectedQuantity, _setSelectedQuantity] = useState(1);  
   
@@ -19,25 +18,15 @@ export default function DetalheItem({ route, navigation }) {
     addToCart({...produto, quantity: 1 });
   }, [])
 
-  // function incrementQuantity() {
-  //   setQuantity(quantity + 1);
-  // }
-
-  // function decrementQuantity() {
-  //   if (quantity > 0) {
-  //     setQuantity(quantity - 1);
-  //   }
-  // }
-
-  // function formatarMoeda(dataParam) {
-  //   return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
-  // }
+  function formatarMoeda(dataParam) {
+    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+  }
   
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={{ uri: produto.imagem }} /*produto.imagem*/
+          source={produto.imagem}
           style={styles.backgroundImage}
         />
         <View style={styles.headerContent}>
@@ -52,7 +41,7 @@ export default function DetalheItem({ route, navigation }) {
         <View style={styles.bodyContent1}>
           <Text style={[styles.title1, { marginTop: 30 }]}>{produto.titulo}</Text>
           <Text style={styles.descricao}>{produto.descricao} • 
-            <Text style={[styles.title2, { color: '#FF9431' }]}> R$ {produto.preco.toFixed(2)}</Text>
+            <Text style={[styles.title2, { color: '#FF9431' }]}> {formatarMoeda(produto.preco)}</Text>
           </Text>
         </View>
 
@@ -61,7 +50,7 @@ export default function DetalheItem({ route, navigation }) {
             <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} /> {/* produto.empresa.imgPerfil*/}
             <Text style={styles.title3}>{produto.categoria.empresa.nome}</Text>
           </View>
-          <Text style={styles.text}>Tempo de entrega: {produto.categoria.empresa.tempoEntrega} min • {produto.categoria.descricao} • <Text style={{ color: '#FF9431' }}><Text style={styles.text}>Frete:</Text>R$ {produto.categoria.empresa.taxaFrete.toFixed(2)}</Text></Text>
+          <Text style={styles.text}>Tempo de entrega: {produto.categoria.empresa.tempoEntrega} min • {produto.categoria.descricao} • <Text style={{ color: '#FF9431' }}><Text style={styles.text}>Frete:</Text>{formatarMoeda(produto.categoria.empresa.taxaFrete)}</Text></Text>
         </View>
         <View style={styles.divider}></View>
 
@@ -88,7 +77,7 @@ export default function DetalheItem({ route, navigation }) {
           </TouchableOpacity>
           <Button
             style={styles.buttonContainer}
-            title={`Adicionar R$ ${(getProductQuantity(produto.id)*produto.preco).toFixed(2)}`}
+            title={`Adicionar ${formatarMoeda((getProductQuantity(produto.id)*produto.preco))}`}
             buttonStyle={styles.addButton}
             titleStyle={styles.addButtonTitle}
             onPress={() => navigation.navigate('Sacola')}
