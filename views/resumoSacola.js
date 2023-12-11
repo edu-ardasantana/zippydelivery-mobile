@@ -118,7 +118,7 @@ useEffect(() => {
     }
     ).then(function (response) {
       console.log("Pedido realizado com sucesso!")
-      navigation.navigate('PedidoConfirmado', response.data.id)
+      navigation.navigate('ConfirmaPedido', response.data.id)
     })
       .catch(function (error) {});
   }
@@ -226,7 +226,7 @@ useEffect(() => {
 
       
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={styles.subTitleF}>Forma de pagamento</Text>
+        <Text style={styles.subTitle}>Forma de pagamento</Text>
         <View>
           <Picker
             style={styles.input}

@@ -9,8 +9,7 @@ import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } fr
 export default function FormEndereco({ navigation }) {
 
     const { origin }  = route.params;
-    const navigation = useNavigation();
-    const id = parseInt(localStorage.getItem('id'));
+    const userId = parseInt(localStorage.getItem('id'));
   
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
@@ -24,7 +23,7 @@ export default function FormEndereco({ navigation }) {
     const local = localStorage.getItem("var");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+        axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
             .then(function (response) {
                 const data = response.data;
                 setLogradouro(data.logradouro);

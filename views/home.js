@@ -30,7 +30,7 @@ export default function Home({ navigation }) {
   }, [])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);
