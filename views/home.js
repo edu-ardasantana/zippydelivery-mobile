@@ -62,7 +62,7 @@ export default function Home({ navigation }) {
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={[styles.carousel, { marginLeft: 17 }]}>
           {[1, 2].map((index) =>
             <View key={index} style={styles.banner}>
-              <Image style={styles.anuncioImage} source={require(`/views/img/banner${index}.png`)} />
+              {/* <Image style={styles.anuncioImage} source={require(`/views/img/banner${index}.png`)} /> */}
             </View>
           )}
         </ScrollView>

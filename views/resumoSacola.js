@@ -118,7 +118,7 @@ export default function ResumoSacola({ navigation }) {
     }
     ).then(function (response) {
       console.log("Pedido realizado com sucesso!")
-      navigation.navigate('PedidoConfirmado', response.data.id)
+      navigation.navigate('ConfirmaPedido', response.data.id)
     })
       .catch(function (error) {});
   }
