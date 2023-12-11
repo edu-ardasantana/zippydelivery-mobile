@@ -226,7 +226,7 @@ useEffect(() => {
 
       
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={styles.subTitleF}>Forma de pagamento</Text>
+        <Text style={styles.subTitle}>Forma de pagamento</Text>
         <View>
           <Picker
             style={styles.input}
