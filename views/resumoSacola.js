@@ -5,6 +5,7 @@ import { Button } from "react-native-elements";
 import { useIsFocused } from '@react-navigation/native';
 import { useMyContext } from './myContext';
 
+import {WebView} from 'react-native-web-webview'
 
 export default function ResumoSacola({ navigation }) {
   
@@ -32,6 +33,8 @@ export default function ResumoSacola({ navigation }) {
   const [getEndereco, setEndereco] = useState([]);
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [url, setUrl] = useState('');
+  const [go, setGo] = useState(false);
 
 
   useEffect(() => {
@@ -141,7 +144,7 @@ export default function ResumoSacola({ navigation }) {
       "items": itensM
       // [
       //   {
-      //     "title": "Dummy Title",
+      //     "title": "Dummy Title" ,
       //     "description": "Dummy description",
       //     "category_id": "car_electronics",
       //     "quantity": 2,
@@ -150,6 +153,8 @@ export default function ResumoSacola({ navigation }) {
       //   }
       // ]
     }, {headers: headers}).then( function (response) {
+      setUrl(response.data.init_point)
+      setGo(true)
       console.log(response.data)
     })
   }
@@ -173,19 +178,30 @@ export default function ResumoSacola({ navigation }) {
       numeroEndereco: '12',
       itens: montaitens(cart)
     }
-    ) .then(function (response) {
- console.log("ok ok houve ok")
- navigation.navigate('ConfirmaPedido')
+    ).then(function (response) {
+      console.log("ok ok houve ok")
+      mercadoPago(cart)
+    //  navigation.navigate('ConfirmaPedido')
   })
   .catch(function (error) {
-     
+     console.log(error)
   });
 
   }
-
-
   return (
-    <View style={styles.container}>
+
+    <View style={styles.container} >
+
+
+{ go == true ?
+      <WebView
+        source={{ uri: url }}
+      style={{ flex: 1, width: '100%', height: '100%' }}
+           />
+        :
+        ''
+}
+
       <View style={styles.headerContent}>
         <TouchableOpacity
           onPress={() => navigation.navigate("Sacola")}
@@ -313,7 +329,7 @@ export default function ResumoSacola({ navigation }) {
         <Button
           buttonStyle={styles.button}
           title="Fazer pedido"
-          onPress={() => mercadoPago(cart)}
+          onPress={() => fazerPedido(cart)}
         />
       </View>
     </View>

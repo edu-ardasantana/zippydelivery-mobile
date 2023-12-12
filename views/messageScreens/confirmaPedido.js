@@ -28,7 +28,7 @@ export default function ConfirmaPedido({ navigation }) {
 
             {pedidoExiste ? (
                 <View style={styles.body}>
-                    <Image style={styles.iconMessage} source={require('/views/img/successIcon.png')} />
+                    <Image style={styles.iconMessage} source={require('../../views/img/successIcon.png')} />
                     <Text style={styles.title1}>Pedido realizado!</Text>
                     <Text style={styles.title2}>Você pode voltar para a tela principal</Text>
                     <TouchableOpacity onPress={handleCancelarPedido}>
@@ -37,7 +37,7 @@ export default function ConfirmaPedido({ navigation }) {
                 </View>
             ) : (
                 <View style={styles.body}>
-                    <Image style={styles.iconMessage} source={require('/views/img/successIcon.png')} />
+                    <Image style={styles.iconMessage} source={require('../../views/img/successIcon.png')} />
                     <Text style={styles.title1}>Pedido cancelado!</Text>
                     <Text style={styles.title2}>Você pode voltar para a tela principal</Text>
                 </View>

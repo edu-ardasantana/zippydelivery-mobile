@@ -124,7 +124,7 @@ export default function Sacola({ navigation }) {
             ))} */}
             {cart.length === 0 && (
                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center' }}>
-                    <Image style={{ height: 200, width: 200, alignSelf: 'center' }} source={require('/views/img/emptyCar.png')}></Image>
+                    <Image style={{ height: 200, width: 200, alignSelf: 'center' }} source={require('../views/img/emptyCar.png')}></Image>
                     <Text style={{ padding: 10, textAlign: 'center', fontWeight: 'bold' }}>O seu carrinho está vazio!</Text>
                 </View>)}
             {/*<Text style={{flex:1, justifyContent:'center', textAlign:'center', textAlignVertical:'center'}}>O carrinho está vazio!</Text>*/}

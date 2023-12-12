@@ -37,7 +37,7 @@ export default function DetalhePedido({ route, navigation }) {
                 pedido.itensPedido.map((item, index) => (
                     <View key={index} style={styles.item}>
                     {/* Use a tag <Image /> para exibir uma imagem */}
-                    <Image style={styles.itemImage} source={require('/views/img/item.png')} />
+                    <Image style={styles.itemImage} source={require('../views/img/item.png')} />
 
                     <View style={styles.resumoPedido}>
                         {/* Exiba as informações do pedido */}

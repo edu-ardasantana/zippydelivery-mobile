@@ -5,6 +5,7 @@ import Footer from './component/footer';
 import Loja from './component/loja';
 import { useIsFocused } from '@react-navigation/native';
 
+
 export default function Home({ route, navigation }) {
 
   localStorage.setItem("var", "home");
@@ -67,7 +68,7 @@ export default function Home({ route, navigation }) {
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={[styles.carousel, { marginLeft: 17 }]}>
           {[1, 2].map((index) =>
             <View key={index} style={styles.banner}>
-              <Image style={styles.anuncioImage} source={require(`/views/img/banner${index}.png`)} />
+              <Image style={styles.anuncioImage} source={require(`../views/img/banner${index}.png`)} />
             </View>
           )}
         </ScrollView>

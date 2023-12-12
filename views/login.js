@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'reac
 import { Button } from 'react-native-elements';
 import FlashMessage, { showMessage } from "react-native-flash-message";
 
-    export default function Login({ navigation }) {
+export default function Login({ navigation }) {
 
     const [getEmail, setEmail] = useState('');
     const [getSenha, setSenha] = useState('');
@@ -34,7 +34,8 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
     return (
         <View style={styles.container}>
             <View style={{ alignItems: 'center' }}>
-                <Image style={styles.logo} source={require('/views/img/LogoNovo.png')} />
+                
+                <Image style={styles.logo} source={require('../views/img/LogoNovo.png')} />
                 <View>
                     <Text style={styles.label}>Email</Text>
                     <TextInput
@@ -72,7 +73,7 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
 
             <View style={{ alignItems: 'center' }}>
                 <TouchableOpacity style={styles.googleSignInButton}>
-                    <Image style={styles.googleIcon} source={require('/views/img/simbolo-do-google.png')} />
+                    <Image style={styles.googleIcon} source={require('../views/img/simbolo-do-google.png')} />
                     <Text style={styles.googleButtonText}>Entre com o Google</Text>
                 </TouchableOpacity>
                 <FlashMessage position="top" />
