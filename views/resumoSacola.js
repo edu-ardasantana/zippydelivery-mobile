@@ -10,7 +10,6 @@ export default function ResumoSacola({ navigation }) {
 
   const userId = parseInt(localStorage.getItem("id"), 10);
   const idEmpresa = window.localStorage.getItem("idEmpresa");
-
   const { cart, setCart } = useMyContext();
 
   const calcularTotalCompras = (carrinho) => {
@@ -30,9 +29,10 @@ export default function ResumoSacola({ navigation }) {
   const [getEndereco, setEndereco] = useState([]);
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [produto, setProduto] = useState();
 
-
-  useEffect(() => {
+  
+useEffect(() => {
     axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
       .then(function (response) {
         setEndereco(response.data)
@@ -77,7 +77,7 @@ export default function ResumoSacola({ navigation }) {
     });
     return listaItens;
   }
-
+  
   function formatarDataHora(data) {
     const ano = data.getFullYear();
     const mes = String(data.getMonth() + 1).padStart(2, '0');
@@ -91,11 +91,11 @@ export default function ResumoSacola({ navigation }) {
 
   const agora = new Date();
   const dataHoraFormatada = formatarDataHora(agora);
-
+  
   function formatarMoeda(dataParam) {
     return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
   }
-
+  
   function fazerPedido(cart) {
     axios.post('http://localhost:8080/api/pedido', {
       id_cliente: userId + 1,
@@ -118,11 +118,54 @@ export default function ResumoSacola({ navigation }) {
     }
     ).then(function (response) {
       console.log("Pedido realizado com sucesso!")
-      navigation.navigate('PedidoConfirmado', response.data.id)
+      navigation.navigate('ConfirmaPedido', response.data.id)
     })
       .catch(function (error) {});
   }
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer APP_USR-1980238996971813-112320-8d04c96e13a81ac5d6c8e1a31397f802-1561790253'
+  }
+  
+  function mercadoPago(cart){
+    const itensC = montaitens(cart)
+    const itensM = []
+    
+    itensC.forEach( e => {
+      axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( async function (response) {
+        await setProduto(response.data);
+         console.log(produto)
+      })
 
+      let item = {
+        title: produto.titulo,
+        description: produto.descricao,
+        category_id: produto.categoria.descricao,
+        quantity: e.qtdProduto,
+        currency_id: "BRL",
+        unit_price: e.valorUnitario
+      }
+      itensM.push(item)
+    })
+
+    axios.post('https://api.mercadopago.com/checkout/preferences',
+    {
+      "items": itensM
+      // [
+      //   {
+      //     "title": "Dummy Title",
+      //     "description": "Dummy description",
+      //     "category_id": "car_electronics",
+      //     "quantity": 2,
+      //     "currency_id": "BRL",
+      //     "unit_price": 1000
+      //   }
+      // ]
+    }, {headers: headers}).then( function (response) {
+      console.log(response.data)
+    })
+  }
 
   return (
     <View style={styles.container}>
@@ -183,7 +226,7 @@ export default function ResumoSacola({ navigation }) {
 
       
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={styles.subTitleF}>Forma de pagamento</Text>
+        <Text style={styles.subTitle}>Forma de pagamento</Text>
         <View>
           <Picker
             style={styles.input}
@@ -238,7 +281,13 @@ export default function ResumoSacola({ navigation }) {
             <Text>Alterar dados</Text>
           </TouchableOpacity>
         </View>
-        <Button buttonStyle={styles.button} title="Fazer pedido" onPress={() => fazerPedido(cart)}/>
+        
+        <Button
+          buttonStyle={styles.button}
+          title="Fazer pedido"
+          onPress={() => mercadoPago(cart)}
+          //onPress={() => fazerPedido(cart)}
+        />
       </View>
     </View>
   );
