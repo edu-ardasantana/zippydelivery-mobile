@@ -1,5 +1,5 @@
-import { type } from 'os';
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 interface LojaProps  {
@@ -11,11 +11,6 @@ interface LojaProps  {
 }
 
 export default function Loja(props: LojaProps) {
-    const tempoMin = 40;
-    const tempoMax = 50;
-    const categoria = 'Bebidas';
-    const frete = formatarMoeda(6.99);
-
 
     function formatarMoeda(dataParam) {
         return dataParam
@@ -25,21 +20,16 @@ export default function Loja(props: LojaProps) {
 
     return (
         <View style={styles.slide}>
-
             <View style={styles.colum1}>
                 <Image style={styles.lojaImage} source={{uri:props.imgPerfil}} />
             </View>
-
             <View style={styles.colum2}>
                 <Text style={styles.nomeItem}>{props.nome}</Text>
-
                 <Text style={styles.text}>{props.tempoEntrega}-{props.tempoEntrega + 10} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
-
             </View>
-            
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     slide: {
@@ -47,7 +37,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         flexDirection: 'row',
         borderBottomWidth: 1,
-        borderBottomColor: '#BBB',
+        borderBottomColor: '#f3f3f3',
         justifyContent: 'space-between',
         marginVertical: 20,
         paddingHorizontal: 5,
@@ -70,9 +60,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-end',
     },
-    iconWrapper: {
-        padding: 10,
-    },
     icon: {
         width: 20,
         height: 20,
@@ -84,8 +71,8 @@ const styles = StyleSheet.create({
         fontWeight: '400',
     },
     lojaImage: {
-        width: 70,
-        height: 70,
+        width: 60,
+        height: 60,
         borderRadius: 50,
         marginVertical: 10,
         marginRight: 7,
