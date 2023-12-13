@@ -118,7 +118,7 @@ useEffect(() => {
     }
     ).then(function (response) {
       console.log("Pedido realizado com sucesso!")
-      navigation.navigate('ConfirmaPedido', response.data.id)
+      navigation.navigate('PedidoConfirmado', response.data.id)
     })
       .catch(function (error) {});
   }
@@ -285,8 +285,8 @@ useEffect(() => {
         <Button
           buttonStyle={styles.button}
           title="Fazer pedido"
-          onPress={() => mercadoPago(cart)}
-          //onPress={() => fazerPedido(cart)}
+          //onPress={() => mercadoPago(cart)}
+          onPress={() => fazerPedido(cart)}
         />
       </View>
     </View>
