@@ -22,7 +22,7 @@ export default function Sacola({ navigation }) {
     const [cupomInfo, setCupomInfo] = useState(null);
 
     const { cart, setCart } = useMyContext();
-
+    const agora = new Date();
     const limparSacola = () => {
         setCart([]);
     };
@@ -31,11 +31,32 @@ export default function Sacola({ navigation }) {
         axios.get('http://localhost:8080/api/cupom/codigo/' + getCupom)
             .then(function (response) {
                 if (response.data !== null && response.data != []) {
-                    setCupomInfo(response.data);
+                    if (response.data.fimVigencia[0] > agora.getFullYear()) 
+                    {
+                        setCupomInfo(response.data);
+                    }
+                    else if( response.data.fimVigencia[0] == agora.getFullYear() && response.data.fimVigencia[1] > agora.getMonth()+1)
+                    {
+                        setCupomInfo(response.data);
+                    }
+                    else if(response.data.fimVigencia[0] == agora.getFullYear() 
+                            && response.data.fimVigencia[1] == agora.getMonth()+1 
+                            && response.data.fimVigencia[2] >=  agora.getUTCDate())
+                    {
+                        setCupomInfo(response.data);
+                    }
+
+                    else{
+                        console.log("Cupom inválido ou código inexistente.");
+                        setCupomInfo(null);
+                    }
+
                     console.log("Percentual de Desconto:", response.data.percentualDesconto);
                 }
                 else {
                     console.log("Cupom inválido ou código inexistente.");
+                    setCupomInfo(null);
+
                 }
             })
             .catch(function (error) {
@@ -79,9 +100,11 @@ export default function Sacola({ navigation }) {
         </View>
     )
 
+    var desconto = 0
     const cartTotal = cart.reduce((total, cartItem) => {
         const itemPrice = cartItem.preco * cartItem.quantity;
-        return total + itemPrice;
+        desconto = cupomInfo === null ? 1 : 1 - cupomInfo.percentualDesconto / 100
+        return (total + itemPrice) * desconto;
     }, 0);
 
     function formatarMoeda(dataParam) {
@@ -171,8 +194,7 @@ export default function Sacola({ navigation }) {
                                 <View style={{ flexDirection: "column" }}>
                                     <Text style={styles.preco}>
                                         {formatarMoeda(
-                                            (cartTotal * (1 - cupomInfo.percentualDesconto / 100) +
-                                                cart[0].categoria.empresa.taxaFrete)
+                                            (cartTotal + cart[0].categoria.empresa.taxaFrete)
                                         )}
                                     </Text>
                                     <Text style={styles.sobreCupom}>
@@ -199,7 +221,7 @@ export default function Sacola({ navigation }) {
                 <Button
                     buttonStyle={styles.button}
                     title={buttonTitle}
-                    onPress={() => navigation.navigate(buttonAction)}
+                    onPress={() => navigation.navigate(buttonAction, { cupomInfo })}
                     disabled={enderecoCompleto === null && cart.length > 0}
                 />
             </View>

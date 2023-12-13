@@ -6,12 +6,13 @@ import { useIsFocused } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
 
 
-export default function ResumoSacola({ navigation }) {
+export default function ResumoSacola({ navigation, route }) {
 
+  const { cupomInfo } = route.params
+  const valorDesconto =  cupomInfo === null ? 0 : cupomInfo.percentualDesconto/100;
   const userId = parseInt(localStorage.getItem("id"), 10);
   const idEmpresa = window.localStorage.getItem("idEmpresa");
   const { cart, setCart } = useMyContext();
-
   const calcularTotalCompras = (carrinho) => {
     let total = 0;
     carrinho.forEach((item) => {
@@ -164,7 +165,17 @@ useEffect(() => {
       // ]
     }, {headers: headers}).then( function (response) {
       console.log(response.data)
-    })
+    }).then(  
+      axios.put('http://localhost:8080/api/cupom/' + cupomInfo.id , {
+        codigo: "222B22",
+        percentualDesconto: cupomInfo.percentualDesconto,
+        valorDesconto: 11,
+        inicioVigencia: cupomInfo.inicioVigencia,
+        fimVigencia: cupomInfo.fimVigencia,
+        valorMinimoPedidoPermitido: cupomInfo.valorMinimoPedidoPermitido,
+        quantidadeMaximaUso: cupomInfo.quantidadeMaximaUso-1
+      })
+    )
   }
 
   return (
@@ -195,7 +206,11 @@ useEffect(() => {
       <View style={styles.resumo}>
         <Text>Subtotal</Text> <Text>{formatarMoeda(valorTotal)}</Text>
       </View>
-
+      {cupomInfo !== null ? (
+      <View style={styles.resumo}>
+        <Text >Cupom de desconto</Text> <Text style={{color:"#39cd39"}}>{formatarMoeda(valorTotal*valorDesconto)}</Text>
+      </View>
+      ):(null)}
       <View style={styles.resumo}>
         <Text>Taxa de entrega</Text>
         <Text style={{ color: `${color}` }}>
@@ -215,7 +230,7 @@ useEffect(() => {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>{formatarMoeda((valorTotal + taxaFrete))}</strong>
+          <strong>{formatarMoeda((valorTotal*(1-valorDesconto) + taxaFrete))}</strong>
         </Text>
       </View>
       <br />
