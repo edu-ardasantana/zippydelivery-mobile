@@ -11,7 +11,6 @@ export default function ResumoSacola({ navigation }) {
   
   const id = window.localStorage.getItem("id");  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
-
   const { cart, setCart } = useMyContext();
 
   const calcularTotalCompras = (carrinho) => {
@@ -35,10 +34,11 @@ export default function ResumoSacola({ navigation }) {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [url, setUrl] = useState('');
   const [go, setGo] = useState(false);
+  const [produto, setProduto] = useState();
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/` + id)
+    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -184,7 +184,7 @@ export default function ResumoSacola({ navigation }) {
     })
   }
 
-  function fazerPedido(cart){
+  function fazerPedido(cart) {
     axios.post('http://localhost:8080/api/pedido', {
       id_cliente: Number(id)+1,
       id_empresa: idEmpresa,
@@ -214,6 +214,8 @@ export default function ResumoSacola({ navigation }) {
   });
 
   }
+
+
   return (
 
     <View style={styles.container} >
@@ -284,9 +286,9 @@ export default function ResumoSacola({ navigation }) {
         <View style={styles.dividerLine} />
       </View>
 
-      <Text style={styles.subTitle}>Escolha a forma de pagamento</Text>
-      <View style={{ alignItems: 'center' }}>
-
+      
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.subTitleF}>Forma de pagamento</Text>
         <View>
           <Picker
             style={styles.input}
@@ -356,7 +358,8 @@ export default function ResumoSacola({ navigation }) {
         <Button
           buttonStyle={styles.button}
           title="Fazer pedido"
-          onPress={() => fazerPedido(cart)}
+          onPress={() => mercadoPago(cart)}
+          //onPress={() => fazerPedido(cart)}
         />
       </View>
     </View>

@@ -14,10 +14,8 @@ export default function Sacola({ navigation }) {
     const [buttonTitle, setButtonTitle] = useState('Continuar');
     const [buttonAction, setButtonAction] = useState('ResumoSacola');
     const [getEndereco, setEndereco] = useState([]);
-
+    const userId = parseInt(localStorage.getItem('id'));
     const isFocused = useIsFocused();
-
-    const id = window.localStorage.getItem("id");
 
     const { cart, setCart } = useMyContext();
 
@@ -27,7 +25,7 @@ export default function Sacola({ navigation }) {
 
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
+        axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
             .then(function (response) {
                 setEndereco(response.data)
 

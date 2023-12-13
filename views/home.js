@@ -10,13 +10,15 @@ export default function Home({ route, navigation }) {
 
   localStorage.setItem("var", "home");
 
-  const id = window.localStorage.getItem("id");
+  const userId = parseInt(localStorage.getItem('id'));
   const isFocused = useIsFocused();
 
   const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
   const [empresas, setEmpresas] = useState([]);
+  const [empresasFiltradas, setEmpresasFiltradas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/categoriaempresa')
@@ -26,7 +28,7 @@ export default function Home({ route, navigation }) {
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
-      .then(function (response) { return setEmpresas(...empresas, response.data); })
+      .then(function (response) { return setEmpresas(response.data); })
       .catch(function (error) { console.log(error); });
   }, [])
 
@@ -42,9 +44,17 @@ export default function Home({ route, navigation }) {
       });
   }, [isFocused])
 
-  function filtarEmpresas(){}
-
   let endereco = cidade == null ? null : `${cidade}, ${estado}`;
+
+  const handleSearch = () => {
+    const filteredEmpresas = searchText === ''
+      ? empresas
+      : empresas.filter(empresa =>
+          empresa.nome.toLowerCase().includes(searchText.toLowerCase())
+        );
+  
+    setEmpresasFiltradas(filteredEmpresas);
+  };
 
   return (
     <View style={styles.container}>
@@ -69,8 +79,12 @@ export default function Home({ route, navigation }) {
 
         <View style={styles.containerSearch}>
           <View style={styles.search}>
-            <TextInput style={styles.input} placeholder="Busque por pratos ou ingredientes" />
-            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <TextInput
+              style={styles.input}
+              placeholder="Busque lojas próximas"
+              onChangeText={text => setSearchText(text)}
+              value={searchText} />
+            <TouchableOpacity onPress={handleSearch}>
               <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg', }} />
             </TouchableOpacity>
           </View>
@@ -78,19 +92,28 @@ export default function Home({ route, navigation }) {
 
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
           {categoriasEmpresas.map((c, index) =>
-            <TouchableOpacity style={styles.etiqueta} onPress={filtarEmpresas}>
+            <TouchableOpacity style={styles.etiqueta}>
               <Text style={styles.textoEtiqueta}>{c.descricao}</Text>
             </TouchableOpacity>
           )}
         </ScrollView>
 
         <Text style={styles.title2}>Lojas</Text>
-        {empresas.map((empresa, index) => (
-          <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
-          </TouchableOpacity>
-        ))}
+        {empresasFiltradas.length !== 0 ? (
+          empresasFiltradas.map((empresa, index) => (
+            <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+              <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
+            </TouchableOpacity>
+          ))
+        ) : (
+          empresas.map((empresa, index) => (
+            <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+              <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
+            </TouchableOpacity>
+          ))
+        )}
       </ScrollView>
+
       <Footer />
     </View>
 
