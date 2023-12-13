@@ -129,7 +129,7 @@ export default function ResumoSacola({ navigation }) {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer APP_USR-1980238996971813-112320-8d04c96e13a81ac5d6c8e1a31397f802-1561790253'
   }
-  const [produto, setProduto] = useState();
+
 
   function mercadoPago(cart){
 
