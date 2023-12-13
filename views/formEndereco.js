@@ -8,7 +8,7 @@ import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } fr
 
 export default function FormEndereco({ navigation }) {
 
-    const { origin }  = route.params;
+    // const { origin }  = route.params;
     const userId = parseInt(localStorage.getItem('id'));
   
     const [logradouro, setLogradouro] = useState('');

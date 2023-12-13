@@ -1,39 +1,42 @@
 import axios from 'axios';
-import { useMyContext } from './myContext';
-import { Button } from "react-native-elements";
 import React, { useEffect, useState } from 'react';
-import { useIsFocused } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
-
+import { Button } from "react-native-elements";
+import { useIsFocused } from '@react-navigation/native';
+import { useMyContext } from './myContext';
 
 export default function ResumoSacola({ navigation }) {
-
-  const userId = parseInt(localStorage.getItem("id"), 10);
+  
+  const id = parseInt(window.localStorage.getItem("id"));  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
+
   const { cart, setCart } = useMyContext();
 
   const calcularTotalCompras = (carrinho) => {
     let total = 0;
+
     carrinho.forEach((item) => {
       const precoTotalItem = item.preco * item.quantity;
       total += precoTotalItem;
     });
+      
     return total;
   };
-
+    
   const valorTotal = calcularTotalCompras(cart)
-  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete)
+  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete.toFixed(2))
   const isFocused = useIsFocused();
-
+  
   const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
   const [getEndereco, setEndereco] = useState([]);
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [produto, setProduto] = useState();
+  const [url, setUrl] = useState('');
+  const [go, setGo] = useState(false);
 
-  
-useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/cliente/${id + 1}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -45,6 +48,7 @@ useEffect(() => {
   useEffect(() => {
     axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
       .then(function (response) {
+        console.log(response.data.formaPagamento)
         setFormasPagamento(response.data.formasPagamento)
         setTaxaFrete(response.data.taxaFrete)
       })
@@ -55,6 +59,7 @@ useEffect(() => {
 
   let enderecoCompleto;
   if (getEndereco.logradouro == null) {
+    console.log(getEndereco)
     enderecoCompleto = null;
   } else {
     enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
@@ -65,16 +70,21 @@ useEffect(() => {
     ...formasPagamento.map(formaPgmt => ({ label: formaPgmt, value: formaPgmt })),
   ];
 
-  function montaitens(cart) {
+  function montaitens(cart){
+
     var listaItens = []
+
     cart.forEach(element => {
+      
       let item = {
         id_produto: element.id,
         qtdProduto: element.quantity,
         valorUnitario: element.preco
       }
+
       listaItens.push(item)
     });
+
     return listaItens;
   }
   
@@ -85,59 +95,35 @@ useEffect(() => {
     const hora = String(data.getHours()).padStart(2, '0');
     const minuto = String(data.getMinutes()).padStart(2, '0');
     const segundo = String(data.getSeconds()).padStart(2, '0');
-
+  
     return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
   }
-
+  
   const agora = new Date();
   const dataHoraFormatada = formatarDataHora(agora);
   
-  function formatarMoeda(dataParam) {
-    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
-  }
-  
-  function fazerPedido(cart) {
-    axios.post('http://localhost:8080/api/pedido', {
-      id_cliente: userId + 1,
-      id_empresa: idEmpresa,
-      codigoCupom: "",
-      dataHora: dataHoraFormatada,
-      formaPagamento: selectedPayment,
-      statusPedido: "Em Processamento",
-      statusPagamento: "Aguardando Confirmação",
-      valorTotal: valorTotal,
-      taxaEntrega: taxaFrete,
-      logradouro: getEndereco.logradouro,
-      bairro: getEndereco.bairro,
-      cidade: getEndereco.cidade,
-      estado: getEndereco.estado,
-      cep: getEndereco.cep,
-      complemento: getEndereco.complemento,
-      numeroEndereco: "12",
-      itens: montaitens(cart)
-    }
-    ).then(function (response) {
-      console.log("Pedido realizado com sucesso!")
-      navigation.navigate('ConfirmaPedido', response.data.id)
-    })
-      .catch(function (error) {});
-  }
-  
+  console.log(dataHoraFormatada);
+
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer APP_USR-1980238996971813-112320-8d04c96e13a81ac5d6c8e1a31397f802-1561790253'
   }
-  
+  const [produto, setProduto] = useState();
+
   function mercadoPago(cart){
+
     const itensC = montaitens(cart)
+
     const itensM = []
-    
+
     itensC.forEach( e => {
+
       axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( async function (response) {
         await setProduto(response.data);
          console.log(produto)
       })
 
+      //console.log(produto)
       let item = {
         title: produto.titulo,
         description: produto.descricao,
@@ -146,15 +132,18 @@ useEffect(() => {
         currency_id: "BRL",
         unit_price: e.valorUnitario
       }
+
       itensM.push(item)
     })
+    
+    console.log(itensM);
 
     axios.post('https://api.mercadopago.com/checkout/preferences',
     {
       "items": itensM
       // [
       //   {
-      //     "title": "Dummy Title",
+      //     "title": "Dummy Title" ,
       //     "description": "Dummy description",
       //     "category_id": "car_electronics",
       //     "quantity": 2,
@@ -163,12 +152,55 @@ useEffect(() => {
       //   }
       // ]
     }, {headers: headers}).then( function (response) {
+      setUrl(response.data.init_point)
+      setGo(true)
       console.log(response.data)
     })
   }
 
+  function fazerPedido(cart){
+    axios.post('http://localhost:8080/api/pedido', {
+      id_cliente: Number(id)+1,
+      id_empresa: idEmpresa,
+      codigoCupom: null,
+      dataHora: dataHoraFormatada,
+      formaPagamento: selectedPayment,
+      statusPagamento: "Aguardando Confirmação",
+      statusPedido: "Em Processamento",
+      taxaEntrega: taxaFrete,
+      logradouro: getEndereco.logradouro,
+      bairro: getEndereco.bairro,
+      cidade: getEndereco.cidade,
+      estado: getEndereco.estado,
+      cep: getEndereco.cep,
+      complemento: getEndereco.complemento,
+      numeroEndereco: '12',
+      itens: montaitens(cart)
+    }
+    ).then(function (response) {
+      console.log("ok ok houve ok")
+      mercadoPago(cart)
+    //  navigation.navigate('ConfirmaPedido')
+  })
+  .catch(function (error) {
+     console.log(error)
+  });
+
+  }
   return (
-    <View style={styles.container}>
+
+    <View style={styles.container} >
+
+
+{ go === true ?
+      <webview
+        source={{ uri: url }}
+      style={{ flex: 1, width: '100%', height: '100%' }}
+           />
+        :
+        null
+}
+
       <View style={styles.headerContent}>
         <TouchableOpacity
           onPress={() => navigation.navigate("Sacola")}
@@ -193,7 +225,7 @@ useEffect(() => {
       <br />
 
       <View style={styles.resumo}>
-        <Text>Subtotal</Text> <Text>{formatarMoeda(valorTotal)}</Text>
+        <Text>Subtotal</Text> <Text>R$ {valorTotal.toFixed(2)}</Text>
       </View>
 
       <View style={styles.resumo}>
@@ -201,7 +233,7 @@ useEffect(() => {
         <Text style={{ color: `${color}` }}>
           {(() => {
             try {
-              return taxaFrete === 0.00 ? `${formatarMoeda(cart[0].categoria.empresa.taxaFrete)}` : ` ${formatarMoeda(cart[0].categoria.empresa.taxaFrete)}`;
+              return taxaFrete === 0.00 ? `${cart[0].categoria.empresa.taxaFrete.toFixed(2)}` : `R$ ${cart[0].categoria.empresa.taxaFrete.toFixed(2)}`;
             } catch (error) {
               console.error('Erro ao formatar taxaFrete:', error);
               return 'Erro de formatação';
@@ -215,7 +247,7 @@ useEffect(() => {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>{formatarMoeda((valorTotal + taxaFrete))}</strong>
+          <strong>R$ {parseFloat(valorTotal + parseFloat(taxaFrete)).toFixed(2)}</strong>
         </Text>
       </View>
       <br />
@@ -224,25 +256,25 @@ useEffect(() => {
         <View style={styles.dividerLine} />
       </View>
 
-      
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={styles.subTitle}>Forma de pagamento</Text>
+      <Text style={styles.subTitle}>Escolha a forma de pagamento</Text>
+      <View style={{ alignItems: 'center' }}>
+
         <View>
           <Picker
             style={styles.input}
-            mode="dropdown"
             selectedValue={selectedPayment}
             onValueChange={(itemValue, itemIndex) => setSelectedPayment(itemValue)}
           >
             {listaFormasPagamentos.map((formaPagamento) => (
               <Picker.Item
                 key={formaPagamento.value}
-                label={(formaPagamento.label.toLowerCase()).charAt(0).toUpperCase() + formaPagamento.label.slice(1)}
+                label={formaPagamento.label}
                 value={formaPagamento.value}
               />
             ))}
           </Picker>
         </View>
+
       </View>
 
       <View style={styles.dividerContainer}>
@@ -267,8 +299,16 @@ useEffect(() => {
       </View>
 
       <View style={styles.bloco}>
-        <Image style={styles.menuIcon} source={{ uri: "https://api.iconify.design/material-symbols:location-on-rounded.svg"}}/>
-        <Text style={styles.blocoText}>{enderecoCompleto}</Text>
+        <Image
+          style={styles.menuIcon}
+          source={{
+            uri: "https://api.iconify.design/material-symbols:location-on-rounded.svg",
+          }}
+        />
+
+        <Text style={styles.blocoText}>
+          {enderecoCompleto}
+        </Text>
       </View>
 
       <View style={styles.dividerContainer}>
@@ -277,16 +317,18 @@ useEffect(() => {
 
       <View style={styles.footerContainer}>
         <View style={styles.footer2}>
-          <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate("Sacola")}>
+          <TouchableOpacity
+            style={styles.footerLink}
+            onPress={() => navigation.navigate("Sacola")}
+          >
             <Text>Alterar dados</Text>
           </TouchableOpacity>
         </View>
-        
+
         <Button
           buttonStyle={styles.button}
           title="Fazer pedido"
-          onPress={() => mercadoPago(cart)}
-          //onPress={() => fazerPedido(cart)}
+          onPress={() => fazerPedido(cart)}
         />
       </View>
     </View>
@@ -328,14 +370,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   blocoText: {
-    fontSize: 12,
+    fontSize: 14,
   },
   subTitle: {
-    fontWeight: 500,
+    fontWeight: "bold",
     paddingTop: 20,
     paddingHorizontal: 20,
     fontSize: 15,
-  }, 
+  },
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -344,7 +386,7 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#F3F3F3",
+    backgroundColor: "#dbdbe7",
   },
   menuIcon: {
     width: 20,
@@ -424,14 +466,12 @@ const styles = StyleSheet.create({
     borderColor: "#FF9431",
   },
   input: {
-    width: 130,
+    width: 300,
     height: 40,
-    fontSize: 13,
     paddingHorizontal: 10,
+    backgroundColor: '#dbdbe749',
     marginVertical: 30,
-    color: "#4D585E",
-    borderColor: 'transparent',
-    borderWidth: 1,
-    borderBottomColor: "#FF9431"
+    borderRadius: 5,
+
   },
 });
