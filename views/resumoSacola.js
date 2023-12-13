@@ -5,7 +5,7 @@ import { Button } from "react-native-elements";
 import { useIsFocused } from '@react-navigation/native';
 import { useMyContext } from './myContext';
 
-import {WebView} from 'react-native-web-webview'
+//import {WebView} from 'react-native-web-webview'
 
 export default function ResumoSacola({ navigation }) {
   
@@ -112,18 +112,14 @@ export default function ResumoSacola({ navigation }) {
   const [produto, setProduto] = useState();
 
   function mercadoPago(cart){
-
     const itensC = montaitens(cart)
-
     const itensM = []
-
     itensC.forEach( e => {
 
       axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( async function (response) {
         await setProduto(response.data);
          console.log(produto)
       })
-
       //console.log(produto)
       let item = {
         title: produto.titulo,
@@ -133,7 +129,6 @@ export default function ResumoSacola({ navigation }) {
         currency_id: "BRL",
         unit_price: e.valorUnitario
       }
-
       itensM.push(item)
     })
     
@@ -194,10 +189,11 @@ export default function ResumoSacola({ navigation }) {
 
 
 { go == true ?
-      <WebView
-        source={{ uri: url }}
-      style={{ flex: 1, width: '100%', height: '100%' }}
-           />
+      // <WebView
+      //   source={{ uri: url }}
+      // style={{ flex: 1, width: '100%', height: '100%' }}
+      //      />
+      open(url)
         :
         ''
 }

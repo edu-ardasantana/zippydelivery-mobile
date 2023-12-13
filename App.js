@@ -19,14 +19,23 @@ import SemPedidosScreen from './views/messageScreens/semPedidos';
 import ResumoSacola from './views/resumoSacola';
 import DetalhePedido from './views/detalhePedido';
 import { MyProvider } from './views/myContext';
+import * as Linking from 'expo-linking';
+
+const prefix = Linking.createURL('/');
 
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const linking = {
+    prefixes: [prefix],
+  };
+
+
+  
   return (
     <MyProvider>
-      <NavigationContainer>
+      <NavigationContainer linking={linking} >
         <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />

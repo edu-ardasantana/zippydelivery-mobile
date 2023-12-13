@@ -5,7 +5,6 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
 import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native';
 
 export default function Login({ navigation }) {
-export default function Login({ navigation }) {
 
     const [getEmail, setEmail] = useState('');
     const [getSenha, setSenha] = useState('');
