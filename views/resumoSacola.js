@@ -1,8 +1,8 @@
+import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
+import { Image, Picker, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "react-native-elements";
-import { useIsFocused } from '@react-navigation/native';
 import { useMyContext } from './myContext';
 
 //import {WebView} from 'react-native-web-webview'
@@ -72,7 +72,6 @@ export default function ResumoSacola({ navigation }) {
   ];
 
   function montaitens(cart){
-
     var listaItens = []
 
     cart.forEach(element => {
@@ -87,6 +86,27 @@ export default function ResumoSacola({ navigation }) {
     });
 
     return listaItens;
+  }
+
+  function montaitensMercadoPago(cart){
+
+    var listaItensMercadoPago = []
+
+    cart.forEach(element => {
+      
+      let itemMercadoPago = {
+        title: element.titulo,
+        id: element.id,
+        quantity: element.quantity,
+        unit_price: element.preco,
+        currency_id: 'BRL'
+      }
+
+      listaItensMercadoPago.push(itemMercadoPago)
+
+    });
+
+    return listaItensMercadoPago;
   }
   
   function formatarDataHora(data) {
@@ -112,31 +132,41 @@ export default function ResumoSacola({ navigation }) {
   const [produto, setProduto] = useState();
 
   function mercadoPago(cart){
-    const itensC = montaitens(cart)
-    const itensM = []
-    itensC.forEach( e => {
 
-      axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( async function (response) {
-        await setProduto(response.data);
-         console.log(produto)
+    const itensM = []
+    /*itensC.forEach( e => {
+
+      axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( function (response) {
+        debugger
+        console.log(response)
+        console.log(e)
+        //await setProduto(response.data);
+        let item = {
+          title: response.data.titulo,
+          description: response.data.descricao,
+          category_id: response.data.categoria.descricao,
+          quantity: e.qtdProduto,
+          currency_id: "BRL",
+          unit_price: e.valorUnitario
+        }
+
+        itensM.push(item)
+       
       })
       //console.log(produto)
-      let item = {
-        title: produto.titulo,
-        description: produto.descricao,
-        category_id: produto.categoria.descricao,
-        quantity: e.qtdProduto,
-        currency_id: "BRL",
-        unit_price: e.valorUnitario
-      }
-      itensM.push(item)
+      
     })
+    */
     
-    console.log(itensM);
+    //console.log(itensM);
 
     axios.post('https://api.mercadopago.com/checkout/preferences',
     {
-      "items": itensM
+      "items": montaitensMercadoPago(cart),
+      "auto_return": "approved",
+      "back_urls": {
+        "success": "http://localhost:19006/PedidoConfirmado"
+      }
       // [
       //   {
       //     "title": "Dummy Title" ,
@@ -174,6 +204,7 @@ export default function ResumoSacola({ navigation }) {
       itens: montaitens(cart)
     }
     ).then(function (response) {
+      localStorage.setItem("idPedido", response.data.id)
       console.log("ok ok houve ok")
       mercadoPago(cart)
     //  navigation.navigate('ConfirmaPedido')
@@ -193,7 +224,7 @@ export default function ResumoSacola({ navigation }) {
       //   source={{ uri: url }}
       // style={{ flex: 1, width: '100%', height: '100%' }}
       //      />
-      open(url)
+      open(url, "_self")
         :
         ''
 }

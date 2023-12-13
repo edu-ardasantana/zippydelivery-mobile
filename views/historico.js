@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 export default function Historico({ navigation }) {
 
     const [lista, setLista] = useState([]);
-    const userId = parseInt(localStorage.getItem("id"), 10);
+    const userId = parseInt(localStorage.getItem("id"));
     useEffect(() => {
         carregarLista();
     }, [])

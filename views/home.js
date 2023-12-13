@@ -1,9 +1,9 @@
-import axios from 'axios';
-import Loja from './component/loja';
-import Footer from './component/footer';
-import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Footer from './component/footer';
+import Loja from './component/loja';
 
 
 export default function Home({ route, navigation }) {
@@ -31,7 +31,7 @@ export default function Home({ route, navigation }) {
   }, [])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);

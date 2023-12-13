@@ -71,7 +71,7 @@ export default function Login({ navigation }) {
 
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity style={styles.googleSignInButton}>
-                        <Image style={styles.googleIcon} source={require('/views/img/simbolo-do-google.png')} />
+                        <Image style={styles.googleIcon} source={require('../views/img/simbolo-do-google.png')} />
                         <Text style={styles.googleButtonText}>Entre com o Google</Text>
                     </TouchableOpacity>
                     <FlashMessage position="top" />

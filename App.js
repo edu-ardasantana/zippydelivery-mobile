@@ -30,12 +30,10 @@ export default function App() {
   const linking = {
     prefixes: [prefix],
   };
-
-
   
   return (
     <MyProvider>
-      <NavigationContainer linking={linking} >
+      <NavigationContainer linking={linking}>
         <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
