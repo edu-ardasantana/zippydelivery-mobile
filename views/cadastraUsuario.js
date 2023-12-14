@@ -45,7 +45,7 @@ export default function CadastraUsuario({ navigation }) {
 
                 <Image
                     style={styles.logo}
-                    source={require('/views/img/LogoNovo.png')}
+                    source={require('../views/img/LogoNovo.png')}
                 />
 
                 <View>
@@ -125,7 +125,7 @@ export default function CadastraUsuario({ navigation }) {
                 <TouchableOpacity style={styles.googleSignInButton}>
                     <Image
                         style={styles.googleIcon}
-                        source={require('/views/img/simbolo-do-google.png')}
+                        source={require('../views/img/simbolo-do-google.png')}
                     />
                     <Text style={styles.googleButtonText}>Entre com o Google</Text>
                 </TouchableOpacity>

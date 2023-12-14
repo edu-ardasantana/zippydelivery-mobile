@@ -8,6 +8,7 @@ const [cart, setCart] = useState([]);
 
 
 const addToCart = (product) => {
+    
     const existingProductIndex = cart.findIndex((item) => item.id === product.id);
     if (existingProductIndex !== -1) {
         const updatedCart = [...cart];
