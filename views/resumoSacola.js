@@ -1,17 +1,21 @@
+import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
+import { Image, Picker, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "react-native-elements";
-import { useIsFocused } from '@react-navigation/native';
 import { useMyContext } from './myContext';
 
-export default function ResumoSacola({ navigation }) {
+//import {WebView} from 'react-native-web-webview'
+
+export default function ResumoSacola({ navigation, route }) {
   
-  const id = parseInt(window.localStorage.getItem("id"));  
+  const { cupomInfo } = route.params
+  console.log(cupomInfo)
+  const valorDesconto =  cupomInfo === null ? 0 : cupomInfo.percentualDesconto/100;
+  const id = window.localStorage.getItem("id");  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
 
   const { cart, setCart } = useMyContext();
-
   const calcularTotalCompras = (carrinho) => {
     let total = 0;
 
@@ -24,7 +28,7 @@ export default function ResumoSacola({ navigation }) {
   };
     
   const valorTotal = calcularTotalCompras(cart)
-  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete.toFixed(2))
+  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : formatarMoeda(cart[0].categoria.empresa.taxaFrete))
   const isFocused = useIsFocused();
   
   const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
@@ -33,10 +37,11 @@ export default function ResumoSacola({ navigation }) {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [url, setUrl] = useState('');
   const [go, setGo] = useState(false);
+  const [produto, setProduto] = useState();
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/${id + 1}`)
+    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -71,7 +76,6 @@ export default function ResumoSacola({ navigation }) {
   ];
 
   function montaitens(cart){
-
     var listaItens = []
 
     cart.forEach(element => {
@@ -86,6 +90,27 @@ export default function ResumoSacola({ navigation }) {
     });
 
     return listaItens;
+  }
+
+  function montaitensMercadoPago(cart){
+
+    var listaItensMercadoPago = []
+
+    cart.forEach(element => {
+      
+      let itemMercadoPago = {
+        title: element.titulo,
+        id: element.id,
+        quantity: element.quantity,
+        unit_price: element.preco * ( 1 - cupomInfo.percentualDesconto / 100) ,
+        currency_id: 'BRL'
+      }
+
+      listaItensMercadoPago.push(itemMercadoPago)
+
+    });
+
+    return listaItensMercadoPago;
   }
   
   function formatarDataHora(data) {
@@ -108,39 +133,48 @@ export default function ResumoSacola({ navigation }) {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer APP_USR-1980238996971813-112320-8d04c96e13a81ac5d6c8e1a31397f802-1561790253'
   }
-  const [produto, setProduto] = useState();
+
 
   function mercadoPago(cart){
 
-    const itensC = montaitens(cart)
-
     const itensM = []
+    /*itensC.forEach( e => {
 
-    itensC.forEach( e => {
+      axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( function (response) {
+        debugger
+        console.log(response)
+        console.log(e)
+        //await setProduto(response.data);
+        let item = {
+          title: response.data.titulo,
+          description: response.data.descricao,
+          category_id: response.data.categoria.descricao,
+          quantity: e.qtdProduto,
+          currency_id: "BRL",
+          unit_price: e.valorUnitario
+        }
 
-      axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( async function (response) {
-        await setProduto(response.data);
-         console.log(produto)
+        itensM.push(item)
+       
       })
-
       //console.log(produto)
-      let item = {
-        title: produto.titulo,
-        description: produto.descricao,
-        category_id: produto.categoria.descricao,
-        quantity: e.qtdProduto,
-        currency_id: "BRL",
-        unit_price: e.valorUnitario
-      }
-
-      itensM.push(item)
+      
     })
+    */
     
-    console.log(itensM);
+    //console.log(itensM);
 
     axios.post('https://api.mercadopago.com/checkout/preferences',
     {
-      "items": itensM
+      "items": montaitensMercadoPago(cart),
+      "auto_return": "approved",
+      "back_urls": {
+        "success": "http://localhost:19006/PedidoConfirmado"
+      },
+    "shipments": {
+      "cost": cart[0].categoria.empresa.taxaFrete
+    }
+
       // [
       //   {
       //     "title": "Dummy Title" ,
@@ -158,47 +192,19 @@ export default function ResumoSacola({ navigation }) {
     })
   }
 
-  function fazerPedido(cart){
-    axios.post('http://localhost:8080/api/pedido', {
-      id_cliente: Number(id)+1,
-      id_empresa: idEmpresa,
-      codigoCupom: null,
-      dataHora: dataHoraFormatada,
-      formaPagamento: selectedPayment,
-      statusPagamento: "Aguardando Confirmação",
-      statusPedido: "Em Processamento",
-      taxaEntrega: taxaFrete,
-      logradouro: getEndereco.logradouro,
-      bairro: getEndereco.bairro,
-      cidade: getEndereco.cidade,
-      estado: getEndereco.estado,
-      cep: getEndereco.cep,
-      complemento: getEndereco.complemento,
-      numeroEndereco: '12',
-      itens: montaitens(cart)
-    }
-    ).then(function (response) {
-      console.log("ok ok houve ok")
-      mercadoPago(cart)
-    //  navigation.navigate('ConfirmaPedido')
-  })
-  .catch(function (error) {
-     console.log(error)
-  });
-
-  }
   return (
 
     <View style={styles.container} >
 
 
-{ go === true ?
-      <webview
-        source={{ uri: url }}
-      style={{ flex: 1, width: '100%', height: '100%' }}
-           />
+{ go == true ?
+      // <WebView
+      //   source={{ uri: url }}
+      // style={{ flex: 1, width: '100%', height: '100%' }}
+      //      />
+      open(url, "_self")
         :
-        null
+        ''
 }
 
       <View style={styles.headerContent}>
@@ -225,9 +231,13 @@ export default function ResumoSacola({ navigation }) {
       <br />
 
       <View style={styles.resumo}>
-        <Text>Subtotal</Text> <Text>R$ {valorTotal.toFixed(2)}</Text>
+        <Text>Subtotal</Text> <Text> {formatarMoeda(valorTotal)}</Text>
       </View>
-
+      {cupomInfo !== null ? (
+      <View style={styles.resumo}>
+        <Text >Cupom de desconto</Text> <Text style={{color:"#39cd39"}}>{formatarMoeda(valorTotal*valorDesconto)}</Text>
+      </View>
+      ):(null)}
       <View style={styles.resumo}>
         <Text>Taxa de entrega</Text>
         <Text style={{ color: `${color}` }}>
@@ -247,7 +257,7 @@ export default function ResumoSacola({ navigation }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>R$ {parseFloat(valorTotal + parseFloat(taxaFrete)).toFixed(2)}</strong>
+          <strong>{formatarMoeda((valorTotal*(1-valorDesconto) + parseFloat(taxaFrete)))}</strong>
         </Text>
       </View>
       <br />
@@ -256,9 +266,9 @@ export default function ResumoSacola({ navigation }) {
         <View style={styles.dividerLine} />
       </View>
 
-      <Text style={styles.subTitle}>Escolha a forma de pagamento</Text>
-      <View style={{ alignItems: 'center' }}>
-
+      
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.subTitleF}>Forma de pagamento</Text>
         <View>
           <Picker
             style={styles.input}
@@ -473,5 +483,5 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     borderRadius: 5,
 
-  },
+  }
 });

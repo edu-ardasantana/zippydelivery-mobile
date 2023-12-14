@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Item from './component/item';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef  } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
 export default function HomeLoja({ navigation, route }) {
@@ -8,12 +8,16 @@ export default function HomeLoja({ navigation, route }) {
   const [empresa, setEmpresa] = useState('');
   const [categorias, setCategorias] = useState([]);
   const [produtos, setProdutos] = useState([]);
+  const sectionRefs = useRef({});
+  const scrollViewRef = useRef(null);
+
 
   useEffect(() => {
     consultarEmpresa(route.params.id)
   }, [])
 
    localStorage.setItem('idEmpresa', route.params.id)
+
   
   async function consultarEmpresa(idEmpresa) {
     await axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
@@ -42,9 +46,16 @@ export default function HomeLoja({ navigation, route }) {
       });
   }, [])
 
+  const scrollToSection = (sectionId) => {
+    const sectionRef = sectionRefs.current[sectionId];
+    if (sectionRef && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: sectionRef.offsetTop, animated: true });
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView style={{ flex: 1 }} ref={scrollViewRef}>
         <View style={styles.header}>
           <Image source={empresa.imgCapa} style={styles.backgroundImage} />
           <View style={styles.headerContent}>
@@ -64,16 +75,18 @@ export default function HomeLoja({ navigation, route }) {
             <Text style={[styles.title1, { marginTop: 20 }]}>{empresa.nome}</Text>
           </View>
 
-          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
+          <ScrollView horizontal  showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
             {categorias.map((valor, index) =>
-              <TouchableOpacity style={styles.etiqueta}>
+              <TouchableOpacity style={styles.etiqueta}  onPress={() => {
+                scrollToSection(valor.descricao);
+              }}>
                 <Text style={styles.textoEtiqueta}>{valor.descricao}</Text>
               </TouchableOpacity>
             )}
           </ScrollView>
 
           {produtos.map((produtosCategoria, indexCategoria) => (
-            <View key={indexCategoria}>
+            <View key={indexCategoria} ref={(ref) => (sectionRefs.current[produtosCategoria[0].categoria.descricao] = ref)}>
                <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
               {produtosCategoria.map((produto, indexProduto) => (
                 <TouchableOpacity key={indexProduto} >
@@ -82,11 +95,14 @@ export default function HomeLoja({ navigation, route }) {
               ))}
             </View>
           ))}
+        
         </View>
       </ScrollView>
     </View>
   );
+
 }
+
 
 const styles = StyleSheet.create({
   container: {
