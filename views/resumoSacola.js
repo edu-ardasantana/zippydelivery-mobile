@@ -41,7 +41,7 @@ export default function ResumoSacola({ navigation, route }) {
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -123,6 +123,10 @@ export default function ResumoSacola({ navigation, route }) {
   
     return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
   }
+
+  function formatarMoeda(dataParam) {
+    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+}
   
   const agora = new Date();
   const dataHoraFormatada = formatarDataHora(agora);
@@ -243,7 +247,7 @@ export default function ResumoSacola({ navigation, route }) {
         <Text style={{ color: `${color}` }}>
           {(() => {
             try {
-              return taxaFrete === 0.00 ? `${cart[0].categoria.empresa.taxaFrete.toFixed(2)}` : `R$ ${cart[0].categoria.empresa.taxaFrete.toFixed(2)}`;
+              return taxaFrete === 0.00 ? cart[0].categoria.empresa.taxaFrete : formatarMoeda(taxaFrete);
             } catch (error) {
               console.error('Erro ao formatar taxaFrete:', error);
               return 'Erro de formatação';

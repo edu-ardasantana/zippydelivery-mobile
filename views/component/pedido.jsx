@@ -26,8 +26,13 @@ export default function Pedido({quantity, restaurantName, orderName, orderStatus
                 <View style={styles.infoEspecifica}>
                     <Text style={styles.title3}>{1} {orderName}</Text>
                     {
-                        resto === 1 ? (<Text style={[styles.title3, { color: '#4D585E' }]}>mais {resto} item</Text>) :
-                        (null)                 
+                        resto === 1 ? (
+                            <Text style={[styles.title3, { color: '#4D585E' }]}>mais {resto} item</Text>
+                        ) : (
+                            resto > 1 ? (
+                            <Text style={[styles.title3, { color: '#4D585E' }]}>mais {resto} itens</Text>
+                            ) : null
+                        )
                     }
                 </View>
             </View>
