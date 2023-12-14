@@ -10,6 +10,7 @@ import { useMyContext } from './myContext';
 export default function ResumoSacola({ navigation, route }) {
   
   const { cupomInfo } = route.params
+  console.log(cupomInfo)
   const valorDesconto =  cupomInfo === null ? 0 : cupomInfo.percentualDesconto/100;
   const id = window.localStorage.getItem("id");  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
@@ -26,7 +27,7 @@ export default function ResumoSacola({ navigation, route }) {
   };
     
   const valorTotal = calcularTotalCompras(cart)
-  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete.toFixed(2))
+  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : formatarMoeda(cart[0].categoria.empresa.taxaFrete))
   const isFocused = useIsFocused();
   
   const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
@@ -39,7 +40,7 @@ export default function ResumoSacola({ navigation, route }) {
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
+    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -99,7 +100,7 @@ export default function ResumoSacola({ navigation, route }) {
         title: element.titulo,
         id: element.id,
         quantity: element.quantity,
-        unit_price: element.preco,
+        unit_price: element.preco * ( 1 - cupomInfo.percentualDesconto / 100) ,
         currency_id: 'BRL'
       }
 
@@ -167,7 +168,11 @@ export default function ResumoSacola({ navigation, route }) {
       "auto_return": "approved",
       "back_urls": {
         "success": "http://localhost:19006/PedidoConfirmado"
-      }
+      },
+    "shipments": {
+      "cost": cart[0].categoria.empresa.taxaFrete
+    }
+
       // [
       //   {
       //     "title": "Dummy Title" ,
@@ -225,7 +230,9 @@ export default function ResumoSacola({ navigation, route }) {
   });
 
   }
-
+  function formatarMoeda(dataParam) {
+    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+}
 
   return (
 
@@ -266,7 +273,7 @@ export default function ResumoSacola({ navigation, route }) {
       <br />
 
       <View style={styles.resumo}>
-        <Text>Subtotal</Text> <Text>R$ {valorTotal.toFixed(2)}</Text>
+        <Text>Subtotal</Text> <Text> {formatarMoeda(valorTotal)}</Text>
       </View>
       {cupomInfo !== null ? (
       <View style={styles.resumo}>
@@ -276,14 +283,7 @@ export default function ResumoSacola({ navigation, route }) {
       <View style={styles.resumo}>
         <Text>Taxa de entrega</Text>
         <Text style={{ color: `${color}` }}>
-          {(() => {
-            try {
-              return taxaFrete === 0.00 ? `${cart[0].categoria.empresa.taxaFrete.toFixed(2)}` : `R$ ${cart[0].categoria.empresa.taxaFrete.toFixed(2)}`;
-            } catch (error) {
-              console.error('Erro ao formatar taxaFrete:', error);
-              return 'Erro de formatação';
-            }
-          })()}
+         {taxaFrete}
         </Text>
       </View>
 
@@ -292,7 +292,7 @@ export default function ResumoSacola({ navigation, route }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>{formatarMoeda((valorTotal*(1-valorDesconto) + taxaFrete))}</strong>
+          <strong>{formatarMoeda((valorTotal*(1-valorDesconto) + parseFloat(taxaFrete)))}</strong>
         </Text>
       </View>
       <br />
@@ -512,12 +512,14 @@ const styles = StyleSheet.create({
     borderColor: "#FF9431",
   },
   input: {
-    width: 300,
+    width: 130,
     height: 40,
+    fontSize: 13,
     paddingHorizontal: 10,
-    backgroundColor: '#dbdbe749',
     marginVertical: 30,
-    borderRadius: 5,
-
-  },
+    color: "#4D585E",
+    borderColor: 'transparent',
+    borderWidth: 1,
+    borderBottomColor: "#FF9431"
+  }
 });

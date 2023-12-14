@@ -17,6 +17,7 @@ export default function HomeLoja({ navigation, route }) {
   }, [])
 
    localStorage.setItem('idEmpresa', route.params.id)
+
   
   async function consultarEmpresa(idEmpresa) {
     await axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
