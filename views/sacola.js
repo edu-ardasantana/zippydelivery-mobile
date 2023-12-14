@@ -31,17 +31,18 @@ export default function Sacola({ navigation }) {
         axios.get('http://localhost:8080/api/cupom/codigo/' + getCupom)
             .then(function (response) {
                 if (response.data !== null && response.data != []) {
-                    if (response.data.fimVigencia[0] > agora.getFullYear()) 
+                    if (response.data.fimVigencia[0] > agora.getFullYear() && response.data.quantidadeMaximaUso > 0) 
                     {
                         setCupomInfo(response.data);
                     }
-                    else if( response.data.fimVigencia[0] == agora.getFullYear() && response.data.fimVigencia[1] > agora.getMonth()+1)
+                    else if( (response.data.fimVigencia[0] == agora.getFullYear() && response.data.fimVigencia[1] > agora.getMonth()+1) && response.data.quantidadeMaximaUso > 0)
                     {
                         setCupomInfo(response.data);
                     }
-                    else if(response.data.fimVigencia[0] == agora.getFullYear() 
+                    else if(  (response.data.fimVigencia[0] == agora.getFullYear() 
                             && response.data.fimVigencia[1] == agora.getMonth()+1 
                             && response.data.fimVigencia[2] >=  agora.getUTCDate())
+                            && response.data.quantidadeMaximaUso > 0)
                     {
                         setCupomInfo(response.data);
                     }
