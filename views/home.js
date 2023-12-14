@@ -15,7 +15,7 @@ export default function Home({ route, navigation }) {
 
   const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
   const [empresas, setEmpresas] = useState([]);
-  const [empresasFiltradas, setEmpresasFiltradas] = useState([]);
+
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
 
