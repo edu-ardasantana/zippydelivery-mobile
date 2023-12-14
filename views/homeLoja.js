@@ -78,11 +78,6 @@ export default function HomeLoja({ navigation, route }) {
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
               <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} /></View>
             </TouchableOpacity>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={styles.iconWrapper}>
-                <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} /></View>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
 
