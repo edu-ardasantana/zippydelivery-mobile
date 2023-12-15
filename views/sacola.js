@@ -67,7 +67,7 @@ export default function Sacola({ navigation }) {
 
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/${userId}`)
+        axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
             .then(function (response) {
                 setEndereco(response.data)
             })
@@ -87,12 +87,11 @@ export default function Sacola({ navigation }) {
     }, [cart]);
 
     let enderecoCompleto;
-    if (getEndereco.logradouro == null) {
+    if (getEndereco.logradouro == null || getEndereco.logradouro === undefined || getEndereco.logradouro === '') {
         enderecoCompleto = null;
     } else {
         enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} ${getEndereco.complemento} `;
     }
-
     const renderCartItem = ({ item }) => (
         <View>
             <TouchableOpacity onPress={() => navigation.navigate("DetalheItem", { produto: item, origin: 'Sacola' })}>

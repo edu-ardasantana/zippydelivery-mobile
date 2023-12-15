@@ -11,23 +11,24 @@ export default function ResumoSacola({ navigation, route }) {
   
   const { cupomInfo } = route.params
   console.log(cupomInfo)
-  const valorDesconto =  cupomInfo === null ? 0 : cupomInfo.percentualDesconto/100;
+  const valorDesconto =  cupomInfo === null ? 0.00 : cupomInfo.percentualDesconto/100;
   const id = window.localStorage.getItem("id");  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
+  
   const { cart, setCart } = useMyContext();
   const calcularTotalCompras = (carrinho) => {
     let total = 0;
-
+    
     carrinho.forEach((item) => {
       const precoTotalItem = item.preco * item.quantity;
       total += precoTotalItem;
     });
-      
+    
     return total;
   };
-    
+  
   const valorTotal = calcularTotalCompras(cart)
-  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : formatarMoeda(cart[0].categoria.empresa.taxaFrete))
+  const taxaFrete = cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete
   const isFocused = useIsFocused();
   
   const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
@@ -63,6 +64,7 @@ export default function ResumoSacola({ navigation, route }) {
 
   let enderecoCompleto;
   if (getEndereco.logradouro == null) {
+    console.log(getEndereco)
     enderecoCompleto = null;
   } else {
     enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
@@ -70,7 +72,9 @@ export default function ResumoSacola({ navigation, route }) {
 
   const listaFormasPagamentos = [
     { label: "Selecione...", value: "" },
-    ...formasPagamento.map(formaPgmt => ({ label: formaPgmt, value: formaPgmt })),
+    ...formasPagamento.map(formaPgmt => 
+      ({ label: formaPgmt, value: formaPgmt })
+      ),
   ];
 
   function montaitens(cart){
@@ -121,6 +125,10 @@ export default function ResumoSacola({ navigation, route }) {
   
     return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
   }
+
+  function formatarMoeda(dataParam) {
+    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+}
   
   const agora = new Date();
   const dataHoraFormatada = formatarDataHora(agora);
@@ -187,52 +195,13 @@ export default function ResumoSacola({ navigation, route }) {
       setUrl(response.data.init_point)
       setGo(true)
       console.log(response.data)
-    }).then(  
-      axios.put('http://localhost:8080/api/cupom/' + cupomInfo.id , {
-        codigo: "222B22",
-        percentualDesconto: cupomInfo.percentualDesconto,
-        valorDesconto: 11,
-        inicioVigencia: cupomInfo.inicioVigencia,
-        fimVigencia: cupomInfo.fimVigencia,
-        valorMinimoPedidoPermitido: cupomInfo.valorMinimoPedidoPermitido,
-        quantidadeMaximaUso: cupomInfo.quantidadeMaximaUso-1
-      })
-    )
+    })
   }
 
-  function fazerPedido(cart) {
-    axios.post('http://localhost:8080/api/pedido', {
-      id_cliente: Number(id)+1,
-      id_empresa: idEmpresa,
-      codigoCupom: null,
-      dataHora: dataHoraFormatada,
-      formaPagamento: selectedPayment,
-      statusPagamento: "Aguardando Confirmação",
-      statusPedido: "Em Processamento",
-      taxaEntrega: taxaFrete,
-      logradouro: getEndereco.logradouro,
-      bairro: getEndereco.bairro,
-      cidade: getEndereco.cidade,
-      estado: getEndereco.estado,
-      cep: getEndereco.cep,
-      complemento: getEndereco.complemento,
-      numeroEndereco: '12',
-      itens: montaitens(cart)
-    }
-    ).then(function (response) {
-      localStorage.setItem("idPedido", response.data.id)
-      console.log("ok ok houve ok")
-      mercadoPago(cart)
-    //  navigation.navigate('ConfirmaPedido')
-  })
-  .catch(function (error) {
-     console.log(error)
-  });
-
-  }
-  function formatarMoeda(dataParam) {
-    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
-}
+  function primeiraLetraMaiuscula(palavra) {
+    palavra = palavra.replace(/[^a-zA-Z0-9 ]/g, ' ');
+    return palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase();
+  } 
 
   return (
 
@@ -283,7 +252,14 @@ export default function ResumoSacola({ navigation, route }) {
       <View style={styles.resumo}>
         <Text>Taxa de entrega</Text>
         <Text style={{ color: `${color}` }}>
-         {taxaFrete}
+          {(() => {
+            try {
+              return taxaFrete === 0.00 ? cart[0].categoria.empresa.taxaFrete : formatarMoeda(taxaFrete);
+            } catch (error) {
+              console.error('Erro ao formatar taxaFrete:', error);
+              return 'Erro de formatação';
+            }
+          })()}
         </Text>
       </View>
 
@@ -292,7 +268,7 @@ export default function ResumoSacola({ navigation, route }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>{formatarMoeda((valorTotal*(1-valorDesconto) + parseFloat(taxaFrete)))}</strong>
+          <strong>{formatarMoeda(valorTotal*(1-valorDesconto) + taxaFrete)}</strong>
         </Text>
       </View>
       <br />
@@ -313,7 +289,7 @@ export default function ResumoSacola({ navigation, route }) {
             {listaFormasPagamentos.map((formaPagamento) => (
               <Picker.Item
                 key={formaPagamento.value}
-                label={formaPagamento.label}
+                label={primeiraLetraMaiuscula(formaPagamento.label)}
                 value={formaPagamento.value}
               />
             ))}
@@ -373,8 +349,7 @@ export default function ResumoSacola({ navigation, route }) {
         <Button
           buttonStyle={styles.button}
           title="Fazer pedido"
-          onPress={() => mercadoPago(cart)}
-          //onPress={() => fazerPedido(cart)}
+          onPress={() => fazerPedido(cart)}
         />
       </View>
     </View>
@@ -512,14 +487,12 @@ const styles = StyleSheet.create({
     borderColor: "#FF9431",
   },
   input: {
-    width: 130,
+    width: 300,
     height: 40,
-    fontSize: 13,
     paddingHorizontal: 10,
+    backgroundColor: '#dbdbe749',
     marginVertical: 30,
-    color: "#4D585E",
-    borderColor: 'transparent',
-    borderWidth: 1,
-    borderBottomColor: "#FF9431"
+    borderRadius: 5,
+
   }
 });
