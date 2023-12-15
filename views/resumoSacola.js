@@ -11,24 +11,24 @@ export default function ResumoSacola({ navigation, route }) {
   
   const { cupomInfo } = route.params
   console.log(cupomInfo)
-  const valorDesconto =  cupomInfo === null ? 0 : cupomInfo.percentualDesconto/100;
+  const valorDesconto =  cupomInfo === null ? 0.00 : cupomInfo.percentualDesconto/100;
   const id = window.localStorage.getItem("id");  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
-
+  
   const { cart, setCart } = useMyContext();
   const calcularTotalCompras = (carrinho) => {
     let total = 0;
-
+    
     carrinho.forEach((item) => {
       const precoTotalItem = item.preco * item.quantity;
       total += precoTotalItem;
     });
-      
+    
     return total;
   };
-    
+  
   const valorTotal = calcularTotalCompras(cart)
-  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : formatarMoeda(cart[0].categoria.empresa.taxaFrete))
+  const taxaFrete = cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete
   const isFocused = useIsFocused();
   
   const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
@@ -41,7 +41,7 @@ export default function ResumoSacola({ navigation, route }) {
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
+    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -72,7 +72,9 @@ export default function ResumoSacola({ navigation, route }) {
 
   const listaFormasPagamentos = [
     { label: "Selecione...", value: "" },
-    ...formasPagamento.map(formaPgmt => ({ label: formaPgmt, value: formaPgmt })),
+    ...formasPagamento.map(formaPgmt => 
+      ({ label: formaPgmt, value: formaPgmt })
+      ),
   ];
 
   function montaitens(cart){
@@ -196,6 +198,11 @@ export default function ResumoSacola({ navigation, route }) {
     })
   }
 
+  function primeiraLetraMaiuscula(palavra) {
+    palavra = palavra.replace(/[^a-zA-Z0-9 ]/g, ' ');
+    return palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase();
+  } 
+
   return (
 
     <View style={styles.container} >
@@ -261,7 +268,7 @@ export default function ResumoSacola({ navigation, route }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>{formatarMoeda((valorTotal*(1-valorDesconto) + parseFloat(taxaFrete)))}</strong>
+          <strong>{formatarMoeda(valorTotal*(1-valorDesconto) + taxaFrete)}</strong>
         </Text>
       </View>
       <br />
@@ -282,7 +289,7 @@ export default function ResumoSacola({ navigation, route }) {
             {listaFormasPagamentos.map((formaPagamento) => (
               <Picker.Item
                 key={formaPagamento.value}
-                label={formaPagamento.label}
+                label={primeiraLetraMaiuscula(formaPagamento.label)}
                 value={formaPagamento.value}
               />
             ))}
