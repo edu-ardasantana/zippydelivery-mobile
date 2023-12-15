@@ -127,11 +127,8 @@ export default function ResumoSacola({ navigation, route }) {
   }
 
   function montaitensMercadoPago(cart){
-
     var listaItensMercadoPago = []
-
     cart.forEach(element => {
-
       if (cupomInfo) {
         var itemMercadoPago = {
           title: element.titulo,
@@ -141,15 +138,14 @@ export default function ResumoSacola({ navigation, route }) {
           currency_id: 'BRL'
         }
       } else {
-      var itemMercadoPago = {
-        title: element.titulo,
-        id: element.id,
-        quantity: element.quantity,
-        unit_price: element.preco,
-        currency_id: 'BRL'
+        var itemMercadoPago = {
+          title: element.titulo,
+          id: element.id,
+          quantity: element.quantity,
+          unit_price: element.preco,
+          currency_id: 'BRL'
+        }
       }
-      }
-
       listaItensMercadoPago.push(itemMercadoPago)
 
     });
