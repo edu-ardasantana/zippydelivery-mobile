@@ -47,8 +47,21 @@ export default function PedidoConfirmado({ route, navigation }) {
             })
     }, [])
 
-     function cancelarPedido() {
-         setPedidoExiste(false);
+    function cancelarPedido() {
+
+        axios.delete(`http://localhost:8080/api/pedido/${idPedido}`)
+        .then(function (response) {
+            console.log(response);
+        }).catch(function (error) {
+            console.log(error);
+            showMessage({
+                message: `Algo deu errado: ${error}`,
+                type: "danger",
+            });
+
+        });
+
+        setPedidoExiste(false);
     }
 
     function formatarMoeda(dataParam) {
@@ -115,7 +128,7 @@ export default function PedidoConfirmado({ route, navigation }) {
                                 titleStyle={styles.addButtonTitle}
                                 onPress={cancelarPedido}
                             />
-                        </View> 
+                        </View>
                     </View>
                 </ScrollView>
             ) : (
