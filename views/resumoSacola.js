@@ -77,6 +77,38 @@ export default function ResumoSacola({ navigation, route }) {
       ),
   ];
 
+  function fazerPedido(cart){
+    axios.post('http://localhost:8080/api/pedido', {
+      id_cliente: Number(id)+1,
+      id_empresa: idEmpresa,
+      codigoCupom: null,
+      dataHora: dataHoraFormatada,
+      formaPagamento: selectedPayment,
+      statusPagamento: "Aguardando Confirmação",
+      statusPedido: "Em Processamento",
+      taxaEntrega: taxaFrete,
+      logradouro: getEndereco.logradouro,
+      bairro: getEndereco.bairro,
+      cidade: getEndereco.cidade,
+      estado: getEndereco.estado,
+      cep: getEndereco.cep,
+      complemento: getEndereco.complemento,
+      numeroEndereco: '12',
+      itens: montaitens(cart)
+    }
+    ).then(function (response) {
+      console.log("ok ok houve ok")
+      localStorage.setItem('idPedido', response.data.id);
+      console.log(response.data.id)
+      mercadoPago(cart)
+    //  navigation.navigate('ConfirmaPedido')
+  })
+  .catch(function (error) {
+     console.log(error)
+  });
+
+  }
+
   function montaitens(cart){
     var listaItens = []
 
@@ -99,13 +131,23 @@ export default function ResumoSacola({ navigation, route }) {
     var listaItensMercadoPago = []
 
     cart.forEach(element => {
-      
-      let itemMercadoPago = {
+
+      if (cupomInfo) {
+        var itemMercadoPago = {
+          title: element.titulo,
+          id: element.id,
+          quantity: element.quantity,
+          unit_price: element.preco * ( 1 - cupomInfo.percentualDesconto / 100) ,
+          currency_id: 'BRL'
+        }
+      } else {
+      var itemMercadoPago = {
         title: element.titulo,
         id: element.id,
         quantity: element.quantity,
-        unit_price: element.preco * ( 1 - cupomInfo.percentualDesconto / 100) ,
+        unit_price: element.preco,
         currency_id: 'BRL'
+      }
       }
 
       listaItensMercadoPago.push(itemMercadoPago)
@@ -278,7 +320,7 @@ export default function ResumoSacola({ navigation, route }) {
       </View>
 
       
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
         <Text style={styles.subTitleF}>Forma de pagamento</Text>
         <View>
           <Picker
@@ -487,9 +529,10 @@ const styles = StyleSheet.create({
     borderColor: "#FF9431",
   },
   input: {
-    width: 300,
+    width: 240,
     height: 40,
     paddingHorizontal: 10,
+    marginHorizontal: 10,
     backgroundColor: '#dbdbe749',
     marginVertical: 30,
     borderRadius: 5,

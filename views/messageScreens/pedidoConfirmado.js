@@ -48,6 +48,19 @@ export default function PedidoConfirmado({ route, navigation }) {
     }, [])
 
     function cancelarPedido() {
+
+        axios.delete(`http://localhost:8080/api/pedido/${idPedido}`)
+        .then(function (response) {
+            console.log(response);
+        }).catch(function (error) {
+            console.log(error);
+            showMessage({
+                message: `Algo deu errado: ${error}`,
+                type: "danger",
+            });
+
+        });
+
         setPedidoExiste(false);
     }
 
