@@ -11,16 +11,17 @@ export default function Home({ route, navigation }) {
   localStorage.setItem("var", "home");
 
   const userId = parseInt(localStorage.getItem('id'));
-  const isFocused = useIsFocused();
-
-  const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
+  
   const [empresas, setEmpresas] = useState([]);
+  const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
+  const [empresasFiltradas, setEmpresasFiltradas] = useState([])
+  const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
 
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
-
-  const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
   const [searchText, setSearchText] = useState('');
+  
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/categoriaempresa')
@@ -35,7 +36,7 @@ export default function Home({ route, navigation }) {
   }, [])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/${userId}`)
+    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);
@@ -46,10 +47,9 @@ export default function Home({ route, navigation }) {
       });
   }, [isFocused])
 
-  const [empresasFiltradas, setEmpreasFiltradas] = useState([])
   function filtarEmpresas(c) {
     setEmpresaSelecionada(c.descricao);
-    setEmpreasFiltradas(empresas.filter((empresa) => empresa.categoria.descricao === c.descricao));
+    setEmpresasFiltradas(empresas.filter((empresa) => empresa.categoria.descricao === c.descricao));
     console.log(empresaSelecionada)
 
   }
@@ -87,7 +87,7 @@ export default function Home({ route, navigation }) {
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={[styles.carousel, { marginLeft: 17 }]}>
           {[1, 2].map((index) =>
             <View key={index} style={styles.banner}>
-              <Image style={styles.anuncioImage} source={require(`../views/img/banner1.png`)} />
+              <Image style={styles.anuncioImage} source={require(`../views/img/banner${index}.png`)} />
             </View>
           )}
         </ScrollView>
