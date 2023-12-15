@@ -7,25 +7,28 @@ import { useMyContext } from './myContext';
 
 //import {WebView} from 'react-native-web-webview'
 
-export default function ResumoSacola({ navigation }) {
+export default function ResumoSacola({ navigation, route }) {
   
+  const { cupomInfo } = route.params
+  console.log(cupomInfo)
+  const valorDesconto =  cupomInfo === null ? 0.00 : cupomInfo.percentualDesconto/100;
   const id = window.localStorage.getItem("id");  
   const idEmpresa = window.localStorage.getItem("idEmpresa");
+  
   const { cart, setCart } = useMyContext();
-
   const calcularTotalCompras = (carrinho) => {
     let total = 0;
-
+    
     carrinho.forEach((item) => {
       const precoTotalItem = item.preco * item.quantity;
       total += precoTotalItem;
     });
-      
+    
     return total;
   };
-    
+  
   const valorTotal = calcularTotalCompras(cart)
-  const taxaFrete = (cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete.toFixed(2))
+  const taxaFrete = cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete
   const isFocused = useIsFocused();
   
   const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
@@ -38,7 +41,7 @@ export default function ResumoSacola({ navigation }) {
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
+    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -61,6 +64,7 @@ export default function ResumoSacola({ navigation }) {
 
   let enderecoCompleto;
   if (getEndereco.logradouro == null) {
+    console.log(getEndereco)
     enderecoCompleto = null;
   } else {
     enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
@@ -68,7 +72,9 @@ export default function ResumoSacola({ navigation }) {
 
   const listaFormasPagamentos = [
     { label: "Selecione...", value: "" },
-    ...formasPagamento.map(formaPgmt => ({ label: formaPgmt, value: formaPgmt })),
+    ...formasPagamento.map(formaPgmt => 
+      ({ label: formaPgmt, value: formaPgmt })
+      ),
   ];
 
   function montaitens(cart){
@@ -98,7 +104,7 @@ export default function ResumoSacola({ navigation }) {
         title: element.titulo,
         id: element.id,
         quantity: element.quantity,
-        unit_price: element.preco,
+        unit_price: element.preco * ( 1 - cupomInfo.percentualDesconto / 100) ,
         currency_id: 'BRL'
       }
 
@@ -119,6 +125,10 @@ export default function ResumoSacola({ navigation }) {
   
     return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
   }
+
+  function formatarMoeda(dataParam) {
+    return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+}
   
   const agora = new Date();
   const dataHoraFormatada = formatarDataHora(agora);
@@ -166,7 +176,11 @@ export default function ResumoSacola({ navigation }) {
       "auto_return": "approved",
       "back_urls": {
         "success": "http://localhost:19006/PedidoConfirmado"
-      }
+      },
+    "shipments": {
+      "cost": cart[0].categoria.empresa.taxaFrete
+    }
+
       // [
       //   {
       //     "title": "Dummy Title" ,
@@ -184,37 +198,10 @@ export default function ResumoSacola({ navigation }) {
     })
   }
 
-  function fazerPedido(cart) {
-    axios.post('http://localhost:8080/api/pedido', {
-      id_cliente: Number(id)+1,
-      id_empresa: idEmpresa,
-      codigoCupom: null,
-      dataHora: dataHoraFormatada,
-      formaPagamento: selectedPayment,
-      statusPagamento: "Aguardando Confirmação",
-      statusPedido: "Em Processamento",
-      taxaEntrega: taxaFrete,
-      logradouro: getEndereco.logradouro,
-      bairro: getEndereco.bairro,
-      cidade: getEndereco.cidade,
-      estado: getEndereco.estado,
-      cep: getEndereco.cep,
-      complemento: getEndereco.complemento,
-      numeroEndereco: '12',
-      itens: montaitens(cart)
-    }
-    ).then(function (response) {
-      localStorage.setItem("idPedido", response.data.id)
-      console.log("ok ok houve ok")
-      mercadoPago(cart)
-    //  navigation.navigate('ConfirmaPedido')
-  })
-  .catch(function (error) {
-     console.log(error)
-  });
-
-  }
-
+  function primeiraLetraMaiuscula(palavra) {
+    palavra = palavra.replace(/[^a-zA-Z0-9 ]/g, ' ');
+    return palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase();
+  } 
 
   return (
 
@@ -255,15 +242,19 @@ export default function ResumoSacola({ navigation }) {
       <br />
 
       <View style={styles.resumo}>
-        <Text>Subtotal</Text> <Text>R$ {valorTotal.toFixed(2)}</Text>
+        <Text>Subtotal</Text> <Text> {formatarMoeda(valorTotal)}</Text>
       </View>
-
+      {cupomInfo !== null ? (
+      <View style={styles.resumo}>
+        <Text >Cupom de desconto</Text> <Text style={{color:"#39cd39"}}>{formatarMoeda(valorTotal*valorDesconto)}</Text>
+      </View>
+      ):(null)}
       <View style={styles.resumo}>
         <Text>Taxa de entrega</Text>
         <Text style={{ color: `${color}` }}>
           {(() => {
             try {
-              return taxaFrete === 0.00 ? `${cart[0].categoria.empresa.taxaFrete.toFixed(2)}` : `R$ ${cart[0].categoria.empresa.taxaFrete.toFixed(2)}`;
+              return taxaFrete === 0.00 ? cart[0].categoria.empresa.taxaFrete : formatarMoeda(taxaFrete);
             } catch (error) {
               console.error('Erro ao formatar taxaFrete:', error);
               return 'Erro de formatação';
@@ -277,7 +268,7 @@ export default function ResumoSacola({ navigation }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>R$ {parseFloat(valorTotal + parseFloat(taxaFrete)).toFixed(2)}</strong>
+          <strong>{formatarMoeda(valorTotal*(1-valorDesconto) + taxaFrete)}</strong>
         </Text>
       </View>
       <br />
@@ -298,7 +289,7 @@ export default function ResumoSacola({ navigation }) {
             {listaFormasPagamentos.map((formaPagamento) => (
               <Picker.Item
                 key={formaPagamento.value}
-                label={formaPagamento.label}
+                label={primeiraLetraMaiuscula(formaPagamento.label)}
                 value={formaPagamento.value}
               />
             ))}
@@ -358,8 +349,7 @@ export default function ResumoSacola({ navigation }) {
         <Button
           buttonStyle={styles.button}
           title="Fazer pedido"
-          onPress={() => mercadoPago(cart)}
-          //onPress={() => fazerPedido(cart)}
+          onPress={() => fazerPedido(cart)}
         />
       </View>
     </View>
@@ -504,5 +494,5 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     borderRadius: 5,
 
-  },
+  }
 });

@@ -20,7 +20,7 @@ export default function Historico({ navigation }) {
             console.log(response.data)
         })
     }
-
+    console.log(lista)
     return (
         <View style={styles.container}>
             <View style={styles.headerContent}>
@@ -29,26 +29,30 @@ export default function Historico({ navigation }) {
             <ScrollView >
                 {
                     <View style={styles.body}>
-                    {lista.map((pedido, index) => {
-                        let qtd = 0;
-                        let produtos = []
-                      pedido.itensPedido.map(item => {
-                        qtd += item.qtdProduto;
-                        produtos.push(item.produto.titulo);
-                      });
-                      return(
-                        <Pedido
-                          key={index} 
-                          quantity={qtd}
-                          restaurantName={pedido.empresa.nome}
-                          orderName={produtos[0]}
-                          orderStatus={pedido.statusPedido}
-                          orderNumber={pedido.id}
-                          onPress={()=>navigation.navigate("DetalhePedido", {pedido})}
-                        />
-                      )
-                    })}
-                  </View>
+                        {lista.length > 0 ? (
+                            lista.map((pedido, index) => {
+                            let qtd = 0;
+                            let produtos = [];
+                            pedido.itensPedido.map((item) => {
+                                qtd += item.qtdProduto;
+                                produtos.push(item.produto.titulo);
+                            });
+                            return (
+                                <Pedido
+                                key={index}
+                                quantity={qtd}
+                                restaurantName={pedido.empresa.nome}
+                                orderName={produtos[0]}
+                                orderStatus={pedido.statusPedido}
+                                orderNumber={pedido.id}
+                                onPress={() => navigation.navigate("DetalhePedido", { pedido })}
+                                />
+                            );
+                            })
+                        ) : (  
+                            <Text style={{justifyContent:'center'}}>Você ainda não realizou nenhum pedido.</Text>
+                        )}
+                    </View>
                   
                 }
             </ScrollView>

@@ -39,9 +39,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#f3f3f3',
         justifyContent: 'space-between',
-        marginVertical: 20,
+        marginVertical: 4,
         paddingHorizontal: 5,
-        paddingBottom: 24,
+        paddingVertical: 4,
     },
     colum1: {
         flex: 1.2,
