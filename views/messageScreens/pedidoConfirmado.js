@@ -12,7 +12,7 @@ export default function PedidoConfirmado({ route, navigation }) {
         setPedidoExiste(true);
     }, []);
 
-    const idPedido = parseInt(route.params);
+    const idPedido =localStorage.getItem("idPedido");
     const [getStatusPedido, setStatusPedido] = useState();
     const [getTempoEntrega, setTempoEntrega] = useState();
     const [getLogradouro, setLogradouro] = useState();

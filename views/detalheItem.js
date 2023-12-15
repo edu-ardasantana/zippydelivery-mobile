@@ -5,6 +5,7 @@ import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet 
 
 export default function DetalheItem({ route, navigation }) {
   
+  const idEmpresa = localStorage.getItem("idEmpresa")
   const { produto, origin } = route.params;
   const { addToCart, delToCart, cart } = useMyContext();
   const [selectedQuantity, _setSelectedQuantity] = useState(1);  
@@ -30,7 +31,7 @@ export default function DetalheItem({ route, navigation }) {
           style={styles.backgroundImage}
         />
         <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => navigation.navigate('HomeLoja')} style={styles.iconWrapper}>
+          <TouchableOpacity onPress={() => navigation.navigate('HomeLoja',{id: idEmpresa})} style={styles.iconWrapper}>
             <View style={styles.iconBackground}>
               <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
             </View>

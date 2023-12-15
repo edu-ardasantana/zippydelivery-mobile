@@ -1,21 +1,26 @@
-import axios from 'axios';
-import Loja from './component/loja';
-import Footer from './component/footer';
-import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Footer from './component/footer';
+import Loja from './component/loja';
 
-export default function Home({ navigation }) {
+
+export default function Home({ route, navigation }) {
 
   localStorage.setItem("var", "home");
 
-  const id = window.localStorage.getItem("id");
+  const userId = parseInt(localStorage.getItem('id'));
   const isFocused = useIsFocused();
 
   const [categoriasEmpresas, setCategoriasEmpresas] = useState([]);
   const [empresas, setEmpresas] = useState([]);
+
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
+
+  const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/categoriaempresa')
@@ -25,12 +30,12 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/empresa')
-      .then(function (response) { return setEmpresas(...empresas, response.data); })
+      .then(function (response) { return setEmpresas(response.data); })
       .catch(function (error) { console.log(error); });
   }, [])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);
@@ -41,12 +46,32 @@ export default function Home({ navigation }) {
       });
   }, [isFocused])
 
-  function filtarEmpresas(){}
+  const [empresasFiltradas, setEmpreasFiltradas] = useState([])
+  function filtarEmpresas(c) {
+    setEmpresaSelecionada(c.descricao);
+    setEmpreasFiltradas(empresas.filter((empresa) => empresa.categoria.descricao === c.descricao));
+    console.log(empresaSelecionada)
 
+  }
+
+  function todas() {
+    setEmpresaSelecionada(null);
+  }
 
   let endereco = cidade == null ? null : `${cidade}, ${estado}`;
 
+  const handleSearch = () => {
+    const filteredEmpresas = searchText === ''
+      ? empresas
+      : empresas.filter(empresa =>
+          empresa.nome.toLowerCase().includes(searchText.toLowerCase())
+        );
+  
+    setEmpresasFiltradas(filteredEmpresas);
+  };
+
   return (
+
     <View style={styles.container}>
 
       <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })} >
@@ -62,35 +87,79 @@ export default function Home({ navigation }) {
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={[styles.carousel, { marginLeft: 17 }]}>
           {[1, 2].map((index) =>
             <View key={index} style={styles.banner}>
-              <Image style={styles.anuncioImage} source={require(`/views/img/banner${index}.png`)} />
+              <Image style={styles.anuncioImage} source={require(`../views/img/banner${index}.png`)} />
             </View>
           )}
         </ScrollView>
 
         <View style={styles.containerSearch}>
           <View style={styles.search}>
-            <TextInput style={styles.input} placeholder="Busque por pratos ou ingredientes" />
-            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <TextInput
+              style={styles.input}
+              placeholder="Busque lojas próximas"
+              onChangeText={text => setSearchText(text)}
+              value={searchText} />
+            <TouchableOpacity onPress={handleSearch}>
               <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg', }} />
             </TouchableOpacity>
           </View>
         </View>
 
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-          {categoriasEmpresas.map((c, index) =>
-            <TouchableOpacity style={styles.etiqueta} onPress={filtarEmpresas}>
-              <Text style={styles.textoEtiqueta}>{c.descricao}</Text>
+
+          {empresaSelecionada == null ?
+            <TouchableOpacity style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
+              <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Todas</Text>
+            </TouchableOpacity> :
+            <TouchableOpacity style={styles.etiqueta} onPress={() => todas()}>
+              <Text style={styles.textoEtiqueta}>Todas</Text>
             </TouchableOpacity>
-          )}
+          }
+
+          {
+            categoriasEmpresas.map((c, index) => (
+
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.etiqueta,
+                  empresaSelecionada === c.descricao && { backgroundColor: '#FF9431' },
+                ]}
+                onPress={() => filtarEmpresas(c)}
+              >
+                <Text
+                  style={[
+                    styles.textoEtiqueta,
+                    empresaSelecionada === c.descricao && { color: 'white' },
+                  ]}
+                >
+                  {c.descricao}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+
         </ScrollView>
 
         <Text style={styles.title2}>Lojas</Text>
-        {empresas.map((empresa, index) => (
-          <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
-          </TouchableOpacity>
-        ))}
+        {
+          empresaSelecionada == null ?
+            empresas.map((empresa, index) => (
+              <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+                <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
+              </TouchableOpacity>
+            ))
+            :
+            empresasFiltradas.map((empresa, index) => (
+              <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+                <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
+              </TouchableOpacity>
+            ))
+        }
+
+
       </ScrollView>
+
       <Footer />
     </View>
 

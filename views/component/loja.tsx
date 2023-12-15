@@ -39,9 +39,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#f3f3f3',
         justifyContent: 'space-between',
-        marginVertical: 20,
+        marginVertical: 4,
         paddingHorizontal: 5,
-        paddingBottom: 24,
+        paddingVertical: 4,
     },
     colum1: {
         flex: 1.2,
@@ -49,11 +49,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'center',
         marginLeft: 5,
+        maxWidth: 100,
+        maxHeight: 'auto',
+        overflow: 'visible'
     },
     colum2: {
         flex: 2.5,
-        flexDirection: 'column',
-        justifyContent: 'center',
+        flexDirection: 'column',  
     },
     colum3: {
         flex: 0.5,
@@ -64,6 +66,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         tintColor: '#ABABAB',
+
     },
     text: {
         color: '#7C7C8A',

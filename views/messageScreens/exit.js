@@ -9,7 +9,7 @@ export default function Exit({ navigation }) {
         <View style={styles.container}>
 
             <View style={styles.body}>
-                <Image style={styles.iconMessage} source={require('/views/img/exitIcon.png')} />
+                <Image style={styles.iconMessage} source={require('../../views/img/exitIcon.png')} />
                 <Text style={styles.title1}>Oh, no! Você está nos deixando...</Text>
                 <Text style={styles.title2}>Tem certeza?</Text>
 
