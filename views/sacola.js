@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useIsFocused } from '@react-navigation/native';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { text } from 'body-parser';
+import { color } from 'react-native-elements/dist/helpers';
 
 export default function Sacola({ navigation }) {
 
@@ -67,7 +68,7 @@ export default function Sacola({ navigation }) {
 
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
+        axios.get(`http://localhost:8080/api/cliente/findByUser/${userId}`)
             .then(function (response) {
                 setEndereco(response.data)
             })
@@ -181,6 +182,7 @@ export default function Sacola({ navigation }) {
                         title={"Aplicar"}
                         onPress={() => aplicarCupom()}
                         disabled={enderecoCompleto === null && cart.length > 0}
+                        titleStyle={styles.buttonText}
                     />
                 </View>
             )}
@@ -321,6 +323,7 @@ const styles = StyleSheet.create({
     },
     preco: {
         fontWeight: 'bold',
+        textAlign: 'right',
     },
     button: {
         alignSelf: 'center',
@@ -331,10 +334,16 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     buttonCupom: {
-        backgroundColor: '#44AB65',
+        borderColor: '#44AB65',
+        borderWidth: 2,
         height: 30,
         width: 90,
         borderRadius: 5,
+        backgroundColor: 'white',
+    },
+    buttonText: {
+        color: '#44AB65',
+        fontWeight: '500',
     },
     inputCupom: {
         height: 30,

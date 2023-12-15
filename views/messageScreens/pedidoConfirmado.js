@@ -47,9 +47,9 @@ export default function PedidoConfirmado({ route, navigation }) {
             })
     }, [])
 
-    function cancelarPedido() {
-        setPedidoExiste(false);
-    }
+    // function cancelarPedido() {
+    //     setPedidoExiste(false);
+    // }
 
     function formatarMoeda(dataParam) {
         return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
@@ -108,14 +108,14 @@ export default function PedidoConfirmado({ route, navigation }) {
                                 </View>
                             </View>
                         </View>
-                        <View style={styles.buttonContainer}>
+                        {/* <View style={styles.buttonContainer}>
                             <Button
                                 title={"Cancelar pedido"}
                                 buttonStyle={styles.addButton}
                                 titleStyle={styles.addButtonTitle}
                                 onPress={cancelarPedido}
                             />
-                        </View>
+                        </View> */}
                     </View>
                 </ScrollView>
             ) : (
@@ -126,11 +126,11 @@ export default function PedidoConfirmado({ route, navigation }) {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.body}>
-                        <View style={styles.cabeca}>
+                        {/* <View style={styles.cabeca}>
                             <Image style={styles.iconMessage} source={require('/views/img/responseIconFailure.png')} />
                             <Text style={[styles.title1,{ color: '#92000E'}]}>Pedido cancelado</Text>
                             <Text style={styles.title2}>Fique tranquilo, nenhuma cobrança será feita</Text>
-                        </View><br />
+                        </View><br /> */}
                         <View style={styles.dividerContainer}><View style={styles.dividerLine} /></View>
                         
                         <View style={styles.enderecoContainer}>
