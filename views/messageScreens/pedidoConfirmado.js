@@ -67,7 +67,7 @@ export default function PedidoConfirmado({ route, navigation }) {
                     </View>
                     <View style={styles.body}>
                         <View style={styles.cabeca}>
-                            <Image style={styles.iconMessage} source={require('/views/img/responseIconSuccess.png')} />
+                            <Image style={styles.iconMessage} source={require('../img/responseIconSuccess.png')} />
                             <Text style={styles.title1}>Pedido realizado!</Text>
                             <Text style={styles.title2}>O restaurante foi notificado do seu pedido</Text>
                         </View><br />
@@ -127,7 +127,7 @@ export default function PedidoConfirmado({ route, navigation }) {
                     </View>
                     <View style={styles.body}>
                         <View style={styles.cabeca}>
-                            <Image style={styles.iconMessage} source={require('/views/img/responseIconFailure.png')} />
+                            <Image style={styles.iconMessage} source={require('../img/responseIconFailure.png')} />
                             <Text style={[styles.title1,{ color: '#92000E'}]}>Pedido cancelado</Text>
                             <Text style={styles.title2}>Fique tranquilo, nenhuma cobrança será feita</Text>
                         </View><br />
