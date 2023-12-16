@@ -24,19 +24,19 @@ export default function Home({ route, navigation }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/categoriaempresa')
+    axios.get('http://api.projetopro.live/api/categoriaempresa')
       .then(function (response) { return setCategoriasEmpresas(...categoriasEmpresas, response.data); })
       .catch(function (error) { console.log(error); });
   }, [])
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/empresa')
+    axios.get('http://api.projetopro.live/api/empresa')
       .then(function (response) { return setEmpresas(response.data); })
       .catch(function (error) { console.log(error); });
   }, [])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
+    axios.get(`http://api.projetopro.live/api/cliente/user/${userId}`)
       .then(function (response) {
         const data = response.data;
         setCidade(data.cidade);

@@ -20,7 +20,7 @@ export default function FormConta({ navigation }) {
     const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/user/`+id)
+        axios.get(`http://api.projetopro.live/api/cliente/user/`+id)
             .then(function (response) {
                 const data = response.data;
                 setNome(data.nome);
@@ -42,7 +42,7 @@ export default function FormConta({ navigation }) {
 
 
         axios
-            .put(`http://localhost:8080/api/cliente/`+idCliente, {
+            .put(`http://api.projetopro.live/api/cliente/`+idCliente, {
 
                 nome: nome,
                 email: email,
@@ -68,7 +68,7 @@ export default function FormConta({ navigation }) {
 
     const excluirDados = () => {
 
-        axios.delete(`http://localhost:8080/api/cliente/`+idCliente)
+        axios.delete(`http://api.projetopro.live/api/cliente/`+idCliente)
 
             .then(function (response) {
                 console.log(response);

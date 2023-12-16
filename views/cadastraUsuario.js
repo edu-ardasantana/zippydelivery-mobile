@@ -21,7 +21,7 @@ export default function CadastraUsuario({ navigation }) {
             senha: senha
         };
 
-        axios.post('http://localhost:8080/api/cliente', userData)
+        axios.post('http://api.projetopro.live/api/cliente', userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({

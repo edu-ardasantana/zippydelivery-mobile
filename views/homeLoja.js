@@ -20,7 +20,7 @@ export default function HomeLoja({ navigation, route }) {
 
   
   async function consultarEmpresa(idEmpresa) {
-    await axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
+    await axios.get(`http://api.projetopro.live/api/empresa/${idEmpresa}`)
       .then(function (response) {
         setEmpresa(response.data);
       }).catch(function (error) {
@@ -29,7 +29,7 @@ export default function HomeLoja({ navigation, route }) {
   }
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/categoriaproduto/categoriasprodutoporempresa/${route.params.id}`)
+    axios.get(`http://api.projetopro.live/api/categoriaproduto/categoriasprodutoporempresa/${route.params.id}`)
       .then(function (response) {
         return setCategorias(...categorias, response.data);
       }).catch(function (error) {
@@ -38,7 +38,7 @@ export default function HomeLoja({ navigation, route }) {
   }, [])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/produto/porcategoriaeempresa/${route.params.id}`)
+    axios.get(`http://api.projetopro.live/api/produto/porcategoriaeempresa/${route.params.id}`)
       .then(function (response) {
         return setProdutos(...produtos, response.data);
       }).catch(function (error) {

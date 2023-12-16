@@ -27,7 +27,7 @@ export default function PedidoConfirmado({ route, navigation }) {
     const [getImgEmpresa, setImgEmpresa] = useState();
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/pedido/${idPedido}`)
+        axios.get(`http://api.projetopro.live/api/pedido/${idPedido}`)
             .then(function (response) {
                 setStatusPedido(response.data.statusPedido)
                 setTempoEntrega(response.data.empresa.tempoEntrega)
@@ -49,7 +49,7 @@ export default function PedidoConfirmado({ route, navigation }) {
 
     function cancelarPedido() {
 
-        axios.delete(`http://localhost:8080/api/pedido/${idPedido}`)
+        axios.delete(`http://api.projetopro.live/api/pedido/${idPedido}`)
         .then(function (response) {
             console.log(response);
         }).catch(function (error) {
