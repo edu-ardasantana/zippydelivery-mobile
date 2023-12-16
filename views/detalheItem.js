@@ -1,27 +1,45 @@
 import { useMyContext } from './myContext';
 import { Button } from 'react-native-elements';
 import React, { useState, useEffect } from 'react';
-import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet, Modal } from 'react-native';
 
 export default function DetalheItem({ route, navigation }) {
   
   const idEmpresa = localStorage.getItem("idEmpresa")
   const { produto, origin } = route.params;
-  const { addToCart, delToCart, cart } = useMyContext();
+  const { addToCart, delToCart, removeFromCart, cart } = useMyContext([]);
   const [selectedQuantity, _setSelectedQuantity] = useState(1);  
-  
+  const [showModal, setShowModal] = useState(false);
+
+  const checkCartForCompany = (productId) => {
+    const cartItem = cart.find((produto) => produto.id === productId);
+    console.log(cart[0].categoria.empresa.id, idEmpresa)
+    console.log(typeof(cart[0].categoria.empresa.id), typeof(idEmpresa))
+    if (cart.length === 0 || cartItem && cart.length > 0 && cart[0].categoria.empresa.id == idEmpresa){
+      navigation.navigate('Sacola')
+    }else{
+      removeFromCart(produto.id)
+      setShowModal(true);
+    }
+  };
+
   const getProductQuantity = (productId) => {
     const cartItem = cart.find((produto) => produto.id === productId);
     return cartItem ? cartItem.quantity : 1;  
   };
 
   useEffect(() => {
-    addToCart({...produto, quantity: 1 });
+      addToCart({...produto, quantity: 1 })
   }, [])
 
   function formatarMoeda(dataParam) {
     return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
   }
+  // const cleanThenAdd = () => {
+  //   setCart([]);
+  //   addToCart({ ...produto, quantity: selectedQuantity })
+  //   console.log(cart)
+  // }
   
   return (
     <ScrollView style={styles.container}>
@@ -73,7 +91,7 @@ export default function DetalheItem({ route, navigation }) {
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
           </TouchableOpacity>
           <Text style={[styles.title2, { color: '#FF9431', margin: 20 }]}>{getProductQuantity(produto.id)}</Text>
-          <TouchableOpacity onPress={()=>addToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
+          <TouchableOpacity onPress={() =>  addToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
           </TouchableOpacity>
           <Button
@@ -81,10 +99,38 @@ export default function DetalheItem({ route, navigation }) {
             title={`Adicionar ${formatarMoeda((getProductQuantity(produto.id)*produto.preco))}`}
             buttonStyle={styles.addButton}
             titleStyle={styles.addButtonTitle}
-            onPress={() => navigation.navigate('Sacola')}
+            onPress={() => checkCartForCompany(produto.id)}            
           />
         </View>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModal}
+        onRequestClose={() => {
+          setShowModal(false);
+        }}
+      >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>
+            Já existe um produto de outra loja no carrinho. Deseja ir para o carrinho e finalizar a compra?
+          </Text>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: '#FF9431' }]}
+              onPress={() => {
+                setShowModal(false);
+                navigation.navigate('Sacola')
+              }}
+            >
+              <Text style={styles.buttonText}>Ok</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+      </Modal>
+
     </ScrollView>
   );
 }
@@ -236,5 +282,50 @@ const styles = StyleSheet.create({
   addButtonTitle: {
     color: 'white',
     fontSize: 15,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    width: '80%', // Ajuste a largura do modal conforme necessário
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  okButton: {
+    backgroundColor: '#FF9431',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
