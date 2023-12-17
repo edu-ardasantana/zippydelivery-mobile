@@ -23,7 +23,7 @@ export default function DetalheItem({ route, navigation }) {
 
   const getProductQuantity = (productId) => {
     const cartItem = cart.find((produto) => produto.id === productId);
-    return cartItem ? cartItem.quantity : 1;  
+    return cartItem ? cartItem.quantity : 0;  
   };
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export default function DetalheItem({ route, navigation }) {
 
         <View style={styles.bodyContent2}>
           <View style={styles.box}>
-            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} /> {/* produto.empresa.imgPerfil*/}
+            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} />
             <Text style={styles.title3}>{produto.categoria.empresa.nome}</Text>
           </View>
           <Text style={styles.text}>Tempo de entrega: {produto.categoria.empresa.tempoEntrega} min • {produto.categoria.descricao} • <Text style={{ color: '#FF9431' }}><Text style={styles.text}>Frete:</Text>{formatarMoeda(produto.categoria.empresa.taxaFrete)}</Text></Text>
@@ -88,7 +88,7 @@ export default function DetalheItem({ route, navigation }) {
           <TouchableOpacity onPress={()=>delToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
           </TouchableOpacity>
-          <Text style={[styles.title2, { color: '#FF9431', margin: 20 }]}>{getProductQuantity(produto.id)}</Text>
+          <Text style={[styles.title2, { color: '#FF9431', marginVertical: 20 }]}>{getProductQuantity(produto.id)}</Text>
           <TouchableOpacity onPress={() =>  addToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
           </TouchableOpacity>
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: '#FF9431',
-    width: 180,
+    width: 150,
     height: 30,
     marginLeft: 10,
   },
@@ -314,10 +314,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-    width: '80%', // Ajuste a largura do modal conforme necessário
+    width: '80%',
   },
   modalText: {
-    fontSize: 18,
+    fontSize: 14,
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -333,13 +333,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
+    height: 30,
   },
   okButton: {
     backgroundColor: '#FF9431',
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+    fontSize: 13,
+    fontWeight: '500',
+  }
 });

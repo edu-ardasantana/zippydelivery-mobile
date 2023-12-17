@@ -1,36 +1,35 @@
-import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Image, Picker, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Button } from "react-native-elements";
 import { useMyContext } from './myContext';
+import { Button } from "react-native-elements";
+import React, { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { Image, Picker, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-//import {WebView} from 'react-native-web-webview'
 
 export default function ResumoSacola({ navigation, route }) {
-  
+
   const { cupomInfo } = route.params
   console.log(cupomInfo)
-  const valorDesconto =  cupomInfo === null ? 0.00 : cupomInfo.percentualDesconto/100;
-  const id = window.localStorage.getItem("id");  
+  const valorDesconto = cupomInfo === null ? 0.00 : cupomInfo.percentualDesconto / 100;
+  const id = window.localStorage.getItem("id");
   const idEmpresa = window.localStorage.getItem("idEmpresa");
-  
+
   const { cart, setCart } = useMyContext();
   const calcularTotalCompras = (carrinho) => {
     let total = 0;
-    
+
     carrinho.forEach((item) => {
       const precoTotalItem = item.preco * item.quantity;
       total += precoTotalItem;
     });
-    
+
     return total;
   };
-  
+
   const valorTotal = calcularTotalCompras(cart)
   const taxaFrete = cart[0].categoria.empresa.taxaFrete === 'Grátis' ? 0.00 : cart[0].categoria.empresa.taxaFrete
   const isFocused = useIsFocused();
-  
+
   const color = taxaFrete === 0.00 ? "#39cd39" : "#FF9431";
   const [getEndereco, setEndereco] = useState([]);
   const [formasPagamento, setFormasPagamento] = useState([]);
@@ -72,16 +71,47 @@ export default function ResumoSacola({ navigation, route }) {
 
   const listaFormasPagamentos = [
     { label: "Selecione...", value: "" },
-    ...formasPagamento.map(formaPgmt => 
+    ...formasPagamento.map(formaPgmt =>
       ({ label: formaPgmt, value: formaPgmt })
-      ),
+    ),
   ];
 
-  function montaitens(cart){
+  function fazerPedido(cart) {
+    axios.post('http://localhost:8080/api/pedido', {
+      id_cliente: Number(id) + 1,
+      id_empresa: idEmpresa,
+      codigoCupom: null,
+      dataHora: dataHoraFormatada,
+      formaPagamento: selectedPayment,
+      statusPagamento: "Aguardando Confirmação",
+      statusPedido: "Em Processamento",
+      taxaEntrega: taxaFrete,
+      logradouro: getEndereco.logradouro,
+      bairro: getEndereco.bairro,
+      cidade: getEndereco.cidade,
+      estado: getEndereco.estado,
+      cep: getEndereco.cep,
+      complemento: getEndereco.complemento,
+      numeroEndereco: '12',
+      itens: montaitens(cart)
+    }
+    ).then(function (response) {
+      console.log("ok ok houve ok")
+      localStorage.setItem('idPedido', response.data.id);
+      console.log(response.data.id)
+      mercadoPago(cart)
+    })
+      .catch(function (error) {
+        console.log(error)
+      });
+
+  }
+
+  function montaitens(cart) {
     var listaItens = []
 
     cart.forEach(element => {
-      
+
       let item = {
         id_produto: element.id,
         qtdProduto: element.quantity,
@@ -94,27 +124,33 @@ export default function ResumoSacola({ navigation, route }) {
     return listaItens;
   }
 
-  function montaitensMercadoPago(cart){
-
+  function montaitensMercadoPago(cart) {
     var listaItensMercadoPago = []
-
     cart.forEach(element => {
-      
-      let itemMercadoPago = {
-        title: element.titulo,
-        id: element.id,
-        quantity: element.quantity,
-        unit_price: element.preco * ( 1 - cupomInfo.percentualDesconto / 100) ,
-        currency_id: 'BRL'
+      if (cupomInfo) {
+        var itemMercadoPago = {
+          title: element.titulo,
+          id: element.id,
+          quantity: element.quantity,
+          unit_price: element.preco * (1 - cupomInfo.percentualDesconto / 100),
+          currency_id: 'BRL'
+        }
+      } else {
+        var itemMercadoPago = {
+          title: element.titulo,
+          id: element.id,
+          quantity: element.quantity,
+          unit_price: element.preco,
+          currency_id: 'BRL'
+        }
       }
-
       listaItensMercadoPago.push(itemMercadoPago)
 
     });
 
     return listaItensMercadoPago;
   }
-  
+
   function formatarDataHora(data) {
     const ano = data.getFullYear();
     const mes = String(data.getMonth() + 1).padStart(2, '0');
@@ -122,17 +158,17 @@ export default function ResumoSacola({ navigation, route }) {
     const hora = String(data.getHours()).padStart(2, '0');
     const minuto = String(data.getMinutes()).padStart(2, '0');
     const segundo = String(data.getSeconds()).padStart(2, '0');
-  
+
     return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
   }
 
   function formatarMoeda(dataParam) {
     return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
-}
-  
+  }
+
   const agora = new Date();
   const dataHoraFormatada = formatarDataHora(agora);
-  
+
   console.log(dataHoraFormatada);
 
   const headers = {
@@ -141,7 +177,7 @@ export default function ResumoSacola({ navigation, route }) {
   }
 
 
-  function mercadoPago(cart){
+  function mercadoPago(cart) {
 
     const itensM = []
     /*itensC.forEach( e => {
@@ -167,56 +203,56 @@ export default function ResumoSacola({ navigation, route }) {
       
     })
     */
-    
+
     //console.log(itensM);
 
     axios.post('https://api.mercadopago.com/checkout/preferences',
-    {
-      "items": montaitensMercadoPago(cart),
-      "auto_return": "approved",
-      "back_urls": {
-        "success": "http://localhost:19006/PedidoConfirmado"
-      },
-    "shipments": {
-      "cost": cart[0].categoria.empresa.taxaFrete
-    }
+      {
+        "items": montaitensMercadoPago(cart),
+        "auto_return": "approved",
+        "back_urls": {
+          "success": "http://localhost:19006/PedidoConfirmado"
+        },
+        "shipments": {
+          "cost": cart[0].categoria.empresa.taxaFrete
+        }
 
-      // [
-      //   {
-      //     "title": "Dummy Title" ,
-      //     "description": "Dummy description",
-      //     "category_id": "car_electronics",
-      //     "quantity": 2,
-      //     "currency_id": "BRL",
-      //     "unit_price": 1000
-      //   }
-      // ]
-    }, {headers: headers}).then( function (response) {
-      setUrl(response.data.init_point)
-      setGo(true)
-      console.log(response.data)
-    })
+        // [
+        //   {
+        //     "title": "Dummy Title" ,
+        //     "description": "Dummy description",
+        //     "category_id": "car_electronics",
+        //     "quantity": 2,
+        //     "currency_id": "BRL",
+        //     "unit_price": 1000
+        //   }
+        // ]
+      }, { headers: headers }).then(function (response) {
+        setUrl(response.data.init_point)
+        setGo(true)
+        console.log(response.data)
+      })
   }
 
   function primeiraLetraMaiuscula(palavra) {
     palavra = palavra.replace(/[^a-zA-Z0-9 ]/g, ' ');
     return palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase();
-  } 
+  }
 
   return (
 
     <View style={styles.container} >
 
 
-{ go == true ?
-      // <WebView
-      //   source={{ uri: url }}
-      // style={{ flex: 1, width: '100%', height: '100%' }}
-      //      />
-      open(url, "_self")
+      {go == true ?
+        // <WebView
+        //   source={{ uri: url }}
+        // style={{ flex: 1, width: '100%', height: '100%' }}
+        //      />
+        open(url, "_self")
         :
         ''
-}
+      }
 
       <View style={styles.headerContent}>
         <TouchableOpacity
@@ -245,10 +281,10 @@ export default function ResumoSacola({ navigation, route }) {
         <Text>Subtotal</Text> <Text> {formatarMoeda(valorTotal)}</Text>
       </View>
       {cupomInfo !== null ? (
-      <View style={styles.resumo}>
-        <Text >Cupom de desconto</Text> <Text style={{color:"#39cd39"}}>{formatarMoeda(valorTotal*valorDesconto)}</Text>
-      </View>
-      ):(null)}
+        <View style={styles.resumo}>
+          <Text >Cupom de desconto</Text> <Text style={{ color: "#39cd39" }}>{formatarMoeda(valorTotal * valorDesconto)}</Text>
+        </View>
+      ) : (null)}
       <View style={styles.resumo}>
         <Text>Taxa de entrega</Text>
         <Text style={{ color: `${color}` }}>
@@ -268,7 +304,7 @@ export default function ResumoSacola({ navigation, route }) {
           <strong>Total</strong>
         </Text>{" "}
         <Text>
-          <strong>{formatarMoeda(valorTotal*(1-valorDesconto) + taxaFrete)}</strong>
+          <strong>{formatarMoeda(valorTotal * (1 - valorDesconto) + taxaFrete)}</strong>
         </Text>
       </View>
       <br />
@@ -277,8 +313,8 @@ export default function ResumoSacola({ navigation, route }) {
         <View style={styles.dividerLine} />
       </View>
 
-      
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
         <Text style={styles.subTitleF}>Forma de pagamento</Text>
         <View>
           <Picker
@@ -391,10 +427,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   blocoText: {
-    fontSize: 14,
+    fontSize: 12,
   },
   subTitle: {
-    fontWeight: "bold",
+    fontWeight: 500,
     paddingTop: 20,
     paddingHorizontal: 20,
     fontSize: 15,
@@ -407,7 +443,7 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#dbdbe7",
+    backgroundColor: "#F3F3F3",
   },
   menuIcon: {
     width: 20,
@@ -487,12 +523,15 @@ const styles = StyleSheet.create({
     borderColor: "#FF9431",
   },
   input: {
-    width: 300,
+    width: 160,
     height: 40,
+    fontSize: 13,
     paddingHorizontal: 10,
-    backgroundColor: '#dbdbe749',
     marginVertical: 30,
-    borderRadius: 5,
-
-  }
+    color: "#4D585E",
+    borderColor: 'transparent',
+    borderWidth: 1,
+    borderBottomColor: "#FF9431",
+    marginLeft: 5,
+  },
 });
