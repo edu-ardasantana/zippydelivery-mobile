@@ -20,7 +20,7 @@ export default function FormConta({ navigation }) {
     const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+        axios.get(`http://localhost:8080/api/cliente/user/`+id)
             .then(function (response) {
                 const data = response.data;
                 setNome(data.nome);

@@ -5,7 +5,9 @@ const MyProvider = ({ children }) => {
     
 const [cart, setCart] = useState([]);
 
-
+const newCart = () =>{
+    setCart([])
+}
 
 const addToCart = (product) => {
     
@@ -53,7 +55,7 @@ const removeFromCart = (productId) => {
     setCart(updatedCart);
 };
 return (
-    <MyContext.Provider value={{ cart,setCart, addToCart, delToCart, removeFromCart }}>
+    <MyContext.Provider value={{ cart,setCart, addToCart, delToCart, removeFromCart, newCart }}>
         {children}
     </MyContext.Provider>
 );

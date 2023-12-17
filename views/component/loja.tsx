@@ -41,7 +41,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginVertical: 4,
         paddingHorizontal: 5,
-        paddingVertical: 4,
+        paddingVertical: 14,
+        //paddingBottom: 10
     },
     colum1: {
         flex: 1.2,
