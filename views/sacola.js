@@ -1,11 +1,11 @@
 
-import { Link, useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useMyContext } from './myContext';
 import { Button } from 'react-native-elements';
 import ItemSacola from './component/itemSacola';
-import { useMyContext } from './myContext';
+import React, { useEffect, useState } from 'react';
+import { Link, useIsFocused } from '@react-navigation/native';
+import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function Sacola({ navigation }) {
 
@@ -160,7 +160,7 @@ export default function Sacola({ navigation }) {
                     <Image style={{ height: 200, width: 200, alignSelf: 'center' }} source={{ uri: 'https://api.iconify.design/material-symbols:shopping-cart-outline-sharp.svg?color=%23e6e6e6', }}></Image>
                     <Text style={{ padding: 10, textAlign: 'center', fontWeight: '500', color: '#4D585E' }}>O seu carrinho está vazio!</Text>
                 </View>)}
-            {/*<Text style={{flex:1, justifyContent:'center', textAlign:'center', textAlignVertical:'center'}}>O carrinho está vazio!</Text>*/}
+            
             {cart.length > 0 && (
                 <FlatList
                     data={cart}
@@ -175,11 +175,10 @@ export default function Sacola({ navigation }) {
                 <View style={styles.espacoCupom}>
                     <TextInput
                         style={styles.inputCupom}
-                        placeholder='O código do cupom vai aqui.'
+                        placeholder='Código do cupom'
                         placeholderTextColor='#C4C4CC'
                         onChangeText={text => { setCupom(text); console.log(text); }}
                     />
-
                     <Button
                         buttonStyle={styles.buttonCupom}
                         title={"Aplicar"}
@@ -194,7 +193,7 @@ export default function Sacola({ navigation }) {
                 {cart.length > 0 && (
                     <View style={styles.footer2}>
                         <Text style={styles.footerText}>Total com a entrega:</Text>
-                        {cupomInfo ? ( // Verifica se cupomInfo tem dados
+                        {cupomInfo ? (
                             <>
                                 <View style={{ flexDirection: "column" }}>
                                     <Text style={styles.preco}>
@@ -347,6 +346,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#44AB65',
         fontWeight: '500',
+        fontSize: 14
     },
     inputCupom: {
         height: 30,
