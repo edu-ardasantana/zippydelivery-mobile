@@ -10,7 +10,7 @@ import { useMyContext } from './myContext';
 export default function Sacola({ navigation }) {
 
     localStorage.setItem("var", "sacola");
-
+    const idEmpresa = localStorage.getItem('idEmpresa')
     const [buttonTitle, setButtonTitle] = useState('Continuar');
     const [buttonAction, setButtonAction] = useState('ResumoSacola');
     const [getEndereco, setEndereco] = useState([]);
@@ -21,7 +21,10 @@ export default function Sacola({ navigation }) {
     const [cupomInfo, setCupomInfo] = useState(null);
 
     const { cart, setCart } = useMyContext();
+    const produtosDaEmpresa = cart.filter((produto) => produto.categoria.empresa.id === idEmpresa);
+    console.log(cart)
     const agora = new Date();
+    
     const limparSacola = () => {
         setCart([]);
     };
@@ -91,13 +94,15 @@ export default function Sacola({ navigation }) {
     } else {
         enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} ${getEndereco.complemento} `;
     }
+
     const renderCartItem = ({ item }) => (
         <View>
-            <TouchableOpacity onPress={() => navigation.navigate("DetalheItem", { produto: item, origin: 'Sacola' })}>
-                <ItemSacola item={item} />
-            </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("DetalheItem", { produto: item, origin: 'Sacola' })}>
+            <ItemSacola item={item} />
+          </TouchableOpacity>
         </View>
-    )
+      );
+      
 
     var desconto = 0
     const cartTotal = cart.reduce((total, cartItem) => {
