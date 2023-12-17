@@ -85,7 +85,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`http://api.projetopro.live/api/cliente/${idCliente}`, userData)
+        axios.put(`http://localhost:8080/api/cliente/${userId + 1}`, userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({

@@ -4,6 +4,8 @@ import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 import { Button } from 'react-native-elements';
 import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 import { TextInputMask } from 'react-native-masked-text';
+import app from './firebaseConfig';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 export default function CadastraUsuario({ navigation }) {
 
@@ -12,6 +14,82 @@ export default function CadastraUsuario({ navigation }) {
     const [cpf, setCpf] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth(app);
+
+    function formatarCPF(cpf) {
+        // Remove os pontos e hífen da string utilizando expressões regulares
+        return cpf.replace(/[^\d]/g, '');
+      }
+
+    const signInWithGoogle = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            console.log(user.email)
+            if (user.emailVerified) {
+              try {
+                const response = await axios.get("https://api.invertexto.com/v1/faker?token=5837%7CKQxaDmKFbfnYsFegMKaTDkhBmACz43Hy&fields=cpf");
+                const cpf = response.data.cpf;
+                console.log(formatarCPF(cpf))
+                const newUser = {
+                  nome: user.displayName,
+                  cpf: formatarCPF(cpf),
+                  email: user.email,
+                  senha: user.uid
+                };  
+                const users = await axios.get("http://localhost:8080/api/cliente");
+                const emailDoNovoUsuario = newUser.email;
+                const emailExiste = users.data.some(user => user.email === emailDoNovoUsuario)
+                if (emailExiste) {
+                    await logarComGoogle(newUser.email, newUser.senha);
+                  } else {
+                    await registrarNovoUsuario(newUser);
+                    await logarComGoogle(newUser.email, newUser.senha);
+                  }       
+              } catch (error) {
+                console.error('Erro ao obter CPF ou criar usuário:', error);
+              }
+            } else {
+              showMessage({
+                message: `Não foi possível verificar sua conta.`,
+                type: "danger",
+              });
+            }
+          } catch (error) {
+            console.error('Erro ao autenticar com o Google:', error);
+          }
+        } 
+               
+        const registrarNovoUsuario = async (newUser) => {
+            try {
+                await axios.post('http://localhost:8080/api/cliente', newUser);
+            } catch (error) {
+                console.error('Erro ao registrar novo usuário:', error);
+                throw error; 
+            }
+        };
+        
+        const logarComGoogle = async (email, uid) => {
+            const credentials = {
+                username: email,
+                password: uid,
+            };
+            
+            try {
+                const response = await axios.post('http://localhost:8080/api/login', credentials);
+                window.localStorage.setItem("id", response.data.id);
+                window.localStorage.setItem("token", response.data.token);
+                navigation.navigate('Home');
+            } catch (error) {
+                showMessage({
+                    message: `Email ou senha inválidos!`,
+                    type: "danger",
+                });
+                console.error('Erro ao fazer login:', error);
+            }
+        };
 
     const inserirDados = () => {
         const userData = {
@@ -122,7 +200,7 @@ export default function CadastraUsuario({ navigation }) {
             </View>
 
             <View style={{ alignItems: 'center' }}>
-                <TouchableOpacity style={styles.googleSignInButton}>
+                <TouchableOpacity onPress={signInWithGoogle} style={styles.googleSignInButton}>
                     <Image
                         style={styles.googleIcon}
                         source={require('../views/img/simbolo-do-google.png')}
@@ -135,7 +213,6 @@ export default function CadastraUsuario({ navigation }) {
             </View>
 
         </View>
-
 
     )
 
