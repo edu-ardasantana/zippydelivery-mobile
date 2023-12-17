@@ -6,7 +6,6 @@ import Footer from './component/footer';
 export default function Menu({ navigation }) {
 
   const [nome, setNome] = useState("");
-
   const id = window.localStorage.getItem("id");
 
   useEffect(() => {
@@ -15,7 +14,6 @@ export default function Menu({ navigation }) {
         console.log(response.data)
          const data = response.data;
         setNome(data.nome);
-
       })
       .catch(function (error) {
         console.log(error);

@@ -13,7 +13,7 @@ export default function ItemSacola({item}) {
   
     const getProductQuantity = (productId) => {
       const cartItem = cart.find((produto) => produto.id === productId);
-      return cartItem ? cartItem.quantity : 1;
+      return cartItem ? (cartItem.quantity) : 1;
     };
 
     function formatarMoeda(dataParam) {
@@ -24,6 +24,7 @@ export default function ItemSacola({item}) {
 
             <View style={styles.colum1}>
                 <Image style={styles.itemImage} source={item.imagem} />
+                {/*<Image style={styles.itemImage} source={{uri:(item.imagem)}} />*/}
             </View>
 
             <View style={styles.colum2}>
