@@ -7,11 +7,6 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'rea
 export default function PedidoConfirmado({ route, navigation }) {
 
     const [pedidoExiste, setPedidoExiste] = useState(true);
-
-    useEffect(() => {
-        setPedidoExiste(true);
-    }, []);
-
     const idPedido =localStorage.getItem("idPedido");
     const [getStatusPedido, setStatusPedido] = useState();
     const [getTempoEntrega, setTempoEntrega] = useState();
@@ -27,7 +22,11 @@ export default function PedidoConfirmado({ route, navigation }) {
     const [getImgEmpresa, setImgEmpresa] = useState();
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/pedido/${idPedido}`)
+        setPedidoExiste(true);
+    }, []);
+
+    useEffect(() => {
+        axios.get(`http://api.projetopro.live/api/pedido/${idPedido}`)
             .then(function (response) {
                 setStatusPedido(response.data.statusPedido)
                 setTempoEntrega(response.data.empresa.tempoEntrega)
@@ -48,8 +47,7 @@ export default function PedidoConfirmado({ route, navigation }) {
     }, [])
 
     function cancelarPedido() {
-
-        axios.delete(`http://localhost:8080/api/pedido/${idPedido}`)
+        axios.delete(`http://api.projetopro.live/api/pedido/${idPedido}`)
         .then(function (response) {
             console.log(response);
         }).catch(function (error) {
@@ -58,9 +56,7 @@ export default function PedidoConfirmado({ route, navigation }) {
                 message: `Algo deu errado: ${error}`,
                 type: "danger",
             });
-
         });
-
         setPedidoExiste(false);
     }
 

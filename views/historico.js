@@ -14,7 +14,7 @@ export default function Historico({ navigation }) {
     }, [])
  
     function carregarLista() {
-        axios.get(`http://localhost:8080/api/pedido/porcliente/${userId + 1}`)
+        axios.get(`http://api.projetopro.live/api/pedido/porcliente/${userId + 1}`)
         .then((response) => {
             setLista(response.data)
             console.log(response.data)

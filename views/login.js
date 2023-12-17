@@ -79,6 +79,15 @@ export default function Login({ navigation }) {
                 window.localStorage.setItem("token", response.data.token);
                 navigation.navigate('Home');
             } catch (error) {
+
+        axios.post('http://api.projetopro.live/api/login', credentials)
+            .then(function (response) {
+                navigation.navigate('Home')
+                window.localStorage.setItem("id", response.data.id)
+                window.localStorage.setItem("token", response.data.token)
+            })
+            .catch(function (error) {
+
                 showMessage({
                     message: `Email ou senha inválidos!`,
                     type: "danger",

@@ -22,7 +22,7 @@ export default function FormEndereco({ navigation }) {
     const local = localStorage.getItem("var");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
+        axios.get(`http://api.projetopro.live/api/cliente/user/${userId}`)
             .then(function (response) {
                 const data = response.data;
                 setLogradouro(data.logradouro);
