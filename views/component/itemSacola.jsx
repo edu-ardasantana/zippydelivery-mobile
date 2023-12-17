@@ -13,7 +13,7 @@ export default function ItemSacola({item}) {
   
     const getProductQuantity = (productId) => {
       const cartItem = cart.find((produto) => produto.id === productId);
-      return cartItem ? cartItem.quantity : 1;
+      return cartItem ? (cartItem.quantity) : 1;
     };
 
     function formatarMoeda(dataParam) {
