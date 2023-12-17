@@ -6,6 +6,7 @@ import { useRoute } from '@react-navigation/native';
 import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 
 export default function FormConta({ navigation }) {
+
     const [modalVisible, setModalVisible] = useState(false);
 
     const route = useRoute();
@@ -19,7 +20,7 @@ export default function FormConta({ navigation }) {
     const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+        axios.get(`http://localhost:8080/api/cliente/user/`+id)
             .then(function (response) {
                 const data = response.data;
                 setNome(data.nome);

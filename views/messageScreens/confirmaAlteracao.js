@@ -14,7 +14,7 @@ export default function ConfirmaAlteracao({ navigation }) {
             </View>
 
             <View style={styles.body}>
-                <Image style={styles.iconMessage} source={require('/views/img/successUpdateIcon.png')} />
+                <Image style={styles.iconMessage} source={require('../../views/img/successUpdateIcon.png')} />
                 <Text style={styles.title1}>Sucesso</Text>
                 <Text style={styles.title2}>Seus dados foram alterados</Text>
             </View>
