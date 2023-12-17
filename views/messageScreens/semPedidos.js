@@ -10,7 +10,7 @@ export default function SemPedidos({ navigation }) {
                 <Text style={styles.title1}>Seus pedidos anteriores</Text>
             </View>
             <View style={styles.body}>
-                <Image style={styles.iconMessage} source={require('/views/img/noOrderIcon.png')} />
+                <Image style={styles.iconMessage} source={require('../../views/img/noOrderIcon.png')} />
                 <Text style={styles.title2}>Sem histórico de pedidos...</Text>
             </View>
             <Footer />

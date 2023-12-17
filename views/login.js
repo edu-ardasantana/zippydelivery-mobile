@@ -32,7 +32,8 @@ export default function Login({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={{ alignItems: 'center' }}>
-                <Image style={styles.logo} source={require('/views/img/LogoNovo.png')} />
+                
+                <Image style={styles.logo} source={require('../views/img/LogoNovo.png')} />
                 <View>
                     <Text style={styles.label}>Email</Text>
                     <TextInput
@@ -70,7 +71,7 @@ export default function Login({ navigation }) {
 
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity style={styles.googleSignInButton}>
-                        <Image style={styles.googleIcon} source={require('/views/img/simbolo-do-google.png')} />
+                        <Image style={styles.googleIcon} source={require('../views/img/simbolo-do-google.png')} />
                         <Text style={styles.googleButtonText}>Entre com o Google</Text>
                     </TouchableOpacity>
                     <FlashMessage position="top" />

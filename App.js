@@ -5,8 +5,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './views/home';
 import Login from './views/login';
 import CadastraUsuario from './views/cadastraUsuario';
-import HomeLojaScreen from '/views/homeLoja';
-import MenuScreen from '/views/menu';
+import HomeLojaScreen from './views/homeLoja';
+import MenuScreen from './views/menu';
 import DetalheItemScreen from './views/detalheItem';
 import SacolaScreen from './views/sacola';
 import PedidoConfirmadoScreen from './views/messageScreens/pedidoConfirmado';
@@ -19,14 +19,21 @@ import SemPedidosScreen from './views/messageScreens/semPedidos';
 import ResumoSacola from './views/resumoSacola';
 import DetalhePedido from './views/detalhePedido';
 import { MyProvider } from './views/myContext';
+import * as Linking from 'expo-linking';
+
+const prefix = Linking.createURL('/');
 
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const linking = {
+    prefixes: [prefix],
+  };
+  
   return (
     <MyProvider>
-      <NavigationContainer>
+      <NavigationContainer linking={linking}>
         <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />

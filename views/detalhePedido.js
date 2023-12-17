@@ -6,6 +6,18 @@ export default function DetalhePedido({ route, navigation }) {
 
     const { pedido } = route.params;
 
+    const getDetalhesPagamento = (formaPagamento) => {
+        if (formaPagamento === 'DINHEIRO') {
+            return ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWZ-uaAvyA8DDCQ5A2AgTgdI7HsIv3ffGFnw&usqp=CAU', 40, 50] 
+        } else if (formaPagamento === 'PIX') {
+            return ['https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo%E2%80%94pix_powered_by_Banco_Central_%28Brazil%2C_2020%29.svg/1500px-Logo%E2%80%94pix_powered_by_Banco_Central_%28Brazil%2C_2020%29.svg.png?20201201220625', 20, 60];
+        } else {
+            return ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjymXY5UNSvyvZ9sBNGOOyM65lkvPHLSbts74OEl0UZ1KZ7KNveTU2qklG3AYINfhadnc&usqp=CAU', 30, 60];
+        }
+    };
+
+    const [uriImagem, imgHeight, imgWidth] = getDetalhesPagamento(pedido.formaPagamento);
+
     function calcularSubtotal(itensPedido) {
         return itensPedido.reduce((subtotal, item) => subtotal + item.qtdProduto * item.valorUnitario, 0);
     }
