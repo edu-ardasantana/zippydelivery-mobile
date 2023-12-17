@@ -30,7 +30,7 @@ export default function Sacola({ navigation }) {
     };
 
     function aplicarCupom() {
-        axios.get('http://localhost:8080/api/cupom/codigo/' + getCupom)
+        axios.get('http://api.projetopro.live/api/cupom/codigo/' + getCupom)
             .then(function (response) {
                 if (response.data !== null && response.data != []) {
                     if (response.data.fimVigencia[0] > agora.getFullYear() && response.data.quantidadeMaximaUso > 0) 
@@ -69,7 +69,7 @@ export default function Sacola({ navigation }) {
 
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/user/${userId}`)
+        axios.get(`http://api.projetopro.live/api/cliente/user/${userId}`)
             .then(function (response) {
                 setEndereco(response.data)
             })

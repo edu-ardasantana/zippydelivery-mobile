@@ -40,7 +40,7 @@ export default function ResumoSacola({ navigation, route }) {
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+    axios.get(`http://api.projetopro.live/api/cliente/user/${id}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -50,7 +50,7 @@ export default function ResumoSacola({ navigation, route }) {
   }, [isFocused])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
+    axios.get(`http://api.projetopro.live/api/empresa/${idEmpresa}`)
       .then(function (response) {
         console.log(response.data.formaPagamento)
         setFormasPagamento(response.data.formasPagamento)
@@ -76,8 +76,8 @@ export default function ResumoSacola({ navigation, route }) {
     ),
   ];
 
-  function fazerPedido(cart) {
-    axios.post('http://localhost:8080/api/pedido', {
+  function fazerPedido(cart){
+    axios.post('http://api.projetopro.live/api/pedido', {
       id_cliente: Number(id) + 1,
       id_empresa: idEmpresa,
       codigoCupom: null,
@@ -182,7 +182,7 @@ export default function ResumoSacola({ navigation, route }) {
     const itensM = []
     /*itensC.forEach( e => {
 
-      axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( function (response) {
+      axios.get(`http://api.projetopro.live/api/produto/${e.id_produto}`).then( function (response) {
         debugger
         console.log(response)
         console.log(e)

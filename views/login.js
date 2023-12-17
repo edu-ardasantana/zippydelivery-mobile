@@ -15,7 +15,7 @@ export default function Login({ navigation }) {
             password: getSenha,
         };
 
-        axios.post('http://localhost:8080/api/login', credentials)
+        axios.post('http://api.projetopro.live/api/login', credentials)
             .then(function (response) {
                 navigation.navigate('Home')
                 window.localStorage.setItem("id", response.data.id)
