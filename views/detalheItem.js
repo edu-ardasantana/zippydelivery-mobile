@@ -13,8 +13,6 @@ export default function DetalheItem({ route, navigation }) {
 
   const checkCartForCompany = (productId) => {
     const cartItem = cart.find((produto) => produto.id === productId);
-    console.log(cart[0].categoria.empresa.id, idEmpresa)
-    console.log(typeof(cart[0].categoria.empresa.id), typeof(idEmpresa))
     if (cart.length === 0 || cartItem && cart.length > 0 && cart[0].categoria.empresa.id == idEmpresa){
       navigation.navigate('Sacola')
     }else{
@@ -125,6 +123,22 @@ export default function DetalheItem({ route, navigation }) {
               }}
             >
               <Text style={styles.buttonText}>Ok</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                {
+                  backgroundColor: 'white',
+                  borderColor: '#FF9431',
+                  borderWidth: 1, // Adiciona uma largura para a borda
+                  marginLeft: 10
+                }
+              ]}
+              onPress={() => {
+                setShowModal(false);
+              }}
+            >
+              <Text style={[styles.buttonText, { color: '#FF9431' }]}>Não</Text>
             </TouchableOpacity>
           </View>
         </View>
