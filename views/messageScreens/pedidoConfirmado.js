@@ -7,11 +7,6 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'rea
 export default function PedidoConfirmado({ route, navigation }) {
 
     const [pedidoExiste, setPedidoExiste] = useState(true);
-
-    useEffect(() => {
-        setPedidoExiste(true);
-    }, []);
-
     const idPedido =localStorage.getItem("idPedido");
     const [getStatusPedido, setStatusPedido] = useState();
     const [getTempoEntrega, setTempoEntrega] = useState();
@@ -25,6 +20,10 @@ export default function PedidoConfirmado({ route, navigation }) {
     const [getFormaPagamento, setFormaPagamento] = useState();
     const [getValorTotal, setValorTotal] = useState();
     const [getImgEmpresa, setImgEmpresa] = useState();
+
+    useEffect(() => {
+        setPedidoExiste(true);
+    }, []);
 
     useEffect(() => {
         axios.get(`http://api.projetopro.live/api/pedido/${idPedido}`)
@@ -48,7 +47,6 @@ export default function PedidoConfirmado({ route, navigation }) {
     }, [])
 
     function cancelarPedido() {
-
         axios.delete(`http://api.projetopro.live/api/pedido/${idPedido}`)
         .then(function (response) {
             console.log(response);
@@ -58,9 +56,7 @@ export default function PedidoConfirmado({ route, navigation }) {
                 message: `Algo deu errado: ${error}`,
                 type: "danger",
             });
-
         });
-
         setPedidoExiste(false);
     }
 
