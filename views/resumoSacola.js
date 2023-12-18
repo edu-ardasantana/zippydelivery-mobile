@@ -281,13 +281,9 @@ export default function ResumoSacola({ navigation, route }) {
             style={styles.input}
             selectedValue={selectedPayment}
             onValueChange={(itemValue, itemIndex) => {
-              // Realiza a verificação do valor escolhido
               if (itemValue === 'Dinheiro' || itemValue === 'DINHEIRO') {
-                // Chama a função desejada
                 setPagamentoNaEntrega(true);
               }
-
-              // Atualiza o estado com o valor escolhido
               setSelectedPayment(itemValue);
             }}
           >

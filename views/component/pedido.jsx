@@ -4,10 +4,10 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
 export default function Pedido({quantity, restaurantName, orderName, orderStatus, orderNumber, onPress}) {
     
-    const uriStatus = 'https://api.iconify.design/grommet-icons/status-warning.svg?color=%23f8da45&width=50&height=50'
+    let uriStatus = 'https://api.iconify.design/grommet-icons/status-warning.svg?color=%23f8da45&width=50&height=50'
     if (orderStatus === 'Concluído'){
         uriStatus = 'https://api.iconify.design/material-symbols:check-circle.svg'
-    }else if (orderStatus === 'Cancelado'){
+    } else if (orderStatus === 'Cancelado'){
         uriStatus = 'https://api.iconify.design/pajamas/canceled-circle.svg?color=red&width=50&height=50&flip=vertical'
     }
     const resto = quantity - 1
