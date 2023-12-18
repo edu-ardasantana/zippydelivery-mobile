@@ -85,7 +85,7 @@ export default function ResumoSacola({ navigation, route }) {
       dataHora: dataHoraFormatada,
       formaPagamento: selectedPayment,
       statusPagamento: "Aguardando Confirmação",
-      statusPedido: "Em Processamento",
+      statusPedido: "Pendente",
       taxaEntrega: taxaFrete,
       logradouro: getEndereco.logradouro,
       bairro: getEndereco.bairro,
