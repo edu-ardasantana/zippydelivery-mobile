@@ -235,9 +235,10 @@ export default function ResumoSacola({ navigation, route }) {
   }
 
   function primeiraLetraMaiuscula(palavra) {
-    palavra = palavra.replace(/[^a-zA-Z0-9 ]/g, ' ');
-    return palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase();
+    palavra = palavra.replace(/[^a-zA-Z0-9áéíóúâêîôûàèìòùãẽĩõũç ]/g, ' ');
+    return palavra.charAt(0).toLocaleUpperCase() + palavra.slice(1).toLocaleLowerCase();
   }
+  
 
   return (
 
