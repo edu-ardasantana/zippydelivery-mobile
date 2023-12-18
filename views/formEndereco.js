@@ -85,7 +85,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`http://localhost:8080/api/cliente/${userId + 1}`, userData)
+        axios.put(`http://api.projetopro.live/api/cliente/${userId + 1}`, userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({
@@ -103,51 +103,36 @@ export default function FormEndereco({ navigation }) {
     }
 
     return (
-
         <View style={styles.container}>
-
-            {local == "sacola" ?
-
+            { local == "sacola"
+                ?
                 <View style={styles.headerContent}>
                     <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
                         <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
                     </TouchableOpacity>
 
                 </View>
-
                 :
-
                 local == "menu" ?
-
-                <View style={styles.headerContent}>
-                    <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
-                        <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-                    </TouchableOpacity>
-
-                </View>
-
-                : 
-
-                <View style={styles.headerContent}>
-                    <TouchableOpacity onPress={() => navigation.push('Home')} style={styles.iconWrapper}>
-                        <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-                    </TouchableOpacity>
-
-                </View>
-                
+                    <View style={styles.headerContent}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
+                            <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    <View style={styles.headerContent}>
+                        <TouchableOpacity onPress={() => navigation.push('Home')} style={styles.iconWrapper}>
+                            <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                        </TouchableOpacity>
+                    </View>
             }
 
             <Text style={styles.title}>Alterar endereço de entrega</Text>
 
             <View style={{ alignItems: 'center' }}>
-
                 <View>
                     <Text style={styles.label}>Logradouro</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => setLogradouro(text)}
-                        value={logradouro}
-                    />
+                    <TextInput style={styles.input} value={logradouro} onChangeText={(text) => setLogradouro(text)}/>
                 </View>
 
                 <View>
@@ -188,9 +173,7 @@ export default function FormEndereco({ navigation }) {
                     <TextInputMask
                         style={styles.input}
                         type={'custom'}
-                        options={{
-                            mask: '99999-999'
-                          }}
+                        options={{ mask: '99999-999' }}
                         onChangeText={(text) => setCep(text)}
                         value={cep}
                     />
@@ -208,15 +191,11 @@ export default function FormEndereco({ navigation }) {
                 <Button
                     buttonStyle={styles.button}
                     title="Use este endereço"
-                    onPress={() => {
-                        inserirDados();
-                    }}
+                    onPress={() => { inserirDados(); }}
                 />
-
             </View>
         </View>
     )
-
 }
 
 const styles = StyleSheet.create({
