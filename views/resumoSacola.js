@@ -36,11 +36,12 @@ export default function ResumoSacola({ navigation, route }) {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [url, setUrl] = useState('');
   const [go, setGo] = useState(false);
+  const [pagamentoNaEntrega, setPagamentoNaEntrega] = useState(false);
   const [produto, setProduto] = useState();
 
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/user/${id}`)
+    axios.get(`http://api.projetopro.live/api/cliente/user/${id}`)
       .then(function (response) {
         setEndereco(response.data)
       })
@@ -50,7 +51,7 @@ export default function ResumoSacola({ navigation, route }) {
   }, [isFocused])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
+    axios.get(`http://api.projetopro.live/api/empresa/${idEmpresa}`)
       .then(function (response) {
         console.log(response.data.formaPagamento)
         setFormasPagamento(response.data.formasPagamento)
@@ -76,8 +77,8 @@ export default function ResumoSacola({ navigation, route }) {
     ),
   ];
 
-  function fazerPedido(cart) {
-    axios.post('http://localhost:8080/api/pedido', {
+  function fazerPedido(cart, funcaoAdicional = null) {
+    axios.post('http://api.projetopro.live/api/pedido', {
       id_cliente: Number(id) + 1,
       id_empresa: idEmpresa,
       codigoCupom: null,
@@ -94,18 +95,22 @@ export default function ResumoSacola({ navigation, route }) {
       complemento: getEndereco.complemento,
       numeroEndereco: '12',
       itens: montaitens(cart)
-    }
-    ).then(function (response) {
-      console.log("ok ok houve ok")
-      localStorage.setItem('idPedido', response.data.id);
-      console.log(response.data.id)
-      mercadoPago(cart)
     })
+      .then(function (response) {
+        console.log("ok ok houve ok")
+        localStorage.setItem('idPedido', response.data.id);
+        console.log(response.data.id)
+        if (funcaoAdicional) {
+          mercadoPago(cart)
+        } else {
+          navigation.navigate("PedidoConfirmado", response.data)
+        }
+      })
       .catch(function (error) {
-        console.log(error)
+        console.log(error);
       });
-
-  }
+        
+    }
 
   function montaitens(cart) {
     var listaItens = []
@@ -180,32 +185,6 @@ export default function ResumoSacola({ navigation, route }) {
   function mercadoPago(cart) {
 
     const itensM = []
-    /*itensC.forEach( e => {
-
-      axios.get(`http://localhost:8080/api/produto/${e.id_produto}`).then( function (response) {
-        debugger
-        console.log(response)
-        console.log(e)
-        //await setProduto(response.data);
-        let item = {
-          title: response.data.titulo,
-          description: response.data.descricao,
-          category_id: response.data.categoria.descricao,
-          quantity: e.qtdProduto,
-          currency_id: "BRL",
-          unit_price: e.valorUnitario
-        }
-
-        itensM.push(item)
-       
-      })
-      //console.log(produto)
-      
-    })
-    */
-
-    //console.log(itensM);
-
     axios.post('https://api.mercadopago.com/checkout/preferences',
       {
         "items": montaitensMercadoPago(cart),
@@ -216,17 +195,6 @@ export default function ResumoSacola({ navigation, route }) {
         "shipments": {
           "cost": cart[0].categoria.empresa.taxaFrete
         }
-
-        // [
-        //   {
-        //     "title": "Dummy Title" ,
-        //     "description": "Dummy description",
-        //     "category_id": "car_electronics",
-        //     "quantity": 2,
-        //     "currency_id": "BRL",
-        //     "unit_price": 1000
-        //   }
-        // ]
       }, { headers: headers }).then(function (response) {
         setUrl(response.data.init_point)
         setGo(true)
@@ -240,18 +208,10 @@ export default function ResumoSacola({ navigation, route }) {
   }
 
   return (
-
     <View style={styles.container} >
-
-
-      {go == true ?
-        // <WebView
-        //   source={{ uri: url }}
-        // style={{ flex: 1, width: '100%', height: '100%' }}
-        //      />
-        open(url, "_self")
-        :
-        ''
+      {go == true
+        ? open(url, "_self")
+        : ''
       }
 
       <View style={styles.headerContent}>
@@ -320,7 +280,12 @@ export default function ResumoSacola({ navigation, route }) {
           <Picker
             style={styles.input}
             selectedValue={selectedPayment}
-            onValueChange={(itemValue, itemIndex) => setSelectedPayment(itemValue)}
+            onValueChange={(itemValue, itemIndex) => {
+              if (itemValue === 'Dinheiro' || itemValue === 'DINHEIRO') {
+                setPagamentoNaEntrega(true);
+              }
+              setSelectedPayment(itemValue);
+            }}
           >
             {listaFormasPagamentos.map((formaPagamento) => (
               <Picker.Item
@@ -385,7 +350,13 @@ export default function ResumoSacola({ navigation, route }) {
         <Button
           buttonStyle={styles.button}
           title="Fazer pedido"
-          onPress={() => fazerPedido(cart)}
+          onPress={() => {
+            if (pagamentoNaEntrega) {
+              fazerPedido(cart);
+            } else {
+              fazerPedido(cart, mercadoPago);
+            }
+        }}
         />
       </View>
     </View>
