@@ -2,110 +2,101 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Footer from '../components/footer';
-import Loja from '../components/loja'
+import Loja from '../components/loja';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home({ navigation }) {
-
-  localStorage.setItem("var", "home");
-
-  const id = window.localStorage.getItem("id");
-
-  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
-
-  const banners = [
-    require('../assets/images/banner1.png'),
-    require('../assets/images/banner2.png'),
-    
-  ]
-
-
   const [empresas, setEmpresas] = useState([]);
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
-
+  const [id, setId] = useState(null);
   const isFocused = useIsFocused();
 
+  const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
+  const banners = [
+    require('../assets/images/banner1.png'),
+    require('../assets/images/banner2.png'),
+  ];
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/empresa')
-      .then(function (response) {
-        return setEmpresas(...empresas, response.data);
-      }).catch(function (error) {
-        console.log(error);
-      });
-
-  }, [])
+    // Fetch ID from AsyncStorage
+    const fetchId = async () => {
+      const storedId = await AsyncStorage.getItem('id');
+      setId(storedId);
+    };
+    fetchId();
+  }, []);
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/${id}`)
-      .then(function (response) {
-        const data = response.data;
-        setCidade(data.cidade);
-        setEstado(data.estado);
-      })
-      .catch(function (error) {
-        console.log(error);
-        console.log(error)
-      });
-  }, [isFocused])
+    // Fetch empresas
+    axios.get('http://192.168.1.16:8080/api/empresa')
+      .then(response => setEmpresas(response.data))
+      .catch(error => console.log(error));
+  }, []);
 
-  let endereco = cidade == null ? null : `${cidade}, ${estado}`;
+  useEffect(() => {
+    if (id) {
+      // Fetch cliente data
+      axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/${id}`)
+        .then(response => {
+          const data = response.data;
+          setCidade(data.cidade);
+          setEstado(data.estado);
+        })
+        .catch(error => console.log(error));
+    }
+  }, [id, isFocused]);
+
+  let endereco = cidade ? `${cidade}, ${estado}` : null;
 
   return (
     <View style={styles.container}>
-
       <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
-        <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
+        <Image style={[styles.menuIcon, { width: 20, height: 20 }]}  source={require('../assets/images/iconFooter/material-symbols--location-on-rounded.png')} />
         {endereco == null
           ? <Text style={styles.endereco}>Escolher endereço</Text>
           : <Text style={styles.endereco}>{endereco}</Text>
         }
-        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
+        <Image style={styles.menuIcon} source={require('../assets/images/iconFooter/solar--alt-arrow-down-outline.png')} />
       </TouchableOpacity>
 
       <ScrollView>
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={[styles.carousel, { marginLeft: 17 }]}>
-          {[1, 2].map((index) =>
+          {banners.map((banner, index) => (
             <View key={index} style={styles.banner}>
-              <Image style={styles.anuncioImage} source={banners[index]} />
+              <Image style={styles.anuncioImage} source={banner} />
             </View>
-          )}
+          ))}
         </ScrollView>
 
         <View style={styles.containerSearch}>
           <View style={styles.search}>
             <TextInput style={styles.input} placeholder="Busque por pratos ou ingredientes" />
             <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-              <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg', }} />
+              <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431' }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} />
             </TouchableOpacity>
           </View>
         </View>
 
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-          {listagemEtiquetas.map((index) =>
-            index === 1 ? (
-              <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                <Text style={[styles.textoEtiqueta, { color: 'white' }]}>Etiqueta {index}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={styles.etiqueta}>
-                <Text style={styles.textoEtiqueta}>Etiqueta {index}</Text>
-              </TouchableOpacity>
-            ))}
+          {listagemEtiquetas.map(index => (
+            <TouchableOpacity key={index} style={[styles.etiqueta, index === 1 ? { backgroundColor: '#FF9431' } : null]}>
+              <Text style={[styles.textoEtiqueta, index === 1 ? { color: 'white' } : null]}>Etiqueta {index}</Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
 
         <Text style={styles.title2}>Lojas</Text>
         {empresas.map((empresa, index) => (
           <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega}/>
+            <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
           </TouchableOpacity>
         ))}
-
       </ScrollView>
+
       <Footer />
     </View>
-
   );
 }
 

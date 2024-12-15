@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { Button } from 'react-native-elements';
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from 'react-native-masked-text';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function FormEndereco({ navigation }) {
 
@@ -15,34 +17,47 @@ export default function FormEndereco({ navigation }) {
     const [cep, setCep] = useState('');
     const [complemento, setComplemento] = useState('');
     const [idCliente, setIdCliente] = useState('');
-
     const [selectedUF, setSelectedUF] = useState('');
+    const [local, setLocal] = useState('');
 
-    const id = window.localStorage.getItem("id");
+    // const id = window.localStorage.getItem("id");
 
-    const local = localStorage.getItem("var");
+    // const local = localStorage.getItem("var");
+
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
-            .then(function (response) {
-                const data = response.data;
-                setDescricao(data.descricao);
-                setLogradouro(data.logradouro);
-                setBairro(data.bairro);
-                setCidade(data.cidade);
-                setCep(data.cep);
-                setEstado(data.estado);
-                setComplemento(data.complemento);
-                setIdCliente(data.id);
-            })
-            .catch(function (error) {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error}`,
-                    type: "danger",
-                });
-            });
+        AsyncStorage.getItem("id").then((id) => {
+            if (id) {
+                axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
+                    .then((response) => {
+                        const data = response.data;
+                        setDescricao(data.descricao);
+                        setLogradouro(data.logradouro);
+                        setBairro(data.bairro);
+                        setCidade(data.cidade);
+                        setCep(data.cep);
+                        setEstado(data.estado);
+                        setComplemento(data.complemento);
+                        setIdCliente(data.id);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        showMessage({
+                            message: `Algo deu errado: ${error}`,
+                            type: "danger",
+                        });
+                    });
+                    AsyncStorage.getItem("var").then((local) => {
+                        if (local) {
+                            setLocal(local);
+                        
+                        }
+                    });
+            }
+        });
     }, []);
+
+
 
     const estados = [
         { label: "Selecione...", value: "" },
@@ -88,7 +103,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`http://localhost:8080/api/cliente/${idCliente}`, userData)
+        axios.put(`http://192.168.1.16:8080/api/cliente/${idCliente}`, userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({
@@ -108,113 +123,113 @@ export default function FormEndereco({ navigation }) {
     return (
 
         <View style={styles.container}>
-    {local == "sacola" ?
-        <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
-                <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-            </TouchableOpacity>
-        </View>
-        :
-        local == "menu" ?
-        <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
-                <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-            </TouchableOpacity>
-        </View>
-        : 
-        <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-                <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-            </TouchableOpacity>
-        </View>
-    }
-    <Text style={styles.title}>Alterar endereço de entrega</Text>
+            {local == "sacola" ?
+                <View style={styles.headerContent}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
+                        <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png')} />
+                    </TouchableOpacity>
+                </View>
+                :
+                local == "menu" ?
+                    <View style={styles.headerContent}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
+                            <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png')} />
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    <View style={styles.headerContent}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
+                            <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png')} />
+                        </TouchableOpacity>
+                    </View>
+            }
+            <Text style={styles.title}>Alterar endereço de entrega</Text>
 
-    <View style={styles.formContainer}>
+            <View style={styles.formContainer}>
 
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Descrição</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setDescricao(text)}
-                value={descricao}
-            />
-        </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Descrição</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => setDescricao(text)}
+                        value={descricao}
+                    />
+                </View>
 
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Logradouro</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setLogradouro(text)}
-                value={logradouro}
-            />
-        </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Logradouro</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => setLogradouro(text)}
+                        value={logradouro}
+                    />
+                </View>
 
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Bairro</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setBairro(text)}
-                value={bairro}
-            />
-        </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Bairro</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => setBairro(text)}
+                        value={bairro}
+                    />
+                </View>
 
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cidade</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setCidade(text)}
-                value={cidade}
-            />
-        </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Cidade</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => setCidade(text)}
+                        value={cidade}
+                    />
+                </View>
 
-        <View style={styles.row}>
-            <View style={styles.inputWrapper}>
-                <Text style={styles.label}>UF</Text>
-                <Picker
-                    style={styles.input}
-                    selectedValue={selectedUF}
-                    onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
-                    value={estado}
-                >
-                    {estados.map((estado) => (
-                        <Picker.Item key={estado.value} label={estado.label} value={estado.value} />
-                    ))}
-                </Picker>
-            </View>
+                <View style={styles.row}>
+                    <View style={styles.inputWrapper}>
+                        <Text style={styles.label}>UF</Text>
+                        <Picker
+                            style={styles.input}
+                            selectedValue={selectedUF}
+                            onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
+                            value={estado}
+                        >
+                            {estados.map((estado) => (
+                                <Picker.Item key={estado.value} label={estado.label} value={estado.value} />
+                            ))}
+                        </Picker>
+                    </View>
 
-            <View style={styles.inputWrapper}>
-                <Text style={styles.label}>CEP</Text>
-                <TextInputMask
-                    style={styles.input}
-                    type={'custom'}
-                    options={{
-                        mask: '99999-999'
+                    <View style={styles.inputWrapper}>
+                        <Text style={styles.label}>CEP</Text>
+                        <TextInputMask
+                            style={styles.input}
+                            type={'custom'}
+                            options={{
+                                mask: '99999-999'
+                            }}
+                            onChangeText={(text) => setCep(text)}
+                            value={cep}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Complemento</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => setComplemento(text)}
+                        value={complemento}
+                    />
+                </View>
+
+                <Button
+                    buttonStyle={styles.button}
+                    title="Adicionar Endereço"
+                    onPress={() => {
+                        inserirDados();
                     }}
-                    onChangeText={(text) => setCep(text)}
-                    value={cep}
                 />
             </View>
         </View>
-
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Complemento</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setComplemento(text)}
-                value={complemento}
-            />
-        </View>
-
-        <Button
-            buttonStyle={styles.button}
-            title="Adicionar Endereço"
-            onPress={() => {
-                inserirDados();
-            }}
-        />
-    </View>
-</View>
 
     )
 
@@ -269,11 +284,12 @@ const styles = StyleSheet.create({
     },
     input: {
         width: '100%',
-        height: 40,
+        height: 50,
         paddingHorizontal: 10,
         backgroundColor: '#dbdbe749',
         borderRadius: 5,
         marginBottom: 10,
+        
     },
     button: {
         marginTop: 20,

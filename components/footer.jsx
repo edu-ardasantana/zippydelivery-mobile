@@ -6,6 +6,7 @@ import { Icon } from 'react-native-elements';
 export default function Footer() {
 
   const navigation = useNavigation();
+  
 
   return (
     <View style={styles.footerContainer}>
@@ -29,22 +30,22 @@ export default function Footer() {
       </TouchableOpacity> */}
 
       <TouchableOpacity style={styles.viewIcon} onPress={() => navigation.navigate('Home')}>
-        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:home.svg', }} />
+        <Image style={[styles.icon, { tintColor: '#FF9431', }]}  source={require('../assets/images/iconFooter/circum--home.png')} /> 
         <Text style={styles.text}>Home</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.viewIcon} onPress={() => navigation.navigate('Historico')}>
-        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:receipt.svg', }} />
+        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={require('../assets/images/iconFooter/circum--receipt.png')} />
         <Text style={styles.text}>Pedidos</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.viewIcon} onPress={() => navigation.navigate('Sacola')}>
-        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:shopping-basket.svg', }} />
+        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={require('../assets/images/iconFooter/circum--shopping-basket.png')} />
         <Text style={styles.text}>Sacola</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.viewIcon} onPress={() => navigation.navigate('Menu')}>
-        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={{ uri: 'https://api.iconify.design/circum:user.svg', }} />
+        <Image style={[styles.icon, { tintColor: '#FF9431', }]} source={require('../assets/images/iconFooter/circum--user.png')} />
         <Text style={styles.text}>Menu</Text>
       </TouchableOpacity>
 
@@ -54,16 +55,21 @@ export default function Footer() {
 
 const styles = StyleSheet.create({
   footerContainer: {
+    backgroundColor: "white",
+    //margin: 0,
+    //width: "100%",
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
+    borderWidth: 1,
+    borderColor:'#FF9431',
     paddingVertical: 10,
     borderBottomWidth: 0,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 1,
+    shadowOpacity: 0,
     shadowRadius: 3,
     elevation: 5,
     height: 60,

@@ -21,7 +21,7 @@ export default function CadastraUsuario({ navigation }) {
             senha: senha
         };
 
-        axios.post('http://localhost:8080/api/cliente', userData)
+        axios.post('http://192.168.1.16:8080/api/cliente', userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({
@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#e8ecf247',
-        paddingVertical: 20,
-        paddingHorizontal: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 50,
         borderRadius: 5,
         marginTop: 20,
         height: 50

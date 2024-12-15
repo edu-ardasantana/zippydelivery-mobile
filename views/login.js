@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native';
 import { Button } from 'react-native-elements';
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function Login({ navigation }) {
 
@@ -14,22 +16,26 @@ export default function Login({ navigation }) {
             username: getEmail,
             password: getSenha,
         };
-
-        axios.post('http://localhost:8080/api/login', credentials)
-            .then(function (response) {
-
-
-                console.log(response.data)
-
-                navigation.navigate('Home')
-                window.localStorage.setItem("id",response.data.id)
-                window.localStorage.setItem("token",response.data.token)
-          
+    
+        axios.post('http://192.168.1.16:8080/api/login', credentials)
+            .then(async function (response) {
+                try {
+                    console.log(response.data);
+    
+                    // Armazena os dados no AsyncStorage
+                    await AsyncStorage.setItem('id', response.data.id.toString());
+                    await AsyncStorage.setItem('token', response.data.token);
+    
+                    // Navega para a próxima tela
+                    navigation.navigate('Home');
+                } catch (error) {
+                    console.error('Erro ao salvar os dados no AsyncStorage', error);
+                }
             })
             .catch(function (error) {
                 showMessage({
-                    message: `Email ou senha inválidos!`,
-                    type: "danger",
+                    message: 'Email ou senha inválidos!',
+                    type: 'danger',
                 });
             });
     }
@@ -67,7 +73,7 @@ export default function Login({ navigation }) {
                 </TouchableOpacity>
                 <FlashMessage position="top" />
             </View>
-            
+
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
                 <Text style={styles.dividerText}>ou</Text>
@@ -140,8 +146,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#e8ecf247',
-        paddingVertical: 20,
-        paddingHorizontal: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 50,
         borderRadius: 5,
         marginTop: 20,
         height: 50

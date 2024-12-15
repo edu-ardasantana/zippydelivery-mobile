@@ -18,7 +18,7 @@ export default function Sacola({ navigation }) {
     const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+        axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/`+id)
             .then(function (response) {
                 setEndereco(response.data)
 
@@ -29,7 +29,7 @@ export default function Sacola({ navigation }) {
     }, [isFocused])
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
+        axios.get(`http://192.168.1.16:8080/api/empresa/${idEmpresa}`)
           .then(function (response) {
             setTaxaFrete(response.data.taxaFrete)
           })
