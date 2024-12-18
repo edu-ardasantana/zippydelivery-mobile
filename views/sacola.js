@@ -1,5 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
@@ -7,36 +8,60 @@ import ItemSacola from '../components/itemSacola';
 
 export default function Sacola({ navigation }) {
 
-    localStorage.setItem("var", "sacola");
+  //  localStorage.setItem("var", "sacola");
     const listagemProdutos = [1, 2, 3];
 
     const [getEndereco, setEndereco] = useState([]);
     const [taxaFrete, setTaxaFrete] = useState();
-
     const isFocused = useIsFocused();
-    const idEmpresa = window.localStorage.getItem("idEmpresa");
-    const id = window.localStorage.getItem("id");
+
+    // Variáveis para armazenar o id da empresa e o id do usuário
+    const [idEmpresa, setIdEmpresa] = useState(null);
+    const [id, setId] = useState(null);
+    
 
     useEffect(() => {
-        axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/`+id)
-            .then(function (response) {
-                setEndereco(response.data)
+        // Recuperar os dados do AsyncStorage
+        const fetchData = async () => {
+            try {
+                const idStorage = await AsyncStorage.getItem('id');
+                const idEmpresaStorage = await AsyncStorage.getItem('idEmpresa');
 
-            })
-            .catch(function (error) {
-                console.log(error)
-            })
-    }, [isFocused])
+                if (idStorage && idEmpresaStorage) {
+                    setId(idStorage); // Atualiza o id
+                    setIdEmpresa(idEmpresaStorage); // Atualiza o id da empresa
+                }
+            } catch (error) {
+                console.error("Erro ao obter dados do AsyncStorage", error);
+            }
+        };
+
+        fetchData();
+    }, [isFocused]);
 
     useEffect(() => {
-        axios.get(`http://192.168.1.16:8080/api/empresa/${idEmpresa}`)
-          .then(function (response) {
-            setTaxaFrete(response.data.taxaFrete)
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      }, [])
+        if (id) {
+            axios.get(`http://10.31.33.13:8080/api/cliente/findByUser/` + id)
+                .then(function (response) {
+                    setEndereco(response.data)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                })
+        }
+    }, [id, isFocused]);
+
+    useEffect(() => {
+        if (idEmpresa) {
+            axios.get(`http://10.31.33.13:8080/api/empresa/${idEmpresa}`)
+                .then(function (response) {
+                    setTaxaFrete(response.data.taxaFrete)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                })
+        }
+    }, [idEmpresa]);
 
     let enderecoCompleto;
     if (getEndereco.logradouro == null) {
@@ -119,7 +144,7 @@ export default function Sacola({ navigation }) {
           })()}
         </Text></Text>
 
-            <br />
+            
 
             <View style={styles.footerContainer}>
 
