@@ -103,7 +103,7 @@ export default function DetalhePedido({ route, navigation }) {
             <View>
                 <TouchableOpacity style={styles.button}>
                     <View>
-                        <Text style={styles.buttonText}>Adicionar à sacola</Text>
+                        <Text style={styles.buttonText}>Pedir novamente</Text>
                     </View>
                 </TouchableOpacity>
             </View>
