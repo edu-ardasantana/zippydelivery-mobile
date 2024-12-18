@@ -8,8 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home({ navigation }) {
   const [empresas, setEmpresas] = useState([]);
-  const [cidade, setCidade] = useState("");
-  const [estado, setEstado] = useState("");
+  const [logradouro, setLogradouro] = useState("");
   const [id, setId] = useState(null);
   const isFocused = useIsFocused();
 
@@ -30,7 +29,7 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     // Fetch empresas
-    axios.get('http://192.168.1.16:8080/api/empresa')
+    axios.get('http://44.202.17.128:8080/api/empresa')
       .then(response => setEmpresas(response.data))
       .catch(error => console.log(error));
   }, []);
@@ -38,25 +37,23 @@ export default function Home({ navigation }) {
   useEffect(() => {
     if (id) {
       // Fetch cliente data
-      axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/${id}`)
+      axios.get(`http://44.202.17.128:8080/api/cliente/findByUser/${id}`)
         .then(response => {
           const data = response.data;
-          setCidade(data.cidade);
-          setEstado(data.estado);
+          setLogradouro(data.logradouro);
         })
         .catch(error => console.log(error));
     }
   }, [id, isFocused]);
 
-  let endereco = cidade ? `${cidade}, ${estado}` : null;
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('FormEndereco')} >
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]}  source={require('../assets/images/iconFooter/material-symbols--location-on-rounded.png')} />
-        {endereco == null
+        {logradouro == null || logradouro == ""
           ? <Text style={styles.endereco}>Escolher endereço</Text>
-          : <Text style={styles.endereco}>{endereco}</Text>
+          : <Text style={styles.endereco}>{logradouro}</Text>
         }
         <Image style={styles.menuIcon} source={require('../assets/images/iconFooter/solar--alt-arrow-down-outline.png')} />
       </TouchableOpacity>
