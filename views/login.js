@@ -113,6 +113,7 @@ export default function Login({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: "#fff",
         flexGrow: 1,
         justifyContent: 'center',
         paddingHorizontal: 20,
