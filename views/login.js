@@ -17,6 +17,7 @@ export default function Login({ navigation }) {
         resolver: yupResolver(schema),
     });
 
+
     const logar = async (data) => {
         const credentials = {
             username: data.email,
@@ -32,11 +33,17 @@ export default function Login({ navigation }) {
                     await AsyncStorage.setItem('token', response.data.token);
 
                     navigation.navigate('Home');
+
                 } catch (error) {
                     console.error('Erro ao salvar os dados no AsyncStorage', error);
+                    showMessage({
+                        message: 'Erro ao salvar os dados no dispositivo!',
+                        type: 'danger',
+                    });
                 }
             })
             .catch(function (error) {
+                console.error('Erro ao fazer login', error);
                 showMessage({
                     message: 'Email ou senha inválidos!',
                     type: 'danger',
