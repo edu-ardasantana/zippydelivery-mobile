@@ -53,7 +53,7 @@ export default function CadastraUsuario({ navigation }) {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView contentContainerStyle={styles.container}>
 
             <View style={styles.header}>
                 <Image style={styles.logo} source={require('../assets/images/LogoNovo.png')} />
@@ -174,11 +174,11 @@ export default function CadastraUsuario({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    scrollViewContainer: {
+    container: {
+        backgroundColor: "#fff",
         flexGrow: 1,
         justifyContent: 'center',
-        paddingHorizontal: 35,
-        backgroundColor: '#fff',
+        paddingHorizontal: 40,
     },
     header: {
         alignItems: 'center',
@@ -198,8 +198,7 @@ const styles = StyleSheet.create({
         color: "#4D585E",
     },
     input: {
-        width: 300,
-        height: 40,
+        height: 48,
         paddingHorizontal: 10,
         backgroundColor: "#dbdbe749",
         marginBottom: 10,
@@ -209,7 +208,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         backgroundColor: "#FF9431",
         height: 40,
-        width: 300,
         borderRadius: 5,
     },
     link: {
