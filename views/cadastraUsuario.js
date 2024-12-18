@@ -21,7 +21,7 @@ export default function CadastraUsuario({ navigation }) {
             senha: senha
         };
 
-        axios.post('http://192.168.1.16:8080/api/cliente', userData)
+        axios.post('http://10.31.33.13:8080/api/cliente', userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({

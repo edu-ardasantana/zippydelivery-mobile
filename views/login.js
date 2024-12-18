@@ -11,28 +11,45 @@ export default function Login({ navigation }) {
     const [getEmail, setEmail] = useState('');
     const [getSenha, setSenha] = useState('');
 
-    function logar() {
+     function logar() {
         const credentials = {
             username: getEmail,
             password: getSenha,
         };
-    
-        axios.post('http://192.168.1.16:8080/api/login', credentials)
+
+        axios.post('http://10.31.33.13:8080/api/login', credentials)
             .then(async function (response) {
                 try {
                     console.log(response.data);
-    
-                    // Armazena os dados no AsyncStorage
-                    await AsyncStorage.setItem('id', response.data.id.toString());
-                    await AsyncStorage.setItem('token', response.data.token);
-    
-                    // Navega para a próxima tela
-                    navigation.navigate('Home');
+                    console.log(credentials);
+                    console.log(response);
+
+                    const { id, token } = response.data;
+
+                    // Verifica se os valores 'id' e 'token' são válidos
+                    if (id && token) {
+                        // Armazena os dados no AsyncStorage
+                        await AsyncStorage.setItem('id', id.toString());
+                        await AsyncStorage.setItem('token', token);
+                        // Navega para a próxima tela
+                        navigation.navigate('Home');
+                    } else {
+                        showMessage({
+                            message: 'Dados de login inválidos!',
+                            type: 'danger',
+                        });
+                    }
+
                 } catch (error) {
                     console.error('Erro ao salvar os dados no AsyncStorage', error);
+                    showMessage({
+                        message: 'Erro ao salvar os dados no dispositivo!',
+                        type: 'danger',
+                    });
                 }
             })
             .catch(function (error) {
+                console.error('Erro ao fazer login', error);
                 showMessage({
                     message: 'Email ou senha inválidos!',
                     type: 'danger',

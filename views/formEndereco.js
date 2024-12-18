@@ -28,7 +28,7 @@ export default function FormEndereco({ navigation }) {
     useEffect(() => {
         AsyncStorage.getItem("id").then((id) => {
             if (id) {
-                axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
+                axios.get(`http://10.31.33.13:8080/api/cliente/findByUser/` + id)
                     .then((response) => {
                         const data = response.data;
                         setDescricao(data.descricao);
@@ -103,7 +103,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`http://192.168.1.16:8080/api/cliente/${idCliente}`, userData)
+        axios.put(`http://10.31.33.13:8080/api/cliente/${idCliente}`, userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({
