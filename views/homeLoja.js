@@ -46,7 +46,7 @@ export default function HomeLoja({ navigation, route }) {
   */
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/categoriaproduto/categoriasprodutoporempresa/' + route.params.id)
+    axios.get('http://localhost:8080/api/categoria-produto/empresa/' + route.params.id)
       .then(function (response) {
         console.log(response.data);
         return setCategorias(...categorias, response.data);
@@ -58,7 +58,7 @@ export default function HomeLoja({ navigation, route }) {
   }, [])
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/produto/porcategoriaeempresa/' + route.params.id)
+    axios.get('http://localhost:8080/api/produto/categoria-empresa/' + route.params.id)
       .then(function (response) {
         console.log(response.data);
         return setProdutos(...produtos, response.data);

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Button } from 'react-native-elements';
 import { showMessage } from "react-native-flash-message";
@@ -19,44 +19,6 @@ export default function FormEndereco({ navigation }) {
     const [idCliente, setIdCliente] = useState('');
     const [selectedUF, setSelectedUF] = useState('');
     const [local, setLocal] = useState('');
-
-    // const id = window.localStorage.getItem("id");
-
-    // const local = localStorage.getItem("var");
-
-
-    useEffect(() => {
-        AsyncStorage.getItem("id").then((id) => {
-            if (id) {
-                axios.get(`http://10.31.33.13:8080/api/cliente/findByUser/` + id)
-                    .then((response) => {
-                        const data = response.data;
-                        setDescricao(data.descricao);
-                        setLogradouro(data.logradouro);
-                        setBairro(data.bairro);
-                        setCidade(data.cidade);
-                        setCep(data.cep);
-                        setEstado(data.estado);
-                        setComplemento(data.complemento);
-                        setIdCliente(data.id);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        showMessage({
-                            message: `Algo deu errado: ${error}`,
-                            type: "danger",
-                        });
-                    });
-                    AsyncStorage.getItem("var").then((local) => {
-                        if (local) {
-                            setLocal(local);
-                        
-                        }
-                    });
-            }
-        });
-    }, []);
-
 
 
     const estados = [
@@ -103,7 +65,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`http://10.31.33.13:8080/api/cliente/${idCliente}`, userData)
+        axios.put(`http://localhost:8080/api/cliente/${idCliente}`, userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({
@@ -121,8 +83,7 @@ export default function FormEndereco({ navigation }) {
     }
 
     return (
-
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             {local == "sacola" ?
                 <View style={styles.headerContent}>
                     <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
@@ -146,7 +107,6 @@ export default function FormEndereco({ navigation }) {
             <Text style={styles.title}>Alterar endereço de entrega</Text>
 
             <View style={styles.formContainer}>
-
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Descrição</Text>
                     <TextInput
@@ -155,7 +115,6 @@ export default function FormEndereco({ navigation }) {
                         value={descricao}
                     />
                 </View>
-
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Logradouro</Text>
                     <TextInput
@@ -164,7 +123,6 @@ export default function FormEndereco({ navigation }) {
                         value={logradouro}
                     />
                 </View>
-
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Bairro</Text>
                     <TextInput
@@ -173,7 +131,6 @@ export default function FormEndereco({ navigation }) {
                         value={bairro}
                     />
                 </View>
-
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Cidade</Text>
                     <TextInput
@@ -182,7 +139,6 @@ export default function FormEndereco({ navigation }) {
                         value={cidade}
                     />
                 </View>
-
                 <View style={styles.row}>
                     <View style={styles.inputWrapper}>
                         <Text style={styles.label}>UF</Text>
@@ -221,18 +177,16 @@ export default function FormEndereco({ navigation }) {
                     />
                 </View>
 
-                <Button
-                    buttonStyle={styles.button}
-                    title="Adicionar Endereço"
-                    onPress={() => {
-                        inserirDados();
-                    }}
-                />
+                <View style={styles.center}>
+                    <Button
+                        buttonStyle={styles.button}
+                        title="Use este endereço"
+                        onPress={() => { inserirDados(); }}
+                    />
+                </View>
             </View>
-        </View>
-
+        </ScrollView>
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -264,7 +218,12 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
     },
     formContainer: {
+        width: '100%'
+    },
+    center: {
         width: '100%',
+        display: 'flex',
+        alignItems: 'center'
     },
     inputGroup: {
         marginBottom: 15,
@@ -289,13 +248,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#dbdbe749',
         borderRadius: 5,
         marginBottom: 10,
-        
     },
     button: {
         marginTop: 20,
+        marginBottom: 60,
         backgroundColor: '#FF9431',
         height: 40,
-        width: '100%',
         borderRadius: 5,
     },
 });
