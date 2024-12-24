@@ -5,7 +5,7 @@ import { Button } from 'react-native-elements';
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from 'react-native-masked-text';
 
-export default function FormEndereco({ navigation }) {
+export default function ListAddress({ navigation }) {
 
     const [descricao, setDescricao] = useState('');
     const [logradouro, setLogradouro] = useState('');
@@ -23,7 +23,7 @@ export default function FormEndereco({ navigation }) {
     const local = localStorage.getItem("var");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+        axios.get(`http://localhost:8080/api/cliente/user/`+id)
             .then(function (response) {
                 const data = response.data;
                 setDescricao(data.descricao);

@@ -41,7 +41,7 @@ export default function Sacola({ navigation }) {
 
     useEffect(() => {
         if (id) {
-            axios.get(`http://10.31.33.13:8080/api/cliente/findByUser/` + id)
+            axios.get(`http://10.31.33.13:8080/api/cliente/user/` + id)
                 .then(function (response) {
                     setEndereco(response.data)
                 })

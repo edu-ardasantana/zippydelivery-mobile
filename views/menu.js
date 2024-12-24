@@ -11,7 +11,7 @@ export default function Menu({ navigation }) {
   console.log(id)
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+    axios.get(`http://localhost:8080/api/cliente/user/`+id)
       .then(function (response) {
         console.log(response.data)
          const data = response.data;

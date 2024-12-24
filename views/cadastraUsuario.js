@@ -35,7 +35,7 @@ export default function CadastraUsuario({ navigation }) {
         };
 
         axios
-            .post("http://44.202.17.128:8080/api/cliente", userData)
+            .post("http://localhost:8080/api/cliente", userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({

@@ -24,22 +24,15 @@ export default function Login({ navigation }) {
             password: data.senha,
         };
 
-        axios.post('http://44.202.17.128:8080/api/login', credentials)
+        axios.post('http://localhost:8080/api/login', credentials)
             .then(async function (response) {
                 try {
-                    console.log(response.data);
-
                     await AsyncStorage.setItem('id', response.data.id.toString());
                     await AsyncStorage.setItem('token', response.data.token);
-
-                    navigation.navigate('Home');
-
+                    navigation.navigate('Home', { token: response.data.token });
                 } catch (error) {
                     console.error('Erro ao salvar os dados no AsyncStorage', error);
-                    showMessage({
-                        message: 'Erro ao salvar os dados no dispositivo!',
-                        type: 'danger',
-                    });
+                    showMessage({message: 'Erro ao salvar os dados no dispositivo!', type: 'danger'});
                 }
             })
             .catch(function (error) {
