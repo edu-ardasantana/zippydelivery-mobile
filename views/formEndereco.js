@@ -75,7 +75,6 @@ export default function FormEndereco({ navigation }) {
 
     const fetchCliente = async () => {
         let userId = await AsyncStorage.getItem('id')
-        console.log(header)
         axios.get(`http://localhost:8080/api/cliente/user/${userId}`, header)
         .then(function (response) { 
             console.log(response)
