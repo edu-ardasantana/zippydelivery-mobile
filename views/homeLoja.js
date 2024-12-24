@@ -1,88 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Item from './component/item';
-import Footer from './component/footer';
 import axios from 'axios';
+import Item from './component/item';
+import React, { useState, useEffect, useRef  } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
 export default function HomeLoja({ navigation, route }) {
 
-  // const listagemProdutos = [1, 2, 3];
-  // const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
   const [empresa, setEmpresa] = useState('');
   const [categorias, setCategorias] = useState([]);
   const [produtos, setProdutos] = useState([]);
+  const sectionRefs = useRef({});
+  const scrollViewRef = useRef(null);
+
 
   useEffect(() => {
-
-    console.log(route.params.id)
     consultarEmpresa(route.params.id)
-
   }, [])
 
+   localStorage.setItem('idEmpresa', route.params.id)
+
+  
   async function consultarEmpresa(idEmpresa) {
-
-    await axios.get('http://localhost:8080/api/empresa/' + idEmpresa)
+    await axios.get(`http://api.projetopro.live/api/empresa/${idEmpresa}`)
       .then(function (response) {
-        console.log(response.data);
         setEmpresa(response.data);
-
       }).catch(function (error) {
         console.log(error);
-
       });
   }
 
-  /*useEffect(() => {
-    axios.get('http://localhost:8080/api/produto')
-      .then(function (response) {
-        console.log(response.data);
-        return setEmpresas(...produtos, response.data);
-
-      }).catch(function (error) {
-        console.log(error);
-
-      });
-  }, [])
-  */
-
   useEffect(() => {
-    axios.get('http://localhost:8080/api/categoriaproduto/categoriasprodutoporempresa/' + route.params.id)
+    axios.get(`http://api.projetopro.live/api/categoriaproduto/categoriasprodutoporempresa/${route.params.id}`)
       .then(function (response) {
-        console.log(response.data);
         return setCategorias(...categorias, response.data);
-        console.log(categorias);
       }).catch(function (error) {
         console.log(error);
-
       });
   }, [])
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/produto/porcategoriaeempresa/' + route.params.id)
+    axios.get(`http://api.projetopro.live/api/produto/porcategoriaeempresa/${route.params.id}`)
       .then(function (response) {
-        console.log(response.data);
         return setProdutos(...produtos, response.data);
-        console.log(produtos);
       }).catch(function (error) {
         console.log(error);
-
       });
   }, [])
+
+  const scrollToSection = (sectionId) => {
+    const sectionRef = sectionRefs.current[sectionId];
+    if (sectionRef && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: sectionRef.offsetTop, animated: true });
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView style={{ flex: 1 }} ref={scrollViewRef}>
         <View style={styles.header}>
           <Image source={empresa.imgCapa} style={styles.backgroundImage} />
           <View style={styles.headerContent}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
               <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} /></View>
             </TouchableOpacity>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={styles.iconWrapper}>
-                <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} /></View>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
 
@@ -91,24 +70,18 @@ export default function HomeLoja({ navigation, route }) {
             <Text style={[styles.title1, { marginTop: 20 }]}>{empresa.nome}</Text>
           </View>
 
-          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
+          <ScrollView horizontal  showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
             {categorias.map((valor, index) =>
-              /*
-              index === 1 ? (
-
-                  <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                  <Text style={[styles.textoEtiqueta, { color: 'white' }]}>{v.descricao}</Text>
-                  </TouchableOpacity>
-              ) : (
-                */
-              <TouchableOpacity style={styles.etiqueta}>
+              <TouchableOpacity style={styles.etiqueta}  onPress={() => {
+                scrollToSection(valor.descricao);
+              }}>
                 <Text style={styles.textoEtiqueta}>{valor.descricao}</Text>
               </TouchableOpacity>
             )}
           </ScrollView>
 
           {produtos.map((produtosCategoria, indexCategoria) => (
-            <View key={indexCategoria}>
+            <View key={indexCategoria} ref={(ref) => (sectionRefs.current[produtosCategoria[0].categoria.descricao] = ref)}>
                <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
               {produtosCategoria.map((produto, indexProduto) => (
                 <TouchableOpacity key={indexProduto} >
@@ -117,12 +90,14 @@ export default function HomeLoja({ navigation, route }) {
               ))}
             </View>
           ))}
+        
         </View>
       </ScrollView>
-      {/*<Footer />*/}
     </View>
   );
+
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -166,6 +141,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.4,
     marginLeft: 7,
     marginTop: 20,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textoEtiqueta: {
     color: '#0D0D0D',

@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import axios from 'axios';
 import Footer from './component/footer';
 import Pedido from './component/pedido';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 
 export default function Historico({ navigation }) {
 
     const [lista, setLista] = useState([]);
-    
+    const userId = parseInt(localStorage.getItem("id"));
     useEffect(() => {
         carregarLista();
     }, [])
  
     function carregarLista() {
- 
-        axios.get("http://localhost:8080/api/pedido")
+        axios.get(`http://api.projetopro.live/api/pedido/porcliente/${userId + 1}`)
         .then((response) => {
             setLista(response.data)
+            console.log(response.data)
         })
     }
-
     console.log(lista)
     return (
         <View style={styles.container}>
@@ -30,27 +29,30 @@ export default function Historico({ navigation }) {
             <ScrollView >
                 {
                     <View style={styles.body}>
-                    {lista.map((pedido, index) => {
-                        let qtd = 0;
-                        let produtos = []
-                      pedido.itensPedido.map(item => {
-                        qtd += item.qtdProduto;
-                        produtos.push(item.produto.titulo);
-                      });
-                      return(
-                        <Pedido
-                          key={index} 
-                          quantity={qtd}
-                          restaurantName={pedido.empresa.nome}
-                          orderName={produtos[0]}
-                          orderStatus={pedido.statusPedido}
-                          orderNumber={pedido.id}
-                          quantityItemsOrder={pedido.itensPedido.length}
-                          onPress={()=>navigation.navigate("DetalhePedido", {pedido})}
-                        />
-                      )
-                    })}
-                  </View>
+                        {lista.length > 0 ? (
+                            lista.map((pedido, index) => {
+                            let qtd = 0;
+                            let produtos = [];
+                            pedido.itensPedido.map((item) => {
+                                qtd += item.qtdProduto;
+                                produtos.push(item.produto.titulo);
+                            });
+                            return (
+                                <Pedido
+                                key={index}
+                                quantity={qtd}
+                                restaurantName={pedido.empresa.nome}
+                                orderName={produtos[0]}
+                                orderStatus={pedido.statusPedido}
+                                orderNumber={pedido.id}
+                                onPress={() => navigation.navigate("DetalhePedido", { pedido })}
+                                />
+                            );
+                            })
+                        ) : (  
+                            <Text style={{justifyContent:'center'}}>Você ainda não realizou nenhum pedido.</Text>
+                        )}
+                    </View>
                   
                 }
             </ScrollView>

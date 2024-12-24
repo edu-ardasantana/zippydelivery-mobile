@@ -1,17 +1,93 @@
 import axios from 'axios';
+import app from './firebaseConfig';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-elements';
-import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 import { TextInputMask } from 'react-native-masked-text';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function CadastraUsuario({ navigation }) {
-
 
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth(app);
+
+    function formatarCPF(cpf) {
+        return cpf.replace(/[^\d]/g, '');
+    }
+
+    const signInWithGoogle = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            console.log(user.email)
+            if (user.emailVerified) {
+                try {
+                    const response = await axios.get("https://api.invertexto.com/v1/faker?token=5837%7CKQxaDmKFbfnYsFegMKaTDkhBmACz43Hy&fields=cpf");
+                    const cpf = response.data.cpf;
+                    console.log(formatarCPF(cpf))
+                    const newUser = {
+                        nome: user.displayName,
+                        cpf: formatarCPF(cpf),
+                        email: user.email,
+                        senha: user.uid
+                    };
+                    const users = await axios.get("http://api.projetopro.live/api/cliente");
+                    const emailDoNovoUsuario = newUser.email;
+                    const emailExiste = users.data.some(user => user.email === emailDoNovoUsuario)
+                    if (emailExiste) {
+                        await logarComGoogle(newUser.email, newUser.senha);
+                    } else {
+                        await registrarNovoUsuario(newUser);
+                        await logarComGoogle(newUser.email, newUser.senha);
+                    }
+                } catch (error) {
+                    console.error('Erro ao obter CPF ou criar usuário:', error);
+                }
+            } else {
+                showMessage({
+                    message: `Não foi possível verificar sua conta.`,
+                    type: "danger",
+                });
+            }
+        } catch (error) {
+            console.error('Erro ao autenticar com o Google:', error);
+        }
+    };
+
+    const registrarNovoUsuario = async (newUser) => {
+        try {
+            await axios.post('http://api.projetopro.live/api/cliente', newUser);
+        } catch (error) {
+            console.error('Erro ao registrar novo usuário:', error);
+            throw error;
+        }
+    };
+
+    const logarComGoogle = async (email, uid) => {
+        const credentials = {
+            username: email,
+            password: uid,
+        };
+
+        try {
+            const response = await axios.post('http://api.projetopro.live/api/login', credentials);
+            window.localStorage.setItem("id", response.data.id);
+            window.localStorage.setItem("token", response.data.token);
+            navigation.navigate('Home');
+        } catch (error) {
+            showMessage({
+                message: `Email ou senha inválidos!`,
+                type: "danger",
+            });
+            console.error('Erro ao fazer login:', error);
+        }
+    };
 
     const inserirDados = () => {
         const userData = {
@@ -21,7 +97,7 @@ export default function CadastraUsuario({ navigation }) {
             senha: senha
         };
 
-        axios.post('http://localhost:8080/api/cliente', userData)
+        axios.post('http://api.projetopro.live/api/cliente', userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({
@@ -37,19 +113,13 @@ export default function CadastraUsuario({ navigation }) {
                 });
             });
     };
+
+
     return (
-
         <View style={styles.container}>
-
             <View style={{ alignItems: 'center' }}>
-
-                <Image
-                    style={styles.logo}
-                    source={require('/views/img/LogoNovo.png')}
-                />
-
+                <Image style={styles.logo} source={require('../views/img/LogoNovo.png')} />
                 <View>
-
                     <Text style={styles.label}>Nome</Text>
                     <TextInput
                         style={styles.input}
@@ -58,11 +128,8 @@ export default function CadastraUsuario({ navigation }) {
                         onChangeText={(text) => setNome(text)}
                         value={nome}
                     />
-
                 </View>
-
                 <View>
-
                     <Text style={styles.label}>CPF</Text>
                     <TextInputMask
                         style={styles.input}
@@ -72,11 +139,8 @@ export default function CadastraUsuario({ navigation }) {
                         onChangeText={(text) => setCpf(text)}
                         value={cpf}
                     />
-
                 </View>
-
                 <View>
-
                     <Text style={styles.label}>Email</Text>
                     <TextInput
                         style={styles.input}
@@ -85,9 +149,7 @@ export default function CadastraUsuario({ navigation }) {
                         onChangeText={(text) => setEmail(text)}
                         value={email}
                     />
-
                 </View>
-
                 <View>
                     <Text style={styles.label}>Senha</Text>
                     <TextInput
@@ -99,7 +161,6 @@ export default function CadastraUsuario({ navigation }) {
                         value={senha}
                     />
                 </View>
-
                 <Button
                     buttonStyle={styles.button}
                     title="Criar conta"
@@ -111,34 +172,21 @@ export default function CadastraUsuario({ navigation }) {
                     <Text style={styles.link}> Já tenho uma conta</Text>
                 </TouchableOpacity>
 
-            </View>
-
-            <br /><br /> <br /><br /><br /><br /><br />
-
+            </View><br /><br /> <br /><br /><br /><br /><br />
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
                 <Text style={styles.dividerText}>ou</Text>
                 <View style={styles.dividerLine} />
             </View>
-
             <View style={{ alignItems: 'center' }}>
-                <TouchableOpacity style={styles.googleSignInButton}>
-                    <Image
-                        style={styles.googleIcon}
-                        source={require('/views/img/simbolo-do-google.png')}
-                    />
+                <TouchableOpacity onPress={signInWithGoogle} style={styles.googleSignInButton}>
+                    <Image style={styles.googleIcon} source={require('../views/img/simbolo-do-google.png')} />
                     <Text style={styles.googleButtonText}>Entre com o Google</Text>
                 </TouchableOpacity>
-
                 <FlashMessage position="top" />
-
             </View>
-
         </View>
-
-
     )
-
 }
 
 const styles = StyleSheet.create({

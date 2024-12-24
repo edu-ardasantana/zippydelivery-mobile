@@ -1,29 +1,25 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Footer from './component/footer';
 
 export default function Menu({ navigation }) {
 
   const [nome, setNome] = useState("");
-  
   const id = window.localStorage.getItem("id");
-  console.log(id)
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+    axios.get(`http://api.projetopro.live/api/cliente/user/`+id)
       .then(function (response) {
         console.log(response.data)
          const data = response.data;
         setNome(data.nome);
-
       })
       .catch(function (error) {
         console.log(error);
         console.log(error)
       });
   }, []);
-
 
   var nomeUser = nome;
   localStorage.setItem("var", "menu");
@@ -39,8 +35,11 @@ export default function Menu({ navigation }) {
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormConta')}>
             <Text style={styles.optionText}>Configuração da conta</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormEndereco')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FormEndereco', { origin: 'Menu' })}>
             <Text style={styles.optionText}>Endereço de entrega</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Home')}>
+            <Text style={styles.optionText}>Voltar</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Exit')}>
             <Text style={styles.optionText}>Sair</Text>
