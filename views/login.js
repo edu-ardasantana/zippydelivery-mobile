@@ -24,13 +24,15 @@ export default function Login({ navigation }) {
                     console.log(credentials);
                     console.log(response);
 
-                    const { id, token } = response.data;
+                    const { userId, token } = response.data;
+                    console.log(userId)
+                    console.log(token)
 
                     // Verifica se os valores 'id' e 'token' são válidos
-                    if (id && token) {
+                    if (userId && token) {
                         // Armazena os dados no AsyncStorage
-                        await AsyncStorage.setItem('id', id.toString());
-                        await AsyncStorage.setItem('token', token);
+                        await AsyncStorage.setItem('id', userId.toString());
+                        await AsyncStorage.setItem('token', token.toString());
                         // Navega para a próxima tela
                         navigation.navigate('Home');
                     } else {
@@ -85,6 +87,12 @@ export default function Login({ navigation }) {
                 </View>
 
                 <Button buttonStyle={styles.button} title="Entrar" onPress={() => logar()} />
+                <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
+                    <Text style={styles.link}> Criar uma conta</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
+                    <Text style={styles.link}> Criar uma conta</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
                     <Text style={styles.link}> Criar uma conta</Text>
                 </TouchableOpacity>
