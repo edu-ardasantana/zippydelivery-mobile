@@ -45,9 +45,8 @@ export default function Home({ route, navigation }) {
     axios.get(url, { headers: { Authorization: `Bearer ${token}` }})
     .then(function (response) { 
       setClienteLogado(response.data)
-      setEndereco(response.data.enderecos)
 
-      const enderecoPadrao = response.data.enderecos.find(endereco => endereco.isPadrao);
+      const enderecoPadrao = response.data.enderecos.find(endereco => endereco.padraoParaEntrega);
       setEndereco(enderecoPadrao ? enderecoPadrao : null);
 
     })
@@ -82,13 +81,24 @@ export default function Home({ route, navigation }) {
       setEmpresasFiltradasPorNome(filteredEmpresas);
   };
 
+  //Transforma a primeira letra de cada palavra em maiústula
+  const toTitleCase = (text) => {
+    if (!text) return ''; 
+    return text
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.header}>
         <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
         {endereco === null
           ? <Text style={styles.endereco} onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })} >Escolher endereço</Text>
-          : <Text style={styles.endereco} onPress={() => navigation.navigate('ListAddress', { origin: 'Home' })} >{endereco.logradouro}, {endereco.cidade}</Text>
+          : <Text style={styles.endereco} onPress={() => navigation.navigate('ListAddress', { origin: 'Home' })} >{toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}</Text>
         }
         <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg', }} />
       </TouchableOpacity>

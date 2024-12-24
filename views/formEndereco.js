@@ -8,18 +8,19 @@ import { TextInputMask } from 'react-native-masked-text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function FormEndereco({ navigation }) {
-
-    const [descricao, setDescricao] = useState('');
+    
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
+    const [selectedUF, setSelectedUF] = useState('');
     const [cep, setCep] = useState('');
     const [complemento, setComplemento] = useState('');
+    const [descricao, setDescricao] = useState('');
+    const [numero, setNumero] = useState('');
     const [idCliente, setIdCliente] = useState('');
-    const [selectedUF, setSelectedUF] = useState('');
     const [local, setLocal] = useState('');
-
+    const [header, setHeader] = useState(null);
 
     const estados = [
         { label: "Selecione...", value: "" },
@@ -52,33 +53,56 @@ export default function FormEndereco({ navigation }) {
         { label: "Tocantins", value: "TO" },
     ];
 
+    useEffect(() => {
+        fetchHeader();
+    }, []);
+    
+    useEffect(() => {
+        if (header) {
+            fetchCliente();
+        }
+    }, [header]);
 
-    const inserirDados = () => {
-        const userData = {
-            descricao: descricao,
+    const fetchHeader = async () => {
+        let token = await AsyncStorage.getItem('token');
+        setHeader({
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+    };
+
+    const fetchCliente = async () => {
+        let userId = await AsyncStorage.getItem('id')
+        console.log(header)
+        axios.get(`http://localhost:8080/api/cliente/user/${userId}`, header)
+        .then(function (response) { 
+            console.log(response)
+            setIdCliente(response.data.id)
+        })
+        .catch(function (error) { console.error(error); });
+    };
+
+    const inserirDados = async () => {
+        let userData = {
             logradouro: logradouro,
+            numero: numero,
             bairro: bairro,
             cidade: cidade,
+            estado: selectedUF,
             cep: cep,
             complemento: complemento,
-            estado: selectedUF,
+            descricao: descricao,
         }
 
-
-        axios.put(`http://localhost:8080/api/cliente/${idCliente}`, userData)
+        axios.post(`http://localhost:8080/api/cliente/${idCliente}/endereco`, userData, header)
             .then(function (response) {
-                console.log(response);
-                showMessage({
-                    message: "Cadastro de endereço realizado com sucesso!",
-                    type: "success"
-                });
+                showMessage({ message: "Cadastro de endereço realizado com sucesso!", type: "success" });
             })
             .catch(function (error) {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error}`,
-                    type: "danger",
-                });
+                console.error(error);
+                showMessage({message: `Algo deu errado: ${error}`, type: "danger", });
             });
     }
 
@@ -131,15 +155,15 @@ export default function FormEndereco({ navigation }) {
                         value={bairro}
                     />
                 </View>
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Cidade</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => setCidade(text)}
-                        value={cidade}
-                    />
-                </View>
                 <View style={styles.row}>
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Cidade</Text>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(text) => setCidade(text)}
+                            value={cidade}
+                        />
+                    </View>
                     <View style={styles.inputWrapper}>
                         <Text style={styles.label}>UF</Text>
                         <Picker
@@ -153,8 +177,18 @@ export default function FormEndereco({ navigation }) {
                             ))}
                         </Picker>
                     </View>
-
+                </View>
+                <View style={styles.row}>
                     <View style={styles.inputWrapper}>
+                        <Text style={styles.label}>Número</Text>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(text) => setNumero(text)}
+                            value={numero}
+                        />
+                    </View>
+
+                    <View style={styles.inputGroup}>
                         <Text style={styles.label}>CEP</Text>
                         <TextInputMask
                             style={styles.input}

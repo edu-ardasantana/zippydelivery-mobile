@@ -18,6 +18,7 @@ import HistoricoScreen from '../views/historico';
 import SemPedidosScreen from '../views/messageScreens/semPedidos';
 import ResumoSacola from '../views/resumoSacola';
 import DetalhePedido from '../views/detalhePedido';
+import ListAddress from '../views/listAdress';
 
 
 const Stack = createNativeStackNavigator();
@@ -42,6 +43,7 @@ export default function App() {
         <Stack.Screen name="SemPedidos" component={SemPedidosScreen} options={{headerShown: false}} />
         <Stack.Screen name="ResumoSacola" component={ResumoSacola} options={{headerShown: false}} />
         <Stack.Screen name="DetalhePedido" component={DetalhePedido} options={{headerShown: false}} />
+        <Stack.Screen name="ListAddress" component={ListAddress} options={{headerShown: false}} />
       </Stack.Navigator>
     //</NavigationContainer>
   );
