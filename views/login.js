@@ -17,7 +17,7 @@ export default function Login({ navigation }) {
             password: getSenha,
         };
 
-        axios.post('http://10.31.33.13:8080/api/login', credentials)
+        axios.post('http://192.168.1.16:8080/api/login', credentials)
             .then(async function (response) {
                 try {
                     console.log(response.data);

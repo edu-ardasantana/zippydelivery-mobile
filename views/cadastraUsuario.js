@@ -6,36 +6,40 @@ import FlashMessage, { showMessage, hideMessage } from "react-native-flash-messa
 import { TextInputMask } from 'react-native-masked-text';
 
 export default function CadastraUsuario({ navigation }) {
-
-
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [successMessage, setSuccessMessage] = useState(''); // Estado para mensagem de sucesso
+    const [errorMessage, setErrorMessage] = useState(''); // Estado para mensagem de erro
 
-    const inserirDados = () => {
+    const inserirDados = async () => {
         const userData = {
-            nome: nome,
-            cpf: cpf,
-            email: email,
-            senha: senha
+            nome,
+            cpf,
+            email,
+            senha,
         };
 
-        axios.post('http://10.31.33.13:8080/api/cliente', userData)
-            .then(function (response) {
-                console.log(response);
-                showMessage({
-                    message: "Cadastro realizado com sucesso!",
-                    type: "success"
-                });
-            })
-            .catch(function (error) {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error}`,
-                    type: "danger",
-                });
-            });
+        try {
+            const response = await axios.post('http://192.168.1.16:8080/api/cliente', userData);
+            console.log("Resposta da API: ", response);
+
+            // Define a mensagem de sucesso
+            setSuccessMessage("Cadastro realizado com sucesso!");
+            setErrorMessage(''); // Limpa qualquer mensagem de erro
+
+            // Redireciona para a tela de login após 2 segundos
+            setTimeout(() => {
+                navigation.navigate('Login');
+            }, 2000);
+        } catch (error) {
+            console.error("Erro ao cadastrar usuário: ", error);
+
+            // Define a mensagem de erro
+            setErrorMessage("Algo deu errado. Por favor, tente novamente.");
+            setSuccessMessage(''); // Limpa qualquer mensagem de sucesso
+        }
     };
     return (
 
@@ -107,6 +111,7 @@ export default function CadastraUsuario({ navigation }) {
                         inserirDados();
                     }}
                 />
+                
                 <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                     <Text style={styles.link}> Já tenho uma conta</Text>
                 </TouchableOpacity>

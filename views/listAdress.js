@@ -23,7 +23,7 @@ export default function FormEndereco({ navigation }) {
     const local = localStorage.getItem("var");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+        axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/`+id)
             .then(function (response) {
                 const data = response.data;
                 setDescricao(data.descricao);

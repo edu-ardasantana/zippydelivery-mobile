@@ -3,29 +3,33 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button, Divider } from 'react-native-elements';
+import { Button } from 'react-native-elements';
 import ItemSacola from '../components/itemSacola';
 
 export default function Sacola({ navigation }) {
 
+  //  localStorage.setItem("var", "sacola");
     const listagemProdutos = [1, 2, 3];
 
     const [getEndereco, setEndereco] = useState([]);
     const [taxaFrete, setTaxaFrete] = useState(0);
     const isFocused = useIsFocused();
 
+    // Variáveis para armazenar o id da empresa e o id do usuário
     const [idEmpresa, setIdEmpresa] = useState(null);
     const [id, setId] = useState(null);
+    
 
     useEffect(() => {
+        // Recuperar os dados do AsyncStorage
         const fetchData = async () => {
             try {
                 const idStorage = await AsyncStorage.getItem('id');
                 const idEmpresaStorage = await AsyncStorage.getItem('idEmpresa');
 
                 if (idStorage && idEmpresaStorage) {
-                    setId(idStorage);
-                    setIdEmpresa(idEmpresaStorage);
+                    setId(idStorage); // Atualiza o id
+                    setIdEmpresa(idEmpresaStorage); // Atualiza o id da empresa
                 }
             } catch (error) {
                 console.error("Erro ao obter dados do AsyncStorage", error);
@@ -38,24 +42,24 @@ export default function Sacola({ navigation }) {
     useEffect(() => {
         if (id) {
             axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
-                .then(response => {
-                    setEndereco(response.data);
+                .then(function (response) {
+                    setEndereco(response.data)
                 })
-                .catch(error => {
-                    console.log(error);
-                });
+                .catch(function (error) {
+                    console.log(error)
+                })
         }
     }, [id, isFocused]);
 
     useEffect(() => {
         if (idEmpresa) {
             axios.get(`http://192.168.1.16:8080/api/empresa/${idEmpresa}`)
-                .then(response => {
-                    setTaxaFrete(response.data.taxaFrete);
+                .then(function (response) {
+                    setTaxaFrete(response.data.taxaFrete)
                 })
-                .catch(error => {
-                    console.log(error);
-                });
+                .catch(function (error) {
+                    console.log(error)
+                })
         }
     }, [idEmpresa]);
 
@@ -70,6 +74,7 @@ export default function Sacola({ navigation }) {
         <View style={styles.container}>
 
             <View style={styles.headerContent}>
+
                 <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
                     <Image style={styles.icon} source={require("../assets/images/iconFooter/solar--alt-arrow-down-outline.png")} />
                 </TouchableOpacity>
@@ -79,54 +84,76 @@ export default function Sacola({ navigation }) {
                 <TouchableOpacity >
                     <Text style={styles.limpar}>Limpar</Text>
                 </TouchableOpacity>
+
             </View>
 
-            <View>
             <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
                 <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
 
                 {enderecoCompleto == null ?
+
                     <View style={styles.semEndereco}>
+
                         <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
                             <Text style={styles.limpar}>Escolher endereço</Text>
                         </TouchableOpacity>
+
                     </View>
+
                     :
+
                     <View style={styles.endereco}>
                         <Image style={styles.menuIcon} source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")} />
+
                         <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
+
                         <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
                             <Text style={styles.limpar}>Trocar</Text>
                         </TouchableOpacity>
+
                     </View>
+
                 }
 
-                {/* <View style={styles.dividerContainer}>
+
+                <View style={styles.dividerContainer}>
                     <View style={styles.dividerLine} />
-                </View> */}
+                </View>
+
             </TouchableOpacity>
-            </View>
 
             {listagemProdutos.map((index) => (
-                
                 <View key={index}>
-                    <Divider />
                     <TouchableOpacity>
                         <ItemSacola />
                     </TouchableOpacity>
                 </View>
             ))}
 
-            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>
-                Taxa de entrega: <Text>
-                    {taxaFrete ? taxaFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Erro de formatação'}
-                </Text>
-            </Text>
+            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: <Text>
+          {(() => {
+            try {
+              return taxaFrete.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              });
+            } catch (error) {
+              console.error('Erro ao formatar taxaFrete:', error);
+              return 'Erro de formatação';
+            }
+          })()}
+        </Text></Text>
+
+            
 
             <View style={styles.footerContainer}>
+
                 <View style={styles.footer2}>
+
                     <Text style={styles.footerText}>Total com a entrega</Text>
+
                     <Text style={styles.preco}>R$ 31,90</Text>
+
                 </View>
 
                 <Button
@@ -134,6 +161,7 @@ export default function Sacola({ navigation }) {
                     title="Continuar"
                     onPress={() => navigation.navigate('ResumoSacola')}
                 />
+
             </View>
 
         </View>
@@ -196,7 +224,7 @@ const styles = StyleSheet.create({
     dividerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 0,
+        marginBottom: 10,
     },
     dividerLine: {
         flex: 1,

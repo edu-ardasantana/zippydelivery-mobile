@@ -15,7 +15,7 @@ export default function Historico({ navigation }) {
  
     function carregarLista() {
  
-        axios.get("http://localhost:8080/api/pedido")
+        axios.get("http://192.168.1.16:8080/api/pedido")
         .then((response) => {
             setLista(response.data)
         })

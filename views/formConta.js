@@ -19,7 +19,7 @@ export default function FormConta({ navigation }) {
     const id = window.localStorage.getItem("id");
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/cliente/findByUser/`+id)
+        axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/`+id)
             .then(function (response) {
                 const data = response.data;
                 setNome(data.nome);
@@ -41,7 +41,7 @@ export default function FormConta({ navigation }) {
 
 
         axios
-            .put(`http://localhost:8080/api/cliente/`+idCliente, {
+            .put(`http://192.168.1.16:8080/api/cliente/`+idCliente, {
 
                 nome: nome,
                 email: email,
@@ -67,7 +67,7 @@ export default function FormConta({ navigation }) {
 
     const excluirDados = () => {
 
-        axios.delete(`http://localhost:8080/api/cliente/`+idCliente)
+        axios.delete(`http://192.168.1.16:8080/api/cliente/`+idCliente)
 
             .then(function (response) {
                 console.log(response);

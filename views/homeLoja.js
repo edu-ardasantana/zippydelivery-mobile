@@ -21,7 +21,7 @@ export default function HomeLoja({ navigation, route }) {
 
   async function consultarEmpresa(idEmpresa) {
 
-    await axios.get('http://localhost:8080/api/empresa/' + idEmpresa)
+    await axios.get('http://192.168.1.16:8080/api/empresa/' + idEmpresa)
       .then(function (response) {
         console.log(response.data);
         setEmpresa(response.data);
@@ -46,7 +46,7 @@ export default function HomeLoja({ navigation, route }) {
   */
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/categoriaproduto/categoriasprodutoporempresa/' + route.params.id)
+    axios.get('http://192.168.1.16:8080/api/categoriaproduto/categoriasprodutoporempresa/' + route.params.id)
       .then(function (response) {
         console.log(response.data);
         return setCategorias(...categorias, response.data);
@@ -58,7 +58,7 @@ export default function HomeLoja({ navigation, route }) {
   }, [])
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/produto/porcategoriaeempresa/' + route.params.id)
+    axios.get('http://192.168.1.16:8080/api/produto/porcategoriaeempresa/' + route.params.id)
       .then(function (response) {
         console.log(response.data);
         return setProdutos(...produtos, response.data);

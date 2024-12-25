@@ -16,7 +16,7 @@ export default function ResumoSacola({ navigation }) {
   const [selectedPayment, setSelectedPayment] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`)
+    axios.get(`http://192.168.1.16:8080/api/empresa/${idEmpresa}`)
       .then(function (response) {
         setFormasPagamento(response.data.formasPagamento)
         setTaxaFrete(response.data.taxaFrete)
@@ -27,7 +27,7 @@ export default function ResumoSacola({ navigation }) {
   }, [])
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/cliente/findByUser/` + id)
+    axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
       .then(function (response) {
         setEndereco(response.data)
       })
