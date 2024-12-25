@@ -2,7 +2,7 @@ import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Button, Divider } from 'react-native-elements';
 import ItemSacola from '../components/itemSacola';
 
@@ -82,46 +82,46 @@ export default function Sacola({ navigation }) {
             </View>
 
             <View>
-            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
-                <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
+                    <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
 
-                {enderecoCompleto == null ?
-                    <View style={styles.semEndereco}>
-                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
-                            <Text style={styles.limpar}>Escolher endereço</Text>
-                        </TouchableOpacity>
-                    </View>
-                    :
-                    <View style={styles.endereco}>
-                        <Image style={styles.menuIcon} source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")} />
-                        <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
-                            <Text style={styles.limpar}>Trocar</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
+                    {enderecoCompleto == null ?
+                        <View style={styles.semEndereco}>
+                            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                                <Text style={styles.limpar}>Escolher endereço</Text>
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        <View style={styles.endereco}>
+                            <Image style={styles.menuIcon} source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")} />
+                            <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                                <Text style={styles.limpar}>Trocar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
 
-                {/* <View style={styles.dividerContainer}>
-                    <View style={styles.dividerLine} />
-                </View> */}
-            </TouchableOpacity>
+
+                </TouchableOpacity>
             </View>
 
-            {listagemProdutos.map((index) => (
-                
-                <View key={index}>
-                    <Divider />
-                    <TouchableOpacity>
-                        <ItemSacola />
-                    </TouchableOpacity>
-                </View>
-            ))}
+            <ScrollView>
+                {listagemProdutos.map((index) => (
 
-            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>
-                Taxa de entrega: <Text>
-                    {taxaFrete ? taxaFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Erro de formatação'}
-                </Text>
+                    <View key={index}>
+                        <Divider />
+                        <TouchableOpacity>
+                            <ItemSacola />
+                        </TouchableOpacity>
+                    </View>
+                ))}
+            </ScrollView>
+
+            <Text style={{ paddingHorizontal: 20, fontWeight: '600', marginVertical: 20 }}>
+                Taxa de entrega:{" "}
+                {(taxaFrete || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </Text>
+
 
             <View style={styles.footerContainer}>
                 <View style={styles.footer2}>
@@ -211,13 +211,21 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
     },
     footerContainer: {
-        justifyContent: 'center',
+        backgroundColor: "white",
+        //margin: 0,
+        //width: "100%",
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-        paddingVertical: 70,
+        borderWidth: 1,
+        borderColor:'#FF9431',
+        paddingVertical: 10,
+        borderBottomWidth: 0,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 1,
+        shadowOffset: { width: 0, height: 1.5 },
+        shadowOpacity: 0,
         shadowRadius: 3,
         elevation: 5,
         height: 60,
