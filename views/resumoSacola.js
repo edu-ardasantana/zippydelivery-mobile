@@ -1,46 +1,61 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Picker } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Button } from "react-native-elements";
 import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
 
 export default function ResumoSacola({ navigation }) {
-  
-  const idEmpresa = window.localStorage.getItem("idEmpresa");
+
   const isFocused = useIsFocused();
-  const id = window.localStorage.getItem("id");
 
   const [getEndereco, setEndereco] = useState([]);
-  const [taxaFrete, setTaxaFrete] = useState();
+  const [taxaFrete, setTaxaFrete] = useState(0);
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [id, setId] = useState(null);
+  const [idEmpresa, setIdEmpresa] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://192.168.1.16:8080/api/empresa/${idEmpresa}`)
-      .then(function (response) {
-        setFormasPagamento(response.data.formasPagamento)
-        setTaxaFrete(response.data.taxaFrete)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
+    // Recuperar os dados do AsyncStorage
+    const fetchData = async () => {
+      try {
+        const idStorage = await AsyncStorage.getItem('id');
+        const idEmpresaStorage = await AsyncStorage.getItem('idEmpresa');
+
+        if (idStorage) {
+          setId(idStorage); // Atualiza o id
+        }
+        if (idEmpresaStorage) {
+          setIdEmpresa(idEmpresaStorage); // Atualiza o id da empresa
+        }
+      } catch (error) {
+        console.error("Erro ao obter dados do AsyncStorage", error);
+      }
+    };
+
+    fetchData();
+  }, [isFocused]);
 
   useEffect(() => {
-    axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
-      .then(function (response) {
-        setEndereco(response.data)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [isFocused])
+    // Realiza a requisição somente se o ID estiver disponível
+    if (id) {
+      axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/${id}`)
+        .then((response) => {
+          setEndereco(response.data);
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar endereço:', error);
+        });
+    }
+  }, [id, isFocused]);
 
   let enderecoCompleto;
-  if (getEndereco.logradouro == null) {
-    enderecoCompleto = null;
+  if (!getEndereco.logradouro) {
+    enderecoCompleto = "Endereço não cadastrado.";
   } else {
-    enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
+    enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado}\n${getEndereco.complemento || ''}`;
   }
 
   const listaFormasPagamentos = [
@@ -58,9 +73,7 @@ export default function ResumoSacola({ navigation }) {
         >
           <Image
             style={styles.icon}
-            source={{
-              uri: "https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg",
-            }}
+            source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")}
           />
         </TouchableOpacity>
 
@@ -72,7 +85,6 @@ export default function ResumoSacola({ navigation }) {
       </View>
 
       <Text style={styles.subTitle}>Resumo de valores</Text>
-      <br />
 
       <View style={styles.resumo}>
         <Text>Subtotal</Text> <Text>R$ 31,90</Text>
@@ -96,14 +108,14 @@ export default function ResumoSacola({ navigation }) {
       </View>
 
       <View style={styles.resumo}>
-        <Text>
-          <strong>Total</strong>
+        <Text style={{ fontWeight: "bold", paddingVertical: 5, }}>
+          Total
         </Text>{" "}
-        <Text>
-          <strong>R$ 31,90</strong>
+        <Text style={{ fontWeight: "bold", paddingBottom: 5, }}>
+          R$ 31,90
         </Text>
       </View>
-      <br />
+      {/* <br /> */}
 
       <View style={styles.dividerContainer}>
         <View style={styles.dividerLine} />
@@ -136,27 +148,27 @@ export default function ResumoSacola({ navigation }) {
 
       <Text style={styles.subTitle}>Confirme a entrega</Text>
 
-      <View style={styles.bloco}>
+      <View style={[styles.bloco,]}>
         <Image
           style={styles.menuIcon}
-          source={{
-            uri: "https://api.iconify.design/ic:outline-delivery-dining.svg",
-          }}
+          source={require("../assets/images/iconFooter/ic--outline-delivery-dining.png")}
         />
 
-        <Text style={styles.blocoText}>
-          <span style={styles.span}>Entrega Hoje</span>
-          <br />
-          Hoje, 40 - 50 min
+        <Text
+          style={[styles.span,
+          styles.blocoText]}
+        >
+
+          Entrega Hoje, 40 - 50 min
+
         </Text>
       </View>
 
-      <View style={styles.bloco}>
+
+      <View style={[styles.bloco, {paddingBottom: 10}]}>
         <Image
           style={styles.menuIcon}
-          source={{
-            uri: "https://api.iconify.design/material-symbols:location-on-rounded.svg",
-          }}
+          source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")}
         />
 
         <Text style={styles.blocoText}>
@@ -174,7 +186,7 @@ export default function ResumoSacola({ navigation }) {
             style={styles.footerLink}
             onPress={() => navigation.navigate("Sacola")}
           >
-            <Text>Alterar dados</Text>
+            <Text style={{color: "#FF9431", fontWeight: "bold"}}>Alterar dados</Text>
           </TouchableOpacity>
         </View>
 
@@ -228,6 +240,7 @@ const styles = StyleSheet.create({
   subTitle: {
     fontWeight: "bold",
     paddingTop: 20,
+    paddingBottom: 10,
     paddingHorizontal: 20,
     fontSize: 15,
   },
@@ -253,27 +266,31 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: "white",
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     paddingVertical: 20,
     paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 3,
-    elevation: 5,
+    borderWidth: 1,
+    borderColor:'#FF9431',
   },
+  
   button: {
     alignSelf: "center",
     marginTop: 20,
     backgroundColor: "#FF9431",
-    height: 30,
+    height: 40,
     width: 300,
     borderRadius: 5,
   },
+
   span: {
+    flex: 1,
+    width: "100%",
     fontSize: 13,
+
   },
+
   logoCartao: {
     width: 50,
     height: 30,
@@ -291,6 +308,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 40,
+    paddingVertical: 5,
   },
   footerLink: {
     color: "#FF9431",
@@ -320,7 +338,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: 300,
-    height: 40,
+    height: 50,
     paddingHorizontal: 10,
     backgroundColor: '#dbdbe749',
     marginVertical: 30,

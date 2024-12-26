@@ -8,7 +8,7 @@ import ItemSacola from '../components/itemSacola';
 
 export default function Sacola({ navigation }) {
 
-    const listagemProdutos = [1, 2, 3];
+    const listagemProdutos = [0, 1, 2,4,5];
 
     const [getEndereco, setEndereco] = useState([]);
     const [taxaFrete, setTaxaFrete] = useState(0);
@@ -103,38 +103,47 @@ export default function Sacola({ navigation }) {
 
 
                 </TouchableOpacity>
+                
             </View>
-
-            <ScrollView>
-                {listagemProdutos.map((index) => (
-
-                    <View key={index}>
-                        <Divider />
-                        <TouchableOpacity>
-                            <ItemSacola />
-                        </TouchableOpacity>
+            <Divider />
+            
+                <ScrollView style={{ height: 400}}>
+                    
+                    <View>
+                        {listagemProdutos.map((index) => (
+                            <View key={index}>
+                                <Divider />
+                                <TouchableOpacity>
+                                    <ItemSacola />
+                                </TouchableOpacity>
+                            </View>
+                        ))}
                     </View>
-                ))}
-            </ScrollView>
+                </ScrollView>
+                <Divider />
 
-            <Text style={{ paddingHorizontal: 20, fontWeight: '600', marginVertical: 20 }}>
-                Taxa de entrega:{" "}
-                {(taxaFrete || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-            </Text>
-
+           
+            <View style={styles.container}>
+                <Text style={{ paddingHorizontal: 20, fontWeight: '600', marginVertical: 20 }}>
+                    Taxa de entrega:{" "}
+                    {(taxaFrete || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </Text>
+            </View>
 
             <View style={styles.footerContainer}>
                 <View style={styles.footer2}>
                     <Text style={styles.footerText}>Total com a entrega</Text>
                     <Text style={styles.preco}>R$ 31,90</Text>
                 </View>
-
-                <Button
-                    buttonStyle={styles.button}
-                    title="Continuar"
-                    onPress={() => navigation.navigate('ResumoSacola')}
-                />
+                <View style={{flex: 1}}>
+                    <Button
+                        buttonStyle={styles.button}
+                        title="Continuar"
+                        onPress={() => navigation.navigate('ResumoSacola')}
+                    />
+                </View>
             </View>
+            
 
         </View>
     );
@@ -214,37 +223,42 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         //margin: 0,
         //width: "100%",
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-around',
         alignItems: 'center',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
         borderWidth: 1,
         borderColor:'#FF9431',
-        paddingVertical: 10,
-        borderBottomWidth: 0,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1.5 },
-        shadowOpacity: 0,
-        shadowRadius: 3,
-        elevation: 5,
-        height: 60,
+        //paddingVertical: 10,
+        //borderBottomWidth: 0,
+        //shadowColor: '#000',
+        //shadowOffset: { width: 0, height: 1.5 },
+        //shadowOpacity: 0,
+      //  shadowRadius: 3,
+       // elevation: 5,
+        height: 150,
     },
     footer2: {
+        width: "100%",
         flexDirection: 'row',
         justifyContent: 'space-around',
+        marginTop: 20,
+        //backgroundColor: 'red'
     },
     footerText: {
-        paddingRight: 25
+        paddingRight: 25,
+        fontSize: 20,
     },
     preco: {
         fontWeight: 'bold',
     },
     button: {
+        
         alignSelf: 'center',
-        marginTop: 20,
+        marginTop: 40,
         backgroundColor: '#FF9431',
-        height: 30,
+        height: 40,
         width: 300,
         borderRadius: 5
     },
