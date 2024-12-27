@@ -1,9 +1,10 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput, Modal, Pressable } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput, Modal, Pressable } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Input } from 'react-native-elements';
 import { useRoute } from '@react-navigation/native';
-import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 export default function FormConta({ navigation }) {
     const [modalVisible, setModalVisible] = useState(false);
@@ -15,85 +16,94 @@ export default function FormConta({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [idCliente, setIdCliente] = useState('');
-
-    const id = window.localStorage.getItem("id");
+    const [id, setId] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/`+id)
-            .then(function (response) {
+        // Recuperar ID do AsyncStorage
+        const fetchId = async () => {
+            try {
+                const storedId = await AsyncStorage.getItem('userId');
+                if (storedId) {
+                    setId(storedId);
+                    fetchClientData(storedId);
+                }
+            } catch (error) {
+                console.log('Erro ao recuperar o ID do AsyncStorage:', error);
+            }
+        };
+
+        fetchId();
+    }, []);
+
+    const fetchClientData = (userId) => {
+        axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/${userId}`)
+            .then(response => {
                 const data = response.data;
                 setNome(data.nome);
                 setEmail(data.email);
                 setSenha(data.senha);
                 setIdCliente(data.id);
-
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.log(error);
                 showMessage({
-                    message: `Algo deu errado: ${error}`,
+                    message: `Algo deu errado: ${error.message}`,
                     type: "danger",
                 });
             });
-    }, []);
+    };
 
     const alterarDados = () => {
-
-
         axios
-            .put(`http://192.168.1.16:8080/api/cliente/`+idCliente, {
-
+            .put(`http://192.168.1.16:8080/api/cliente/${idCliente}`, {
                 nome: nome,
                 email: email,
                 senha: senha,
             })
-
-            .then(function (response) {
-                console.log(response);
+            .then(() => {
                 showMessage({
                     message: "Alteração realizada com sucesso!",
                     type: "success"
                 });
-                navigation.navigate('ConfirmaAlteracao')
+                navigation.navigate('ConfirmaAlteracao');
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.log(error);
                 showMessage({
-                    message: `Algo deu errado: ${error}`,
+                    message: `Algo deu errado: ${error.message}`,
                     type: "danger",
                 });
             });
     };
 
     const excluirDados = () => {
-
-        axios.delete(`http://192.168.1.16:8080/api/cliente/`+idCliente)
-
-            .then(function (response) {
-                console.log(response);
+        axios.delete(`http://192.168.1.16:8080/api/cliente/${idCliente}`)
+            .then(() => {
                 navigation.navigate('Login');
-            }).catch(function (error) {
+            })
+            .catch(error => {
                 console.log(error);
                 showMessage({
-                    message: `Algo deu errado: ${error}`,
+                    message: `Algo deu errado: ${error.message}`,
                     type: "danger",
                 });
-
             });
-
-    }
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.headerContent}>
                 <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                    <Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} />
                 </TouchableOpacity>
             </View>
-            <View style={{ alignItems: 'center' }}>
-                <View style={{ marginBottom: 40 }}>
-                    <Input style={{ paddingLeft: 20 }}
-                        leftIcon={<Image style={styles.icon} source={{ uri: 'https://api.iconify.design/grommet-icons:edit.svg' }} />}
+
+            <View style={{ alignItems: 'center', }}>
+
+                <View style={{ marginBottom: 40, width: 300,  }}>
+                    <Input
+                        style={[{ paddingLeft: 20, }]}
+                        leftIcon={<Image style={styles.icon} source={require("../assets/images/iconFooter/ic--twotone-edit.png")} />}
                         onChangeText={(text) => setNome(text)}
                         value={nome}
                     />
@@ -106,33 +116,27 @@ export default function FormConta({ navigation }) {
                         value={email}
                     />
                 </View>
-
                 <View>
                     <Text style={styles.label}>Nova Senha <Text style={{ fontSize: 11 }}>(Opcional)</Text></Text>
                     <TextInput
                         style={styles.input}
-                        placeholder='No mínimo 6 caracteres'
-                        placeholderTextColor='#C4C4CC'
+                        placeholder="No mínimo 6 caracteres"
+                        placeholderTextColor="#C4C4CC"
                         secureTextEntry={true}
                         onChangeText={(text) => setSenha(text)}
                         value={senha}
                     />
                 </View>
-
                 <Button
                     buttonStyle={styles.button}
                     title="Atualizar dados"
-                    onPress={() => {
-                        alterarDados();
-                    }}
+                    onPress={alterarDados}
                 />
-
                 <View style={styles.centeredView}>
                     <Modal animationType="slide" transparent={true} visible={modalVisible}>
                         <View style={styles.centeredView}>
                             <View style={styles.modalView}>
                                 <Text style={styles.modalText}>Tem certeza que deseja excluir sua conta?</Text>
-
                                 <View style={styles.buttonGroup}>
                                     <Pressable
                                         style={[styles.buttonModal, styles.buttonCancel]}
@@ -141,32 +145,26 @@ export default function FormConta({ navigation }) {
                                     </Pressable>
                                     <Pressable
                                         style={[styles.buttonModal, styles.buttonDelete]}
-                                        onPress={() => {
-                                            excluirDados();
-                                        }}>
+                                        onPress={excluirDados}>
                                         <Text style={styles.textStyle}>Excluir</Text>
                                     </Pressable>
                                 </View>
                             </View>
                         </View>
                     </Modal>
-
-                    <Button
-                        buttonStyle={[styles.buttonModal, styles.buttonOpen]}
-                        title="Excluir conta"
-                        onPress={() => {
-                            setModalVisible(true)
-                        }}
-                    />
-
-
+                    
                 </View>
-
+                    <View>
+                        <Button
+                            buttonStyle={[ styles.buttonOpen]}
+                            title="Excluir conta"
+                            onPress={() => setModalVisible(true)}
+                        />
+                    </View>
                 <FlashMessage position="top" />
-
             </View>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

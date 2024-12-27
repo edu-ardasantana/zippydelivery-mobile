@@ -3,71 +3,67 @@ import { ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'rea
 import Item from '../components/item';
 import Footer from '../components/footer';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeLoja({ navigation, route }) {
 
-  // const listagemProdutos = [1, 2, 3];
-  // const listagemEtiquetas = [1, 2, 3, 4, 5, 6];
   const [empresa, setEmpresa] = useState('');
   const [categorias, setCategorias] = useState([]);
   const [produtos, setProdutos] = useState([]);
+  const [idEmpresa, setIdEmpresa] = useState('');
+  const [header, setHeader] = useState(null);
+  
 
   useEffect(() => {
-
-    console.log(route.params.id)
-    consultarEmpresa(route.params.id)
-
+    fetchHeader();
   }, [])
 
-  async function consultarEmpresa(idEmpresa) {
+  useEffect(() => {
+    if (header) {
+      fetchEmpresa();
+      fetchCategorias();
+      fetchProdutos();
+    }
+  }, [header]);
 
-    await axios.get('http://192.168.1.16:8080/api/empresa/' + idEmpresa)
+  const fetchHeader = async () => {
+    let token = await AsyncStorage.getItem('token');
+    let userId = route.params.id;
+    setIdEmpresa(userId);
+    setHeader({
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+  };
+
+  const fetchEmpresa = async () => {
+    axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`, header)
       .then(function (response) {
-        console.log(response.data);
         setEmpresa(response.data);
-
       }).catch(function (error) {
-        console.log(error);
-
+        console.error(error);
       });
   }
 
-  /*useEffect(() => {
-    axios.get('http://localhost:8080/api/produto')
+  const fetchCategorias = async () => {
+    axios.get(`http://localhost:8080/api/categoria-produto/empresa/${idEmpresa}`, header)
       .then(function (response) {
-        console.log(response.data);
-        return setEmpresas(...produtos, response.data);
-
+        setCategorias(...categorias, response.data);
       }).catch(function (error) {
-        console.log(error);
-
+        console.error(error);
       });
-  }, [])
-  */
+  }
 
-  useEffect(() => {
-    axios.get('http://192.168.1.16:8080/api/categoriaproduto/categoriasprodutoporempresa/' + route.params.id)
+  const fetchProdutos = async () => {
+    axios.get(`http://localhost:8080/api/produto/categoria-empresa/${idEmpresa}`, header)
       .then(function (response) {
-        console.log(response.data);
-        return setCategorias(...categorias, response.data);
-        console.log(categorias);
+        setProdutos(...produtos, response.data);
       }).catch(function (error) {
-        console.log(error);
-
+        console.error(error);
       });
-  }, [])
-
-  useEffect(() => {
-    axios.get('http://192.168.1.16:8080/api/produto/porcategoriaeempresa/' + route.params.id)
-      .then(function (response) {
-        console.log(response.data);
-        return setProdutos(...produtos, response.data);
-        console.log(produtos);
-      }).catch(function (error) {
-        console.log(error);
-
-      });
-  }, [])
+  }
 
   return (
     <View style={styles.container}>
@@ -76,11 +72,11 @@ export default function HomeLoja({ navigation, route }) {
           <Image source={empresa.imgCapa} style={styles.backgroundImage} />
           <View style={styles.headerContent}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-              <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} /></View>
+              <View style={styles.iconBackground}><Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} /></View>
             </TouchableOpacity>
             <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity style={styles.iconWrapper}>
-                <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} /></View>
+                <View style={styles.iconBackground}><Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--search-rounded.png")} /></View>
               </TouchableOpacity>
             </View>
           </View>
@@ -107,16 +103,20 @@ export default function HomeLoja({ navigation, route }) {
             )}
           </ScrollView>
 
-          {produtos.map((produtosCategoria, indexCategoria) => (
-            <View key={indexCategoria}>
-               <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
-              {produtosCategoria.map((produto, indexProduto) => (
-                <TouchableOpacity key={indexProduto} >
-                  <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} imagem={produto.imagem} onPress={()=>navigation.navigate("DetalheItem", {produto, origin:'HomeLoja'})} />
-                </TouchableOpacity>
-              ))}
-            </View>
-          ))}
+          { produtos.length === 0 ? (
+            <Text style={styles.textoVazio}>Nenhum produto ainda</Text>
+          ) : (
+            produtos.map((produtosCategoria, indexCategoria) => (
+              <View key={indexCategoria}>
+                <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
+                {produtosCategoria.map((produto, indexProduto) => (
+                  <TouchableOpacity key={indexProduto} >
+                    <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} imagem={produto.imagem} onPress={()=>navigation.navigate("DetalheItem", {produto, origin:'HomeLoja'})} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ))
+          )}
         </View>
       </ScrollView>
       {/*<Footer />*/}
@@ -192,15 +192,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   icon: {
-    width: 20,
-    height: 20,
-    tintColor: '#fff',
+    width: 30,
+    height: 30,
+    tintColor: '#FF9431',
   },
-  iconBackground: {
-    backgroundColor: 'rgba(25, 34, 39, 0.8)',
-    borderRadius: 999,
-    padding: 8,
-  },
+  // iconBackground: {
+  //   backgroundColor: 'rgba(25, 34, 39, 0.8)',
+  //   borderRadius: 999,
+  //   padding: 8,
+  // },
   carouselContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -209,4 +209,9 @@ const styles = StyleSheet.create({
   carousel: {
     marginLeft: 20,
   },
+  textoVazio: {
+    color: '#D3D3D3',
+    textAlign: 'center',
+    marginTop: '50%'
+  }
 });
