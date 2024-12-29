@@ -20,7 +20,45 @@ export default function FormEndereco({ navigation }) {
     const [numero, setNumero] = useState('');
     const [idCliente, setIdCliente] = useState('');
     const [local, setLocal] = useState('');
-    const [header, setHeader] = useState(null);
+
+    // const id = window.localStorage.getItem("id");
+
+    // const local = localStorage.getItem("var");
+
+
+    useEffect(() => {
+        AsyncStorage.getItem("id").then((id) => {
+            if (id) {
+                axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
+                    .then((response) => {
+                        const data = response.data;
+                        setDescricao(data.descricao);
+                        setLogradouro(data.logradouro);
+                        setBairro(data.bairro);
+                        setCidade(data.cidade);
+                        setCep(data.cep);
+                        setEstado(data.estado);
+                        setComplemento(data.complemento);
+                        setIdCliente(data.id);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        showMessage({
+                            message: `Algo deu errado: ${error}`,
+                            type: "danger",
+                        });
+                    });
+                    AsyncStorage.getItem("var").then((local) => {
+                        if (local) {
+                            setLocal(local);
+                        
+                        }
+                    });
+            }
+        });
+    }, []);
+
+
 
     const estados = [
         { label: "Selecione...", value: "" },
@@ -95,7 +133,8 @@ export default function FormEndereco({ navigation }) {
             descricao: descricao,
         }
 
-        axios.post(`http://localhost:8080/api/cliente/${idCliente}/endereco`, userData, header)
+
+        axios.put(`http://192.168.1.16:8080/api/cliente/${idCliente}`, userData)
             .then(function (response) {
                 showMessage({ message: "Cadastro de endereço realizado com sucesso!", type: "success" });
             })

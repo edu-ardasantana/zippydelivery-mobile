@@ -2,34 +2,30 @@ import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Image, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
+import { Button, Divider } from 'react-native-elements';
 import ItemSacola from '../components/itemSacola';
 
 export default function Sacola({ navigation }) {
 
-  //  localStorage.setItem("var", "sacola");
-    const listagemProdutos = [1, 2, 3];
+    const listagemProdutos = [0, 1, 2,4,5];
 
     const [getEndereco, setEndereco] = useState([]);
-    const [taxaFrete, setTaxaFrete] = useState();
+    const [taxaFrete, setTaxaFrete] = useState(0);
     const isFocused = useIsFocused();
 
-    // Variáveis para armazenar o id da empresa e o id do usuário
     const [idEmpresa, setIdEmpresa] = useState(null);
     const [id, setId] = useState(null);
-    
 
     useEffect(() => {
-        // Recuperar os dados do AsyncStorage
         const fetchData = async () => {
             try {
                 const idStorage = await AsyncStorage.getItem('id');
                 const idEmpresaStorage = await AsyncStorage.getItem('idEmpresa');
 
                 if (idStorage && idEmpresaStorage) {
-                    setId(idStorage); // Atualiza o id
-                    setIdEmpresa(idEmpresaStorage); // Atualiza o id da empresa
+                    setId(idStorage);
+                    setIdEmpresa(idEmpresaStorage);
                 }
             } catch (error) {
                 console.error("Erro ao obter dados do AsyncStorage", error);
@@ -41,25 +37,25 @@ export default function Sacola({ navigation }) {
 
     useEffect(() => {
         if (id) {
-            axios.get(`http://10.31.33.13:8080/api/cliente/user/` + id)
-                .then(function (response) {
-                    setEndereco(response.data)
+            axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
+                .then(response => {
+                    setEndereco(response.data);
                 })
-                .catch(function (error) {
-                    console.log(error)
-                })
+                .catch(error => {
+                    console.log(error);
+                });
         }
     }, [id, isFocused]);
 
     useEffect(() => {
         if (idEmpresa) {
-            axios.get(`http://10.31.33.13:8080/api/empresa/${idEmpresa}`)
-                .then(function (response) {
-                    setTaxaFrete(response.data.taxaFrete)
+            axios.get(`http://192.168.1.16:8080/api/empresa/${idEmpresa}`)
+                .then(response => {
+                    setTaxaFrete(response.data.taxaFrete);
                 })
-                .catch(function (error) {
-                    console.log(error)
-                })
+                .catch(error => {
+                    console.log(error);
+                });
         }
     }, [idEmpresa]);
 
@@ -74,9 +70,8 @@ export default function Sacola({ navigation }) {
         <View style={styles.container}>
 
             <View style={styles.headerContent}>
-
                 <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/solar:alt-arrow-down-outline.svg' }} />
+                    <Image style={styles.icon} source={require("../assets/images/iconFooter/solar--alt-arrow-down-outline.png")} />
                 </TouchableOpacity>
 
                 <Text style={styles.title}>SACOLA</Text>
@@ -84,85 +79,71 @@ export default function Sacola({ navigation }) {
                 <TouchableOpacity >
                     <Text style={styles.limpar}>Limpar</Text>
                 </TouchableOpacity>
-
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
-                <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
+            <View>
+                <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
+                    <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
 
-                {enderecoCompleto == null ?
-
-                    <View style={styles.semEndereco}>
-
-                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
-                            <Text style={styles.limpar}>Escolher endereço</Text>
-                        </TouchableOpacity>
-
-                    </View>
-
-                    :
-
-                    <View style={styles.endereco}>
-                        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
-
-                        <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
-
-                        <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
-                            <Text style={styles.limpar}>Trocar</Text>
-                        </TouchableOpacity>
-
-                    </View>
-
-                }
+                    {enderecoCompleto == null ?
+                        <View style={styles.semEndereco}>
+                            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                                <Text style={styles.limpar}>Escolher endereço</Text>
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        <View style={styles.endereco}>
+                            <Image style={styles.menuIcon} source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")} />
+                            <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                                <Text style={styles.limpar}>Trocar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
 
 
-                <View style={styles.dividerContainer}>
-                    <View style={styles.dividerLine} />
-                </View>
-
-            </TouchableOpacity>
-
-            {listagemProdutos.map((index) => (
-                <View key={index}>
-                    <TouchableOpacity>
-                        <ItemSacola />
-                    </TouchableOpacity>
-                </View>
-            ))}
-
-            <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginVertical: 20 }}>Taxa de entrega: <Text>
-          {(() => {
-            try {
-              return taxaFrete.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              });
-            } catch (error) {
-              console.error('Erro ao formatar taxaFrete:', error);
-              return 'Erro de formatação';
-            }
-          })()}
-        </Text></Text>
-
+                </TouchableOpacity>
+                
+            </View>
+            <Divider />
             
+                <ScrollView style={{ height: 400}}>
+                    
+                    <View>
+                        {listagemProdutos.map((index) => (
+                            <View key={index}>
+                                <Divider />
+                                <TouchableOpacity>
+                                    <ItemSacola />
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    </View>
+                </ScrollView>
+                <Divider />
+
+           
+            <View style={styles.container}>
+                <Text style={{ paddingHorizontal: 20, fontWeight: '600', marginVertical: 20 }}>
+                    Taxa de entrega:{" "}
+                    {(taxaFrete || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </Text>
+            </View>
 
             <View style={styles.footerContainer}>
-
                 <View style={styles.footer2}>
-
                     <Text style={styles.footerText}>Total com a entrega</Text>
-
                     <Text style={styles.preco}>R$ 31,90</Text>
-
                 </View>
-
-                <Button
-                    buttonStyle={styles.button}
-                    title="Continuar"
-                    onPress={() => navigation.navigate('ResumoSacola')}
-                />
-
+                <View style={{flex: 1}}>
+                    <Button
+                        buttonStyle={styles.button}
+                        title="Continuar"
+                        onPress={() => navigation.navigate('ResumoSacola')}
+                    />
+                </View>
             </View>
+            
 
         </View>
     );
@@ -224,7 +205,7 @@ const styles = StyleSheet.create({
     dividerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 0,
     },
     dividerLine: {
         flex: 1,
@@ -239,32 +220,45 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
     },
     footerContainer: {
-        justifyContent: 'center',
+        backgroundColor: "white",
+        //margin: 0,
+        //width: "100%",
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+        alignItems: 'center',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-        paddingVertical: 70,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 1,
-        shadowRadius: 3,
-        elevation: 5,
-        height: 60,
+        borderWidth: 1,
+        borderColor:'#FF9431',
+        //paddingVertical: 10,
+        //borderBottomWidth: 0,
+        //shadowColor: '#000',
+        //shadowOffset: { width: 0, height: 1.5 },
+        //shadowOpacity: 0,
+      //  shadowRadius: 3,
+       // elevation: 5,
+        height: 150,
     },
     footer2: {
+        width: "100%",
         flexDirection: 'row',
         justifyContent: 'space-around',
+        marginTop: 20,
+        //backgroundColor: 'red'
     },
     footerText: {
-        paddingRight: 25
+        paddingRight: 25,
+        fontSize: 20,
     },
     preco: {
         fontWeight: 'bold',
     },
     button: {
+        
         alignSelf: 'center',
-        marginTop: 20,
+        marginTop: 40,
         backgroundColor: '#FF9431',
-        height: 30,
+        height: 40,
         width: 300,
         borderRadius: 5
     },

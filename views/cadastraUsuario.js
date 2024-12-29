@@ -19,37 +19,43 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { schema } from "../schemas/registerSchema";
 
 export default function CadastraUsuario({ navigation }) {
+
+    const [nome, setNome] = useState('');
+    const [cpf, setCpf] = useState('');
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
     const [isEntregador, setIsEntregador] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(''); // Estado para mensagem de sucesso
+    const [errorMessage, setErrorMessage] = useState(''); // Estado para mensagem de erro
 
-    const { control, handleSubmit, formState: { errors } } = useForm({
-        resolver: yupResolver(schema),
-    });
-
-    const inserirDados = (data) => {
+    const inserirDados = async () => {
         const userData = {
-            nome: data.nome,
-            cpf: data.cpf,
-            email: data.email,
-            senha: data.senha,
-            entregador: isEntregador,
+            nome,
+            cpf,
+            email,
+            senha,
+            entregador,
         };
 
-        axios
-            .post("http://localhost:8080/api/cliente", userData)
-            .then(function (response) {
-                console.log(response);
-                showMessage({
-                    message: "Cadastro realizado com sucesso!",
-                    type: "success",
-                });
-            })
-            .catch(function (error) {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error}`,
-                    type: "danger",
-                });
-            });
+        try {
+            const response = await axios.post('http://192.168.1.16:8080/api/cliente', userData);
+            console.log("Resposta da API: ", response);
+
+            // Define a mensagem de sucesso
+            setSuccessMessage("Cadastro realizado com sucesso!");
+            setErrorMessage(''); // Limpa qualquer mensagem de erro
+
+            // Redireciona para a tela de login após 2 segundos
+            setTimeout(() => {
+                navigation.navigate('Login');
+            }, 2000);
+        } catch (error) {
+            console.error("Erro ao cadastrar usuário: ", error);
+
+            // Define a mensagem de erro
+            setErrorMessage("Algo deu errado. Por favor, tente novamente.");
+            setSuccessMessage(''); // Limpa qualquer mensagem de sucesso
+        }
     };
 
     return (
@@ -146,6 +152,7 @@ export default function CadastraUsuario({ navigation }) {
                     onPress={handleSubmit(inserirDados)}
                 />
                 <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+
                     <Text style={styles.link}> Já tenho uma conta</Text>
                 </TouchableOpacity>
 

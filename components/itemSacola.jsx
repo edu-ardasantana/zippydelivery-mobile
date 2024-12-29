@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Divider } from 'react-native-elements';
 
 export default function Item() {
 
@@ -22,23 +23,22 @@ export default function Item() {
 
             <View style={styles.colum1}>
                 <Image style={styles.itemImage} source={require('../assets/images/item.png')} />
+            
             </View>
-
             <View style={styles.colum2}>
-                <Text style={styles.nomeItem}>Salada Ravanello </Text>
-               
+                <Text style={styles.nomeItem}>Salada Ravanello</Text>
                 <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(44.90)}</Text>
             </View>
 
-            <View style={styles.line4 }>
+            <View style={styles.line4}>
                 <TouchableOpacity onPress={decrementQuantity} style={styles.button}>
-                    <Image style={[styles.icon, { width: 16 }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
+                    <Image style={[styles.icon, { width: 20 }]} source={require("../assets/images/iconFooter/material-symbols--remove-rounded.png")} />
                 </TouchableOpacity>
 
                 <Text style={[styles.title2, { marginLeft: 20, marginRight: 20 }]}>{quantity}</Text>
 
                 <TouchableOpacity onPress={incrementQuantity} style={styles.button}>
-                    <Image style={[styles.icon, { width: 16 }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
+                    <Image style={[styles.icon, { width: 20 }]} source={require("../assets/images/iconFooter/material-symbols--add-rounded.png")} />
                 </TouchableOpacity>
             </View>
 
@@ -48,60 +48,55 @@ export default function Item() {
 
 const styles = StyleSheet.create({
     slide: {
-        flex: 1,
-        marginHorizontal: 7,
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: '#E6E6E6',
+       // marginVertical: 10,
+        paddingVertical: 10,
+        alignItems: 'center',
         justifyContent: 'space-between',
+
+        //backgroundColor: "blue"
     },
     colum2: {
-        flex: 2,
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        marginHorizontal: 5,
+        flex: 1,
+        marginLeft: 10,
     },
     colum1: {
         flex: 1,
-        flexDirection: 'column',
-        alignItems: 'flex-end',
         justifyContent: 'center',
-        marginLeft:30
+        alignItems: 'center',
+        //backgroundColor: "red"
     },
     itemImage: {
-        width: 90,
-        height: 90,
+        width: 80,
+        height: 80,
         borderRadius: 7,
-        marginVertical: 10,
-        marginRight: 7,
-
+        marginVertical: 5,
     },
     title2: {
-        fontSize: 14,
+        fontSize: 18,
         letterSpacing: 1.2,
         fontWeight: '550',
-        color:'#FF9431'
+        color: '#FF9431',
     },
     nomeItem: {
-        color: '#0D0D0D',
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: '600',
+        color: '#0D0D0D',
     },
-    descricao: {
-        color: '#7C7C8A',
-        fontSize: 12,
-        fontWeight: '400',
+    line4: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 10,
+    },
+    button: {
+        padding: 5,
     },
     icon: {
-        tintColor: '#E1E1E6',
+        tintColor: '#A9A9A9',
         width: 25,
         height: 25,
     },
-    line4:{
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'center',
-        paddingRight:10,
-    }
 });

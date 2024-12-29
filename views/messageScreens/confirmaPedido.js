@@ -22,7 +22,7 @@ export default function ConfirmaPedido({ navigation }) {
         <View style={styles.container}>
             <View style={styles.headerContent}>
                 <TouchableOpacity onPress={handleVoltarTelaPrincipal} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                    <Image style={styles.icon} source={require("../../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} />
                 </TouchableOpacity>
             </View>
 

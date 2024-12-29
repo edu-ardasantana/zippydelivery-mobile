@@ -5,8 +5,8 @@ import { Button } from 'react-native-elements';
 
 export default function DetalheItem({ navigation }) {
 
-  
-    
+
+
   const [quantity, setQuantity] = useState(1);
 
   function incrementQuantity() {
@@ -33,7 +33,7 @@ export default function DetalheItem({ navigation }) {
         <View style={styles.headerContent}>
           <TouchableOpacity onPress={() => navigation.navigate('HomeLoja')} style={styles.iconWrapper}>
             <View style={styles.iconBackground}>
-              <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+              <Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} />
             </View>
           </TouchableOpacity>
         </View>
@@ -42,12 +42,12 @@ export default function DetalheItem({ navigation }) {
         <View style={styles.bodyContent1}>
           <Text style={[styles.title1, { marginTop: 30 }]}>Salada Ravanello</Text>
           <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>
-          <Text style={[styles.title2, { color: '#FF9431' }]}>{formatarMoeda(44.90)}</Text>
+          <Text style={[styles.title2, { color: '#FF9431', marginVertical: 15}]}>{formatarMoeda(44.90)}</Text>
         </View>
 
         <View style={styles.bodyContent2}>
           <View style={styles.box}>
-            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} />
+            <Image style={styles.iconP} source={require("../assets/images/iconFooter/material-symbols--restaurant.png")} />
             <Text style={styles.title3}>Nome do Restaurante</Text>
           </View>
           <Text style={styles.text}>40-50 min • Categoria • <Text style={{ color: '#FF9431' }}>Grátis</Text></Text>
@@ -56,7 +56,7 @@ export default function DetalheItem({ navigation }) {
 
         <View style={styles.bodyContent3}>
           <View style={styles.headerBodyContent3}>
-            <Image style={[styles.iconP, { tintColor: '#4D585E' }]} source={{ uri: 'https://api.iconify.design/material-symbols:edit-outline-sharp.svg' }} />
+            <Image style={[styles.iconP, { tintColor: '#4D585E' }]} source={require("../assets/images/iconFooter/flowbite--edit-outline.png")} />
             <Text style={[styles.title3, { color: '#4D585E' }]}>Alguma observação?</Text>
           </View>
           <TextInput
@@ -67,13 +67,19 @@ export default function DetalheItem({ navigation }) {
           />
         </View>
 
-        <View style={[styles.line4, { marginTop: 10 }]}>
+        <View style={styles.line4}>
           <TouchableOpacity onPress={decrementQuantity} style={styles.button}>
-            <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
+            <Image
+              style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]}
+              source={require("../assets/images/iconFooter/material-symbols--remove-rounded.png")}
+            />
           </TouchableOpacity>
-          <Text style={[styles.title2, { color: '#FF9431', margin: 20 }]}>{quantity}</Text>
+          <Text style={styles.title2}>{quantity}</Text>
           <TouchableOpacity onPress={incrementQuantity} style={styles.button}>
-            <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
+            <Image
+              style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]}
+              source={require("../assets/images/iconFooter/material-symbols--add-rounded.png")}
+            />
           </TouchableOpacity>
           <Button
             style={styles.buttonContainer}
@@ -83,6 +89,7 @@ export default function DetalheItem({ navigation }) {
             onPress={() => navigation.navigate('Sacola')}
           />
         </View>
+
       </View>
     </ScrollView>
   );
@@ -154,6 +161,7 @@ const styles = StyleSheet.create({
   bodyContent3: {
     height: 100,
     width: '90%',
+    marginVertical: 20,
   },
   headerBodyContent3: {
     flexDirection: 'row',
@@ -181,12 +189,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title2: {
-    color: '#0D0D0D',
-    fontSize: 18,
-    letterSpacing: 1.2,
-    fontWeight: '600',
-    marginBottom: 15,
-    marginTop: 30,
+    color: '#FF9431',
+    fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   title3: {
     color: '#0D0D0D',
@@ -218,20 +224,32 @@ const styles = StyleSheet.create({
   line4: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 40,
+    width: '90%', // Ajusta largura para centralizar os itens no conteúdo
   },
   buttonContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+
   },
   addButton: {
     backgroundColor: '#FF9431',
-    width: 180,
-    height: 30,
+    width: 140, // Ajuste de largura
+    height: 40,
     marginLeft: 10,
+    justifyContent: 'center',
   },
   addButtonTitle: {
     color: 'white',
     fontSize: 15,
+    textAlign: 'center',
   },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
 });

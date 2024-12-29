@@ -72,11 +72,11 @@ export default function HomeLoja({ navigation, route }) {
           <Image source={empresa.imgCapa} style={styles.backgroundImage} />
           <View style={styles.headerContent}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-              <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} /></View>
+              <View style={styles.iconBackground}><Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} /></View>
             </TouchableOpacity>
             <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity style={styles.iconWrapper}>
-                <View style={styles.iconBackground}><Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} /></View>
+                <View style={styles.iconBackground}><Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--search-rounded.png")} /></View>
               </TouchableOpacity>
             </View>
           </View>
@@ -192,15 +192,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   icon: {
-    width: 20,
-    height: 20,
-    tintColor: '#fff',
+    width: 30,
+    height: 30,
+    tintColor: '#FF9431',
   },
-  iconBackground: {
-    backgroundColor: 'rgba(25, 34, 39, 0.8)',
-    borderRadius: 999,
-    padding: 8,
-  },
+  // iconBackground: {
+  //   backgroundColor: 'rgba(25, 34, 39, 0.8)',
+  //   borderRadius: 999,
+  //   padding: 8,
+  // },
   carouselContainer: {
     flexDirection: 'row',
     alignItems: 'center',
