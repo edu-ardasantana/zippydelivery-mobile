@@ -5,6 +5,7 @@ import { Button } from "react-native-elements";
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import { API_URL } from '@/components/linkApi';
 
 export default function ResumoSacola({ navigation }) {
 
@@ -41,7 +42,7 @@ export default function ResumoSacola({ navigation }) {
   useEffect(() => {
     // Realiza a requisição somente se o ID estiver disponível
     if (id) {
-      axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/${id}`)
+      axios.get(`${API_URL}/api/cliente/findByUser/${id}`)
         .then((response) => {
           setEndereco(response.data);
         })

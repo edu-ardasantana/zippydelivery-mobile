@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Input } from 'react-native-elements';
 import { useRoute } from '@react-navigation/native';
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import { API_URL } from '@/components/linkApi';
 
 export default function FormConta({ navigation }) {
     const [modalVisible, setModalVisible] = useState(false);
@@ -77,7 +78,7 @@ export default function FormConta({ navigation }) {
     };
 
     const excluirDados = () => {
-        axios.delete(`http://192.168.1.16:8080/api/cliente/${idCliente}`)
+        axios.delete(`${API_URL}/api/cliente/${idCliente}`)
             .then(() => {
                 navigation.navigate('Login');
             })

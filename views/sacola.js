@@ -1,150 +1,234 @@
-import { useIsFocused } from '@react-navigation/native';
+
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
-import { Button, Divider } from 'react-native-elements';
+import { useMyContext } from './myContext';
+import { Button } from 'react-native-elements';
 import ItemSacola from '../components/itemSacola';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Link, useIsFocused } from '@react-navigation/native';
+import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { API_URL } from '@/components/linkApi';
 
 export default function Sacola({ navigation }) {
-
-    const listagemProdutos = [0, 1, 2,4,5];
-
+    const [idEmpresa, setIdEmpresa] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [buttonTitle, setButtonTitle] = useState('Continuar');
+    const [buttonAction, setButtonAction] = useState('ResumoSacola');
     const [getEndereco, setEndereco] = useState([]);
-    const [taxaFrete, setTaxaFrete] = useState(0);
     const isFocused = useIsFocused();
 
-    const [idEmpresa, setIdEmpresa] = useState(null);
-    const [id, setId] = useState(null);
+    const [getCupom, setCupom] = useState('');
+    const [cupomInfo, setCupomInfo] = useState(null);
+
+    const { cart, setCart } = useMyContext();
+    const produtosDaEmpresa = cart.filter((produto) => produto.categoria.empresa.id === idEmpresa);
+    const agora = new Date();
+
+    const limparSacola = () => {
+        setCart([]);
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
+        // Carregar dados do AsyncStorage
+        const loadData = async () => {
             try {
-                const idStorage = await AsyncStorage.getItem('id');
-                const idEmpresaStorage = await AsyncStorage.getItem('idEmpresa');
-
-                if (idStorage && idEmpresaStorage) {
-                    setId(idStorage);
-                    setIdEmpresa(idEmpresaStorage);
-                }
+                await AsyncStorage.setItem('var', 'sacola');
+                const empresaId = await AsyncStorage.getItem('idEmpresa');
+                const usuarioId = await AsyncStorage.getItem('id');
+                setIdEmpresa(parseInt(empresaId, 10));
+                setUserId(parseInt(usuarioId, 10));
             } catch (error) {
-                console.error("Erro ao obter dados do AsyncStorage", error);
+                console.log('Erro ao carregar dados do AsyncStorage:', error);
             }
         };
+        loadData();
+    }, []);
 
-        fetchData();
-    }, [isFocused]);
-
-    useEffect(() => {
-        if (id) {
-            axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
-                .then(response => {
-                    setEndereco(response.data);
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-        }
-    }, [id, isFocused]);
-
-    useEffect(() => {
-        if (idEmpresa) {
-            axios.get(`http://192.168.1.16:8080/api/empresa/${idEmpresa}`)
-                .then(response => {
-                    setTaxaFrete(response.data.taxaFrete);
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-        }
-    }, [idEmpresa]);
-
-    let enderecoCompleto;
-    if (getEndereco.logradouro == null) {
-        enderecoCompleto = null;
-    } else {
-        enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} \n${getEndereco.complemento} `;
+    function aplicarCupom() {
+        axios
+            .get(`${API_URL}/api/cupom/codigo/${getCupom}`)
+            .then(function (response) {
+                if (response.data && response.data.quantidadeMaximaUso > 0) {
+                    const [ano, mes, dia] = response.data.fimVigencia;
+                    const fimVigencia = new Date(ano, mes - 1, dia);
+                    if (fimVigencia >= agora) {
+                        setCupomInfo(response.data);
+                    } else {
+                        setCupomInfo(null);
+                        console.log('Cupom inválido ou expirado.');
+                    }
+                } else {
+                    setCupomInfo(null);
+                    console.log('Cupom inválido ou inexistente.');
+                }
+            })
+            .catch(function (error) {
+                console.log('Erro ao aplicar cupom:', error);
+            });
     }
 
+    useEffect(() => {
+        if (userId) {
+            axios
+                .get(`${API_URL}/api/cliente/user/${userId}`)
+                .then(function (response) {
+                    setEndereco(response.data);
+                })
+                .catch(function (error) {
+                    console.log('Erro ao carregar endereço:', error);
+                });
+        }
+    }, [userId, isFocused]);
+
+    useEffect(() => {
+        if (cart.length === 0) {
+            setButtonTitle('Ir às compras');
+            setButtonAction('Home');
+        } else {
+            setButtonTitle('Continuar');
+            setButtonAction('ResumoSacola');
+        }
+    }, [cart]);
+
+    let enderecoCompleto;
+    if (!getEndereco.logradouro) {
+        enderecoCompleto = null;
+    } else {
+        enderecoCompleto = `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} ${getEndereco.complemento}`;
+    }
+
+    const renderCartItem = ({ item }) => (
+        <View>
+            <TouchableOpacity onPress={() => navigation.navigate('DetalheItem', { produto: item, origin: 'Sacola' })}>
+                <ItemSacola item={item} />
+            </TouchableOpacity>
+        </View>
+    );
+
+    var desconto = 0;
+    const cartTotal = cart.reduce((total, cartItem) => {
+        const itemPrice = cartItem.preco * cartItem.quantity;
+        desconto = cupomInfo === null ? 1 : 1 - cupomInfo.percentualDesconto / 100;
+        return (total + itemPrice) * desconto;
+    }, 0);
+
+    function formatarMoeda(dataParam) {
+        return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+    }
     return (
         <View style={styles.container}>
 
             <View style={styles.headerContent}>
                 <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={require("../assets/images/iconFooter/solar--alt-arrow-down-outline.png")} />
+                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/solar:alt-arrow-left-outline.svg' }} />
                 </TouchableOpacity>
-
                 <Text style={styles.title}>SACOLA</Text>
 
-                <TouchableOpacity >
+                <TouchableOpacity onPress={limparSacola}>
                     <Text style={styles.limpar}>Limpar</Text>
                 </TouchableOpacity>
             </View>
 
-            <View>
-                <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')} >
-                    <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
+            <Text style={styles.enderecoTitle}>Entregar no endereço</Text>
 
-                    {enderecoCompleto == null ?
-                        <View style={styles.semEndereco}>
-                            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
-                                <Text style={styles.limpar}>Escolher endereço</Text>
-                            </TouchableOpacity>
-                        </View>
-                        :
-                        <View style={styles.endereco}>
-                            <Image style={styles.menuIcon} source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")} />
+            {enderecoCompleto === null ?
+                <View style={styles.semEndereco}>
+                    <TouchableOpacity onPress={() => navigation.navigate('FormEndereco', { origin: 'Sacola' })}>
+                        {cart.length !== 0 &&
+                            <Text style={styles.limpar}>Escolher endereço</Text>
+                        }
+                    </TouchableOpacity>
+                </View>
+                :
+                <View style={styles.endereco}>
+                    {cart.length > 0 ? (
+                        <>
+                            <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
                             <Text style={styles.enderecoText}>{enderecoCompleto}</Text>
-                            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco')}>
+                            <TouchableOpacity onPress={() => navigation.navigate('FormEndereco', { origin: 'Sacola' })}>
                                 <Text style={styles.limpar}>Trocar</Text>
                             </TouchableOpacity>
-                        </View>
-                    }
-
-
-                </TouchableOpacity>
-                
-            </View>
-            <Divider />
-            
-                <ScrollView style={{ height: 400}}>
-                    
-                    <View>
-                        {listagemProdutos.map((index) => (
-                            <View key={index}>
-                                <Divider />
-                                <TouchableOpacity>
-                                    <ItemSacola />
-                                </TouchableOpacity>
-                            </View>
-                        ))}
-                    </View>
-                </ScrollView>
-                <Divider />
-
-           
-            <View style={styles.container}>
-                <Text style={{ paddingHorizontal: 20, fontWeight: '600', marginVertical: 20 }}>
-                    Taxa de entrega:{" "}
-                    {(taxaFrete || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </Text>
-            </View>
-
-            <View style={styles.footerContainer}>
-                <View style={styles.footer2}>
-                    <Text style={styles.footerText}>Total com a entrega</Text>
-                    <Text style={styles.preco}>R$ 31,90</Text>
+                        </>
+                    ) : null}
                 </View>
-                <View style={{flex: 1}}>
+            }
+            <View style={styles.dividerContainer}>
+                <View style={styles.dividerLine} />
+            </View>
+            {cart.length === 0 && (
+                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center' }}>
+                    <Image style={{ height: 200, width: 200, alignSelf: 'center' }} source={{ uri: 'https://api.iconify.design/material-symbols:shopping-cart-outline-sharp.svg?color=%23e6e6e6', }}></Image>
+                    <Text style={{ padding: 10, textAlign: 'center', fontWeight: '500', color: '#4D585E' }}>O seu carrinho está vazio!</Text>
+                </View>)}
+            
+            {cart.length > 0 && (
+                <FlatList
+                    data={cart}
+                    keyExtractor={(item => item.id.toString())}
+                    renderItem={renderCartItem}
+                />
+            )}
+            {cart.length > 0 && (
+                <Text style={{ paddingHorizontal: 20, fontWeight: 600, marginTop: 20 }}>Taxa de entrega: {cart[0].categoria.empresa.taxaFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
+            )}
+            {cart.length > 0 && (
+                <View style={styles.espacoCupom}>
+                    <TextInput
+                        style={styles.inputCupom}
+                        placeholder='Código do cupom'
+                        placeholderTextColor='#C4C4CC'
+                        onChangeText={text => { setCupom(text); console.log(text); }}
+                    />
                     <Button
-                        buttonStyle={styles.button}
-                        title="Continuar"
-                        onPress={() => navigation.navigate('ResumoSacola')}
+                        buttonStyle={styles.buttonCupom}
+                        title={"Aplicar"}
+                        onPress={() => aplicarCupom()}
+                        disabled={enderecoCompleto === null && cart.length > 0}
+                        titleStyle={styles.buttonText}
                     />
                 </View>
+            )}
+            {/* <br /> */}
+            <View style={styles.footerContainer}>
+                {cart.length > 0 && (
+                    <View style={styles.footer2}>
+                        <Text style={styles.footerText}>Total com a entrega:</Text>
+                        {cupomInfo ? (
+                            <>
+                                <View style={{ flexDirection: "column" }}>
+                                    <Text style={styles.preco}>
+                                        {formatarMoeda(
+                                            (cartTotal + cart[0].categoria.empresa.taxaFrete)
+                                        )}
+                                    </Text>
+                                    <Text style={styles.sobreCupom}>
+                                        Desconto do cupom aplicado: {cupomInfo.percentualDesconto}%
+                                    </Text>
+                                </View>
+                            </>
+                        ) : (
+                            <Text style={styles.preco}>
+                                {formatarMoeda(cartTotal + cart[0].categoria.empresa.taxaFrete)}
+                            </Text>
+                        )}
+                    </View>
+                )}
+                {(enderecoCompleto === null && cart.length > 0) && (
+                    <Text style={{ paddingTop: 20, alignSelf: 'center', fontWeight: 'bold' }}>
+                        Para continuar, informe um{' '}
+                        <Link to="/FormEndereco" state={{ origin: 'Sacola' }} style={{ color: '#FF9431' }}>
+                            endereço
+                        </Link>{' '}
+                        para entrega
+                    </Text>
+                )}
+                <Button
+                    buttonStyle={styles.button}
+                    title={buttonTitle}
+                    onPress={() => navigation.navigate(buttonAction, { cupomInfo })}
+                    disabled={enderecoCompleto === null && cart.length > 0}
+                />
             </View>
-            
-
         </View>
     );
 }

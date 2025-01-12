@@ -18,13 +18,14 @@ import HistoricoScreen from '../views/historico';
 import SemPedidosScreen from '../views/messageScreens/semPedidos';
 import ResumoSacola from '../views/resumoSacola';
 import DetalhePedido from '../views/detalhePedido';
+import { MyProvider } from '../views/myContext';
 
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    //<NavigationContainer>
+    <MyProvider>
       <Stack.Navigator initialRouteName='Login'>
         <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
         <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
@@ -43,6 +44,6 @@ export default function App() {
         <Stack.Screen name="ResumoSacola" component={ResumoSacola} options={{headerShown: false}} />
         <Stack.Screen name="DetalhePedido" component={DetalhePedido} options={{headerShown: false}} />
       </Stack.Navigator>
-    //</NavigationContainer>
+    </MyProvider>
   );
 }

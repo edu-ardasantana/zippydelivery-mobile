@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'reac
 import { Button } from 'react-native-elements';
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from "../components/linkApi";
 
 
 export default function Login({ navigation }) {
@@ -11,27 +12,28 @@ export default function Login({ navigation }) {
     const [getEmail, setEmail] = useState('');
     const [getSenha, setSenha] = useState('');
 
-     function logar() {
+    function logar() {
         const credentials = {
             username: getEmail,
             password: getSenha,
         };
 
-        axios.post('http://192.168.1.16:8080/api/login', credentials)
+        axios.post(`${API_URL}/api/login`, credentials)
             .then(async function (response) {
                 try {
                     console.log(response.data);
                     console.log(credentials);
                     console.log(response);
+                    console.log("link", API_URL)
 
-                    const { userId, token } = response.data;
-                    console.log(userId)
+                    const { id, token } = response.data;
+                    console.log(id)
                     console.log(token)
 
                     // Verifica se os valores 'id' e 'token' são válidos
-                    if (userId && token) {
+                    if (id && token) {
                         // Armazena os dados no AsyncStorage
-                        await AsyncStorage.setItem('id', userId.toString());
+                        await AsyncStorage.setItem('id', id.toString());
                         await AsyncStorage.setItem('token', token.toString());
                         // Navega para a próxima tela
                         navigation.navigate('Home');
@@ -90,12 +92,7 @@ export default function Login({ navigation }) {
                 <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
                     <Text style={styles.link}> Criar uma conta</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
-                    <Text style={styles.link}> Criar uma conta</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('CadastraUsuario')}>
-                    <Text style={styles.link}> Criar uma conta</Text>
-                </TouchableOpacity>
+
                 <FlashMessage position="top" />
             </View>
 

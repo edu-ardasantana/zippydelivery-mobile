@@ -1,3 +1,4 @@
+import { API_URL } from '@/components/linkApi';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -22,7 +23,7 @@ export default function CadastraUsuario({ navigation }) {
         };
 
         try {
-            const response = await axios.post('http://192.168.1.16:8080/api/cliente', userData);
+            const response = await axios.post(`${API_URL}/api/cliente`, userData);
             console.log("Resposta da API: ", response);
 
             // Define a mensagem de sucesso

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Footer from '../components/footer';
+import { API_URL } from '@/components/linkApi';
 
 export default function Menu({ navigation }) {
   const [nome, setNome] = useState('');
@@ -28,7 +29,7 @@ export default function Menu({ navigation }) {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://192.168.1.16:8080/api/cliente/findByUser/${id}`)
+        .get(`${API_URL}/api/cliente/findByUser/${id}`)
         .then((response) => {
           const data = response.data;
           setNome(data.nome);

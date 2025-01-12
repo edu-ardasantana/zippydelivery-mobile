@@ -6,6 +6,7 @@ import { Button } from 'react-native-elements';
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from 'react-native-masked-text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '@/components/linkApi';
 
 export default function FormEndereco({ navigation }) {
 
@@ -28,7 +29,7 @@ export default function FormEndereco({ navigation }) {
     useEffect(() => {
         AsyncStorage.getItem("id").then((id) => {
             if (id) {
-                axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/` + id)
+                axios.get(`${API_URL}/api/cliente/findByUser/` + id)
                     .then((response) => {
                         const data = response.data;
                         setDescricao(data.descricao);
@@ -47,12 +48,12 @@ export default function FormEndereco({ navigation }) {
                             type: "danger",
                         });
                     });
-                    AsyncStorage.getItem("var").then((local) => {
-                        if (local) {
-                            setLocal(local);
-                        
-                        }
-                    });
+                AsyncStorage.getItem("var").then((local) => {
+                    if (local) {
+                        setLocal(local);
+
+                    }
+                });
             }
         });
     }, []);
@@ -103,7 +104,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`http://192.168.1.16:8080/api/cliente/${idCliente}`, userData)
+        axios.put(`${API_URL}/api/cliente/${idCliente}`, userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({
@@ -188,9 +189,8 @@ export default function FormEndereco({ navigation }) {
                         <Text style={styles.label}>UF</Text>
                         <Picker
                             style={styles.input}
-                            selectedValue={selectedUF}
-                            onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
-                            value={estado}
+                            selectedValue={selectedUF} // O valor selecionado
+                            onValueChange={(itemValue) => setSelectedUF(itemValue)} // Atualiza o valor selecionado
                         >
                             {estados.map((estado) => (
                                 <Picker.Item key={estado.value} label={estado.label} value={estado.value} />
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#dbdbe749',
         borderRadius: 5,
         marginBottom: 10,
-        
+
     },
     button: {
         marginTop: 20,

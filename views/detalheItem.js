@@ -1,23 +1,41 @@
-import React, { useState } from 'react';
-import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { useMyContext } from './myContext';
 import { Button } from 'react-native-elements';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet, Modal } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export default function DetalheItem({ route, navigation }) {
+  
+  const [idEmpresa, setIdEmpresa] = useState(null);
+  const { produto, origin } = route.params;
+  const { addToCart, delToCart, removeFromCart, cart } = useMyContext([]);
+  const [selectedQuantity, _setSelectedQuantity] = useState(1);  
+  const [showModal, setShowModal] = useState(false);
 
-export default function DetalheItem({ navigation }) {
-
-
-
-  const [quantity, setQuantity] = useState(1);
-
-  function incrementQuantity() {
-    setQuantity(quantity + 1);
-  }
-
-  function decrementQuantity() {
-    if (quantity > 0) {
-      setQuantity(quantity - 1);
+  const checkCartForCompany = (productId) => {
+    const cartItem = cart.find((produto) => produto.id === productId);
+    if (cart.length === 0 || cartItem && cart.length > 0 && cart[0].categoria.empresa.id == idEmpresa){
+      navigation.navigate('Sacola')
+    }else{
+      removeFromCart(produto.id)
+      setShowModal(true);
     }
-  }
+  };
+
+  const getProductQuantity = (productId) => {
+    const cartItem = cart.find((produto) => produto.id === productId);
+    return cartItem ? cartItem.quantity : 0;  
+  };
+
+  useEffect(() => {
+    const fetchIdEmpresa = async () => {
+      const storedIdEmpresa = await AsyncStorage.getItem('idEmpresa');
+      setIdEmpresa(storedIdEmpresa);
+    };
+    fetchIdEmpresa();
+    
+    addToCart({...produto, quantity: 1 });
+  }, [])
 
   function formatarMoeda(dataParam) {
     return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
@@ -27,36 +45,37 @@ export default function DetalheItem({ navigation }) {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('../assets/images/item.png')}
+          source={produto.imagem}
           style={styles.backgroundImage}
         />
         <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => navigation.navigate('HomeLoja')} style={styles.iconWrapper}>
+          <TouchableOpacity onPress={() => navigation.navigate('HomeLoja',{id: idEmpresa})} style={styles.iconWrapper}>
             <View style={styles.iconBackground}>
-              <Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} />
+              <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
             </View>
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent1}>
-          <Text style={[styles.title1, { marginTop: 30 }]}>Salada Ravanello</Text>
-          <Text style={styles.descricao}>Rabanetes, folhas verdes e molho agridoce salpicados com gergelim.</Text>
-          <Text style={[styles.title2, { color: '#FF9431', marginVertical: 15}]}>{formatarMoeda(44.90)}</Text>
+          <Text style={[styles.title1, { marginTop: 30 }]}>{produto.titulo}</Text>
+          <Text style={styles.descricao}>{produto.descricao} • 
+            <Text style={[styles.title2, { color: '#FF9431' }]}> {formatarMoeda(produto.preco)}</Text>
+          </Text>
         </View>
 
         <View style={styles.bodyContent2}>
           <View style={styles.box}>
-            <Image style={styles.iconP} source={require("../assets/images/iconFooter/material-symbols--restaurant.png")} />
-            <Text style={styles.title3}>Nome do Restaurante</Text>
+            <Image style={styles.iconP} source={{ uri: 'https://api.iconify.design/material-symbols:restaurant.svg' }} />
+            <Text style={styles.title3}>{produto.categoria.empresa.nome}</Text>
           </View>
-          <Text style={styles.text}>40-50 min • Categoria • <Text style={{ color: '#FF9431' }}>Grátis</Text></Text>
+          <Text style={styles.text}>Tempo de entrega: {produto.categoria.empresa.tempoEntrega} min • {produto.categoria.descricao} • <Text style={{ color: '#FF9431' }}><Text style={styles.text}>Frete:</Text>{formatarMoeda(produto.categoria.empresa.taxaFrete)}</Text></Text>
         </View>
         <View style={styles.divider}></View>
 
         <View style={styles.bodyContent3}>
           <View style={styles.headerBodyContent3}>
-            <Image style={[styles.iconP, { tintColor: '#4D585E' }]} source={require("../assets/images/iconFooter/flowbite--edit-outline.png")} />
+            <Image style={[styles.iconP, { tintColor: '#4D585E' }]} source={{ uri: 'https://api.iconify.design/material-symbols:edit-outline-sharp.svg' }} />
             <Text style={[styles.title3, { color: '#4D585E' }]}>Alguma observação?</Text>
           </View>
           <TextInput
@@ -67,30 +86,67 @@ export default function DetalheItem({ navigation }) {
           />
         </View>
 
-        <View style={styles.line4}>
-          <TouchableOpacity onPress={decrementQuantity} style={styles.button}>
-            <Image
-              style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]}
-              source={require("../assets/images/iconFooter/material-symbols--remove-rounded.png")}
-            />
+        <View style={[styles.line4, { marginTop: 10 }]}>
+          <TouchableOpacity onPress={()=>delToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
+            <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
           </TouchableOpacity>
-          <Text style={styles.title2}>{quantity}</Text>
-          <TouchableOpacity onPress={incrementQuantity} style={styles.button}>
-            <Image
-              style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]}
-              source={require("../assets/images/iconFooter/material-symbols--add-rounded.png")}
-            />
+          <Text style={[styles.title2, { color: '#FF9431', marginVertical: 20 }]}>{getProductQuantity(produto.id)}</Text>
+          <TouchableOpacity onPress={() =>  addToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
+            <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
           </TouchableOpacity>
           <Button
             style={styles.buttonContainer}
-            title="Adicionar"
+            title={`Adicionar ${formatarMoeda((getProductQuantity(produto.id)*produto.preco))}`}
             buttonStyle={styles.addButton}
             titleStyle={styles.addButtonTitle}
-            onPress={() => navigation.navigate('Sacola')}
+            onPress={() => checkCartForCompany(produto.id)}            
           />
         </View>
-
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModal}
+        onRequestClose={() => {
+          setShowModal(false);
+        }}
+      >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>
+            Já existe um produto de outra loja no carrinho. Deseja ir para o carrinho e finalizar a compra?
+          </Text>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: '#FF9431' }]}
+              onPress={() => {
+                setShowModal(false);
+                navigation.navigate('Sacola')
+              }}
+            >
+              <Text style={styles.buttonText}>Ok</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                {
+                  backgroundColor: 'white',
+                  borderColor: '#FF9431',
+                  borderWidth: 1, // Adiciona uma largura para a borda
+                  marginLeft: 10
+                }
+              ]}
+              onPress={() => {
+                setShowModal(false);
+              }}
+            >
+              <Text style={[styles.buttonText, { color: '#FF9431' }]}>Não</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+      </Modal>
+
     </ScrollView>
   );
 }

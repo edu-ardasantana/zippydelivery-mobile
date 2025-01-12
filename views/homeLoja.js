@@ -4,19 +4,18 @@ import Item from '../components/item';
 import Footer from '../components/footer';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '@/components/linkApi';
 
 export default function HomeLoja({ navigation, route }) {
-
   const [empresa, setEmpresa] = useState('');
   const [categorias, setCategorias] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [idEmpresa, setIdEmpresa] = useState('');
   const [header, setHeader] = useState(null);
-  
 
   useEffect(() => {
     fetchHeader();
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (header) {
@@ -27,43 +26,46 @@ export default function HomeLoja({ navigation, route }) {
   }, [header]);
 
   const fetchHeader = async () => {
-    let token = await AsyncStorage.getItem('token');
-    let userId = route.params.id;
+    const token = await AsyncStorage.getItem('token');
+    const userId = route.params.id;
     setIdEmpresa(userId);
     setHeader({
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     });
   };
 
   const fetchEmpresa = async () => {
-    axios.get(`http://localhost:8080/api/empresa/${idEmpresa}`, header)
-      .then(function (response) {
+    axios.get(`${API_URL}/api/empresa/${idEmpresa}`, header)
+      .then(response => {
         setEmpresa(response.data);
-      }).catch(function (error) {
+      })
+      .catch(error => {
         console.error(error);
       });
-  }
+  };
 
   const fetchCategorias = async () => {
-    axios.get(`http://localhost:8080/api/categoria-produto/empresa/${idEmpresa}`, header)
-      .then(function (response) {
-        setCategorias(...categorias, response.data);
-      }).catch(function (error) {
+    axios.get(`${API_URL}/api/categoria-produto/empresa/${idEmpresa}`, header)
+      .then(response => {
+        setCategorias(response.data);
+      })
+      .catch(error => {
         console.error(error);
       });
-  }
+  };
 
   const fetchProdutos = async () => {
-    axios.get(`http://localhost:8080/api/produto/categoria-empresa/${idEmpresa}`, header)
-      .then(function (response) {
-        setProdutos(...produtos, response.data);
-      }).catch(function (error) {
+    axios.get(`${API_URL}/api/produto/categoria-empresa/${idEmpresa}`, header)
+      .then(response => {
+        setProdutos(response.data);
+      })
+      .catch(error => {
         console.error(error);
       });
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -72,11 +74,15 @@ export default function HomeLoja({ navigation, route }) {
           <Image source={empresa.imgCapa} style={styles.backgroundImage} />
           <View style={styles.headerContent}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-              <View style={styles.iconBackground}><Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} /></View>
+              <View style={styles.iconBackground}>
+                <Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} />
+              </View>
             </TouchableOpacity>
             <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity style={styles.iconWrapper}>
-                <View style={styles.iconBackground}><Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--search-rounded.png")} /></View>
+                <View style={styles.iconBackground}>
+                  <Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--search-rounded.png")} />
+                </View>
               </TouchableOpacity>
             </View>
           </View>
@@ -88,30 +94,28 @@ export default function HomeLoja({ navigation, route }) {
           </View>
 
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-            {categorias.map((valor, index) =>
-              /*
-              index === 1 ? (
-
-                  <TouchableOpacity key={index} style={[styles.etiqueta, { backgroundColor: '#FF9431' }]}              >
-                  <Text style={[styles.textoEtiqueta, { color: 'white' }]}>{v.descricao}</Text>
-                  </TouchableOpacity>
-              ) : (
-                */
-              <TouchableOpacity style={styles.etiqueta}>
-                <Text style={styles.textoEtiqueta}>{valor.descricao}</Text>
+            {categorias.map((categoria, index) => (
+              <TouchableOpacity key={index} style={styles.etiqueta}>
+                <Text style={styles.textoEtiqueta}>{categoria.descricao}</Text>
               </TouchableOpacity>
-            )}
+            ))}
           </ScrollView>
 
-          { produtos.length === 0 ? (
+          {produtos.length === 0 ? (
             <Text style={styles.textoVazio}>Nenhum produto ainda</Text>
           ) : (
             produtos.map((produtosCategoria, indexCategoria) => (
               <View key={indexCategoria}>
                 <Text style={styles.title2}>{produtosCategoria[0].categoria.descricao}</Text>
                 {produtosCategoria.map((produto, indexProduto) => (
-                  <TouchableOpacity key={indexProduto} >
-                    <Item titulo={produto.titulo} descricao={produto.descricao} preco={produto.preco} imagem={produto.imagem} onPress={()=>navigation.navigate("DetalheItem", {produto, origin:'HomeLoja'})} />
+                  <TouchableOpacity key={indexProduto}>
+                    <Item
+                      titulo={produto.titulo}
+                      descricao={produto.descricao}
+                      preco={produto.preco}
+                      imagem={produto.imagem}
+                      onPress={() => navigation.navigate("DetalheItem", { produto, origin: 'HomeLoja' })}
+                    />
                   </TouchableOpacity>
                 ))}
               </View>
@@ -119,7 +123,7 @@ export default function HomeLoja({ navigation, route }) {
           )}
         </View>
       </ScrollView>
-      {/*<Footer />*/}
+      {/* <Footer /> */}
     </View>
   );
 }
@@ -196,11 +200,6 @@ const styles = StyleSheet.create({
     height: 30,
     tintColor: '#FF9431',
   },
-  // iconBackground: {
-  //   backgroundColor: 'rgba(25, 34, 39, 0.8)',
-  //   borderRadius: 999,
-  //   padding: 8,
-  // },
   carouselContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -212,6 +211,6 @@ const styles = StyleSheet.create({
   textoVazio: {
     color: '#D3D3D3',
     textAlign: 'center',
-    marginTop: '50%'
+    marginTop: '50%',
   }
 });

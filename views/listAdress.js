@@ -4,6 +4,7 @@ import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } fr
 import { Button } from 'react-native-elements';
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from 'react-native-masked-text';
+import { API_URL } from '../components/linkApi';
 
 export default function FormEndereco({ navigation }) {
 
@@ -23,7 +24,7 @@ export default function FormEndereco({ navigation }) {
     const local = localStorage.getItem("var");
 
     useEffect(() => {
-        axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/`+id)
+        axios.get(`${API_URL}/api/cliente/findByUser/`+id)
             .then(function (response) {
                 const data = response.data;
                 setDescricao(data.descricao);
@@ -88,7 +89,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`http://localhost:8080/api/cliente/${idCliente}`, userData)
+        axios.put(`${API_URL}/api/cliente/${idCliente}`, userData)
             .then(function (response) {
                 console.log(response);
                 showMessage({

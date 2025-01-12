@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Footer from '../components/footer';
 import Pedido from '../components/pedido';
 import axios from 'axios';
+import { API_URL } from '@/components/linkApi';
 
 
 export default function Historico({ navigation }) {
@@ -15,7 +16,7 @@ export default function Historico({ navigation }) {
  
     function carregarLista() {
  
-        axios.get("http://192.168.1.16:8080/api/pedido")
+        axios.get(`${API_URL}/api/pedido`)
         .then((response) => {
             setLista(response.data)
         })
