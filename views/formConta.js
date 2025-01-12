@@ -5,13 +5,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Input } from 'react-native-elements';
 import { useRoute } from '@react-navigation/native';
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import { API_URL } from '@/components/linkApi';
+import { API_URL } from '../components/linkApi';
 
 export default function FormConta({ navigation }) {
     const [modalVisible, setModalVisible] = useState(false);
-
+    const [token, setToken] = useState('');  // Estado para armazenar o token
     const route = useRoute();
-    const { cliente } = route.params || {};
+    //const { cliente } = route.params || {};
 
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
@@ -20,46 +20,60 @@ export default function FormConta({ navigation }) {
     const [id, setId] = useState(null);
 
     useEffect(() => {
-        // Recuperar ID do AsyncStorage
-        const fetchId = async () => {
+        // Recuperar ID e Token do AsyncStorage
+        const fetchIdAndToken = async () => {
             try {
-                const storedId = await AsyncStorage.getItem('userId');
-                if (storedId) {
+                const storedId = await AsyncStorage.getItem('id');
+                const storedToken = await AsyncStorage.getItem('token');  // Recuperar o token
+                console.log("idsss", storedId)
+                console.log("tokenForm", storedToken)
+                if (storedId && storedToken) {
                     setId(storedId);
-                    fetchClientData(storedId);
+                    setToken(storedToken);  // Armazenar o token
+                    fetchClientData(storedId, storedToken);  // Passar token para a requisição
                 }
             } catch (error) {
-                console.log('Erro ao recuperar o ID do AsyncStorage:', error);
+                console.log('Erro ao recuperar o ID ou token do AsyncStorage:', error);
             }
         };
 
-        fetchId();
+        fetchIdAndToken();
     }, []);
 
-    const fetchClientData = (userId) => {
-        axios.get(`http://192.168.1.16:8080/api/cliente/findByUser/${userId}`)
-            .then(response => {
-                const data = response.data;
-                setNome(data.nome);
-                setEmail(data.email);
-                setSenha(data.senha);
-                setIdCliente(data.id);
-            })
-            .catch(error => {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error.message}`,
-                    type: "danger",
-                });
+    const fetchClientData = (userId, token) => {
+        axios.get(`${API_URL}/api/cliente/user/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,  // Passando o token para a requisição
+            }
+        })
+        .then(response => {
+            const data = response.data;
+            console.log("data", data)
+            console.log("password", data.senha)
+            setNome(data.nome);
+            setEmail(data.email);
+           // setSenha(data.senha);
+            setIdCliente(data.id);
+        })
+        .catch(error => {
+            console.log(error);
+            showMessage({
+                message: `Algo deu errado: ${error.message}`,
+                type: "danger",
             });
+        });
     };
 
     const alterarDados = () => {
         axios
-            .put(`http://192.168.1.16:8080/api/cliente/${idCliente}`, {
+            .put(`${API_URL}/api/cliente/${idCliente}`, {
                 nome: nome,
                 email: email,
                 senha: senha,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,  // Passando o token para a requisição
+                }
             })
             .then(() => {
                 showMessage({
@@ -78,17 +92,21 @@ export default function FormConta({ navigation }) {
     };
 
     const excluirDados = () => {
-        axios.delete(`${API_URL}/api/cliente/${idCliente}`)
-            .then(() => {
-                navigation.navigate('Login');
-            })
-            .catch(error => {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error.message}`,
-                    type: "danger",
-                });
+        axios.delete(`${API_URL}/api/cliente/${idCliente}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,  // Passando o token para a requisição
+            }
+        })
+        .then(() => {
+            navigation.navigate('Login');
+        })
+        .catch(error => {
+            console.log(error);
+            showMessage({
+                message: `Algo deu errado: ${error.message}`,
+                type: "danger",
             });
+        });
     };
 
     return (
@@ -288,4 +306,4 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: 20,
     },
-})
+});

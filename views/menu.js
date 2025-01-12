@@ -8,13 +8,28 @@ import { API_URL } from '@/components/linkApi';
 export default function Menu({ navigation }) {
   const [nome, setNome] = useState('');
   const [id, setId] = useState(null);
+  const [token, setToken] = useState('');
 
+  // Carregar o token
+  useEffect(() => {
+    const fetchToken = async () => {
+      const storedToken = await AsyncStorage.getItem('token');
+      if (storedToken) {
+        console.log("tokenMenu", token)
+        setToken(storedToken);  // Atualiza o token
+      }
+    };
+    fetchToken();  // Carrega o token ao inicializar o componente
+  }, []);
+
+  // Carregar o ID
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const storedId = await AsyncStorage.getItem('id'); // Recupera o ID armazenado
+        const storedId = await AsyncStorage.getItem('id');  // Recupera o ID armazenado
         if (storedId) {
-          setId(storedId);
+          console.log("id", storedId)
+          setId(storedId);  // Atualiza o ID
         } else {
           console.warn('ID não encontrado no AsyncStorage');
         }
@@ -23,22 +38,29 @@ export default function Menu({ navigation }) {
       }
     };
 
-    fetchUserId();
+    fetchUserId();  // Carrega o ID
   }, []);
 
+  // Buscar dados do cliente quando ID e token estiverem definidos
   useEffect(() => {
-    if (id) {
+    if (id && token) {
       axios
-        .get(`${API_URL}/api/cliente/findByUser/${id}`)
+        .get(`${API_URL}/api/cliente/user/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Adicionando o token ao cabeçalho
+          }
+        })
         .then((response) => {
           const data = response.data;
           setNome(data.nome);
+          console.log("Nome do cliente:", data.nome);  // Debugging: mostra o nome do cliente
         })
         .catch((error) => {
           console.error('Erro ao buscar dados do cliente:', error);
+          // Adicionar um tratamento de erro aqui, caso necessário
         });
     }
-  }, [id]);
+  }, [id, token]);  // Requisitar dados quando 'id' ou 'token' mudarem
 
   const nomeUser = nome;
 
@@ -46,7 +68,7 @@ export default function Menu({ navigation }) {
     <View style={styles.container}>
       <View style={styles.body}>
         <View style={styles.info}>
-          <Text style={styles.infoNameUser}>{nomeUser},</Text>
+          <Text style={styles.infoNameUser}>{nomeUser}</Text>
           <Text style={styles.infoText}>o que você quer fazer agora?</Text>
         </View>
         <View style={styles.options}>
