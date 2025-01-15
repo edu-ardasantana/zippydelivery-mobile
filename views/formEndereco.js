@@ -20,18 +20,33 @@ export default function FormEndereco({ navigation }) {
     const [idCliente, setIdCliente] = useState('');
     const [selectedUF, setSelectedUF] = useState('');
     const [local, setLocal] = useState('');
+    const [token, setToken] = useState('');
 
-    // const id = window.localStorage.getItem("id");
-
-    // const local = localStorage.getItem("var");
+    // Carregar o token
+    useEffect(() => {
+      const fetchToken = async () => {
+        const storedToken = await AsyncStorage.getItem('token');
+        if (storedToken) {
+          console.log("tokenMenu", token)
+          setToken(storedToken);  // Atualiza o token
+        }
+      };
+      fetchToken();  // Carrega o token ao inicializar o componente
+    }, []);
 
 
     useEffect(() => {
         AsyncStorage.getItem("id").then((id) => {
             if (id) {
-                axios.get(`${API_URL}/api/cliente/findByUser/` + id)
+                axios
+                .get(`${API_URL}/api/cliente/user/${id}`, {
+                  headers: {
+                    Authorization: `Bearer ${token}`,  // Adicionando o token ao cabeçalho
+                  }
+                })
                     .then((response) => {
                         const data = response.data;
+                        console.log("data ", data)
                         setDescricao(data.descricao);
                         setLogradouro(data.logradouro);
                         setBairro(data.bairro);
@@ -104,7 +119,11 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`${API_URL}/api/cliente/${idCliente}`, userData)
+        axios.put(`${API_URL}/api/cliente/${idCliente}`, userData, {
+            headers: {
+                Authorization: `Bearer ${token}`,  // Adicionando o token ao cabeçalho
+              }
+        })
             .then(function (response) {
                 console.log(response);
                 showMessage({
