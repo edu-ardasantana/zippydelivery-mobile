@@ -88,13 +88,18 @@ export default function Sacola({ navigation }) {
                     },
                 })
                 .then((response) => {
-                    setEndereco(response.data);
+                    if (response.data && response.data.enderecos) {
+                        setEndereco(response.data); // Ou somente response.data.enderecos se necessário
+                    } else {
+                        console.log('Nenhum endereço encontrado.');
+                    }
                 })
                 .catch((error) => {
                     console.log('Erro ao carregar endereço:', error);
                 });
         }
     }, [userId, token, isFocused]);
+    
 
     // Atualizar estado do botão com base no carrinho
     useEffect(() => {
@@ -111,9 +116,11 @@ export default function Sacola({ navigation }) {
         setCart([]);
     };
 
-    const enderecoCompleto = getEndereco.logradouro
-        ? `${getEndereco.logradouro} - ${getEndereco.bairro}, ${getEndereco.cidade} - ${getEndereco.estado} ${getEndereco.complemento}`
-        : null;
+    const enderecoCompleto = getEndereco.enderecos && getEndereco.enderecos[0] && getEndereco.enderecos[0].logradouro
+    ? `${getEndereco.enderecos[0].logradouro} - ${getEndereco.enderecos[0].bairro}, ${getEndereco.enderecos[0].cidade} - ${getEndereco.enderecos[0].estado} ${getEndereco.enderecos[0].complemento}`
+    : null;
+
+
 
     // Renderizar item do carrinho
     const renderCartItem = ({ item }) => (

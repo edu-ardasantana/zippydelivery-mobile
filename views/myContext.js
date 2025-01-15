@@ -5,57 +5,45 @@ const MyProvider = ({ children }) => {
     
 const [cart, setCart] = useState([]);
 
-const newCart = () =>{
-    setCart([])
-}
+const clearCart = () => {
+    setCart([]);
+};
+
 
 const addToCart = (product) => {
-    
-    const existingProductIndex = cart.findIndex((item) => item.id === product.id);
-    if (existingProductIndex !== -1) {
-        const updatedCart = [...cart];
-        updatedCart[existingProductIndex].quantity += 1;
-        setCart(updatedCart);
-    } else {
-        setCart([...cart, { ...product, quantity: 1 }]);
-    }
-    // const existingProductIndex = cart.findIndex((item) => item.id === product.id);
-    // if (existingProductIndex !== -1) {
-    //     // Se o produto já está no carrinho, aumenta a quantidade
-    //     const updatedCart = [...cart];
-    //     updatedCart[existingProductIndex].quantity += 1;
-    //     setCart(updatedCart);
-    // } else {
-    // // Se o produto não está no carrinho, adiciona com quantidade 1
-    //     setCart([...cart, { ...product, quantity: 1 }]);
-    // }
-};
-const delToCart = (product) => {
-    const existingProductIndex = cart.findIndex((item) => item.id === product.id);
-    if (existingProductIndex !== -1) {
-        // Se o produto já está no carrinho, verifica a quantidade antes de diminuir
-        const updatedCart = [...cart];
-        if (updatedCart[existingProductIndex].quantity > 1) {
-            updatedCart[existingProductIndex].quantity -= 1;
-            setCart(updatedCart);
+    setCart((prevCart) => {
+        const existingProductIndex = prevCart.findIndex((item) => item.id === product.id);
+        if (existingProductIndex !== -1) {
+            // Se o produto já existe no carrinho, atualiza a quantidade
+            const updatedCart = [...prevCart];
+            updatedCart[existingProductIndex].quantity += product.quantity;  // Aqui, usamos a quantidade passada
+            return updatedCart;
         } else {
-            // Se a quantidade for igual a 1, mantém em 1 e não diminui
-            // Se a quantidade for 0 ou negativa, remove o produto do carrinho
-            removeFromCart(product.id);
+            // Se o produto não existe no carrinho, adiciona com a quantidade fornecida
+            return [...prevCart, { ...product }];
         }
-    } else {
-        // Se o produto não está no carrinho, adiciona com quantidade 1
-        setCart([...cart, { ...product, quantity: 1 }]);
-    }
+    });
 };
 
-const removeFromCart = (productId) => {
-    const updatedCart = cart.map((item) =>
-    item.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item).filter((item) => item.id !== productId);
-    setCart(updatedCart);
+
+const delToCart = (product) => {
+    setCart((prevCart) => {
+        const updatedCart = prevCart.map((item) => 
+            item.id === product.id && item.quantity > 1 
+                ? { ...item, quantity: item.quantity - 1 } 
+                : item
+        ).filter((item) => item.quantity > 0); // Remove produtos com quantidade 0
+        return updatedCart;
+    });
 };
+
+
+const removeFromCart = (productId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+};
+
 return (
-    <MyContext.Provider value={{ cart,setCart, addToCart, delToCart, removeFromCart, newCart }}>
+    <MyContext.Provider value={{ cart,setCart, addToCart, delToCart, removeFromCart, clearCart }}>
         {children}
     </MyContext.Provider>
 );
