@@ -11,61 +11,37 @@ export default function HomeLoja({ navigation, route }) {
   const [categorias, setCategorias] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [idEmpresa, setIdEmpresa] = useState('');
-  const [header, setHeader] = useState(null);
 
   useEffect(() => {
-    fetchHeader();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const userId = route.params.id;
+        setIdEmpresa(userId);
 
-  useEffect(() => {
-    if (header) {
-      fetchEmpresa();
-      fetchCategorias();
-      fetchProdutos();
-    }
-  }, [header]);
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        };
 
-  const fetchHeader = async () => {
-    const token = await AsyncStorage.getItem('token');
-    const userId = route.params.id;
-    setIdEmpresa(userId);
-    setHeader({
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-  };
+        // Requisições paralelas
+        const [empresaRes, categoriasRes, produtosRes] = await Promise.all([
+          axios.get(`${API_URL}/api/empresa/${userId}`, { headers }),
+          axios.get(`${API_URL}/api/categoria-produto/empresa/${userId}`, { headers }),
+          axios.get(`${API_URL}/api/produto/categoria-empresa/${userId}`, { headers }),
+        ]);
 
-  const fetchEmpresa = async () => {
-    axios.get(`${API_URL}/api/empresa/${idEmpresa}`, header)
-      .then(response => {
-        setEmpresa(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
+        setEmpresa(empresaRes.data);
+        setCategorias(categoriasRes.data);
+        setProdutos(produtosRes.data);
 
-  const fetchCategorias = async () => {
-    axios.get(`${API_URL}/api/categoria-produto/empresa/${idEmpresa}`, header)
-      .then(response => {
-        setCategorias(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
+      } catch (error) {
+        console.error('Erro ao buscar dados: ', error);
+      }
+    };
 
-  const fetchProdutos = async () => {
-    axios.get(`${API_URL}/api/produto/categoria-empresa/${idEmpresa}`, header)
-      .then(response => {
-        setProdutos(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
+    fetchData();
+  }, [route.params.id]); // Executa quando o ID da empresa mudar
 
   return (
     <View style={styles.container}>

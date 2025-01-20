@@ -12,20 +12,29 @@ export default function DetalheItem({ route, navigation }) {
   const [selectedQuantity, _setSelectedQuantity] = useState(1);  
   const [showModal, setShowModal] = useState(false);
 
-  const checkCartForCompany = (productId) => {
+ const checkCartForCompany = (productId) => {
     const cartItem = cart.find((produto) => produto.id === productId);
-    if (cart.length === 0 || cartItem && cart.length > 0 && cart[0].categoria.empresa.id == idEmpresa){
-      navigation.navigate('Sacola')
-    }else{
-      removeFromCart(produto.id)
-      setShowModal(true);
+    if (cart.length === 0 || (cartItem && cart[0].categoria.empresa.id === idEmpresa)) {
+        // Se o carrinho estiver vazio ou se o produto já for da mesma loja, adiciona ao carrinho
+        addToCart({ ...produto, quantity: selectedQuantity });
+        navigation.navigate('Sacola');
+    } else {
+        // Se houver produtos de outras lojas no carrinho, exibe o modal
+        setShowModal(true);
     }
-  };
+};
+
 
   const getProductQuantity = (productId) => {
     const cartItem = cart.find((produto) => produto.id === productId);
     return cartItem ? cartItem.quantity : 0;  
   };
+
+  useEffect(() => {
+    // O produto já será adicionado assim que o componente for montado.
+    addToCart({ ...produto, quantity: selectedQuantity });
+}, []);  // O efeito deve rodar quando a quantidade mudar.
+
 
   useEffect(() => {
     const fetchIdEmpresa = async () => {
@@ -34,7 +43,6 @@ export default function DetalheItem({ route, navigation }) {
     };
     fetchIdEmpresa();
     
-    addToCart({...produto, quantity: 1 });
   }, [])
 
   function formatarMoeda(dataParam) {
@@ -91,9 +99,20 @@ export default function DetalheItem({ route, navigation }) {
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:remove-rounded.svg' }} />
           </TouchableOpacity>
           <Text style={[styles.title2, { color: '#FF9431', marginVertical: 20 }]}>{getProductQuantity(produto.id)}</Text>
-          <TouchableOpacity onPress={() =>  addToCart({...produto, quantity: selectedQuantity })} style={styles.button}>
-            <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={{ uri: 'https://api.iconify.design/material-symbols:add-rounded.svg' }} />
-          </TouchableOpacity>
+          <TouchableOpacity
+    onPress={() => {
+        addToCart({ ...produto, quantity: selectedQuantity });
+        checkCartForCompany(produto.id);  // Verifica se o produto de outra loja está no carrinho.
+    }}
+    style={styles.buttonContainer}
+>
+    <Button
+        title={`Adicionar ${formatarMoeda(selectedQuantity * produto.preco)}`}
+        buttonStyle={styles.addButton}
+        titleStyle={styles.addButtonTitle}
+    />
+</TouchableOpacity>
+
           <Button
             style={styles.buttonContainer}
             title={`Adicionar ${formatarMoeda((getProductQuantity(produto.id)*produto.preco))}`}

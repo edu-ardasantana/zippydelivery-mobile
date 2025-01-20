@@ -6,6 +6,7 @@ export default function DetalhePedido({ route, navigation }) {
 
     const { pedido }  = route.params;
     console.log(pedido)
+    console.log("endereço ", pedido.cliente.enderecos)
 
     function calcularSubtotal (itensPedido) {
         return itensPedido.reduce((subtotal, item) => subtotal + item.qtdProduto * item.valorUnitario, 0);
@@ -15,6 +16,7 @@ export default function DetalhePedido({ route, navigation }) {
         const subtotal = calcularSubtotal(itensPedido);
         return subtotal + taxaEntrega;
     }
+
 
     return (
 
@@ -94,9 +96,9 @@ export default function DetalhePedido({ route, navigation }) {
                 <Text style={styles.h1}>Endereço de entrega</Text>
             </View>
             <View style={styles.bloco}>
-                <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg', }} />
+                <Image style={styles.menuIcon} source={require('../assets/images/iconFooter/material-symbols--location-on-rounded.png')} />
 
-                <Text style={styles.blocoText}>{pedido.cliente.logradouro}, {pedido.cliente.bairo} - <br /> {pedido.cliente.complemento}
+                <Text style={styles.blocoText}>{pedido.cliente.enderecos[0].logradouro}, {pedido.cliente.enderecos[0].bairro} -  {pedido.cliente.enderecos[0].complemento}
                 </Text>
 
             </View>
