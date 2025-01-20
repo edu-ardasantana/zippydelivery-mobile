@@ -3,58 +3,80 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Footer from '../components/footer';
 import Pedido from '../components/pedido';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '@/components/linkApi';
 
 
 export default function Historico({ navigation }) {
 
     const [lista, setLista] = useState([]);
-    
-    useEffect(() => {
-        carregarLista();
-    }, [])
- 
-    function carregarLista() {
- 
-        axios.get(`${API_URL}/api/pedido`)
-        .then((response) => {
-            setLista(response.data)
-        })
-    }
+    const [token, setToken] = useState("");
+    console.log('token ', token)
 
-    console.log(lista)
+    useEffect(() => {
+        const fetchToken = async () => {
+          const storedToken = await AsyncStorage.getItem('token');
+          if (storedToken) {
+            console.log("tokenMenu", token)
+            setToken(storedToken);  // Atualiza o token
+          }
+        };
+        fetchToken();  // Carrega o token ao inicializar o componente
+      }, []);
+    
+      useEffect(() => {
+        // Verifica se o token existe antes de tentar fazer a requisição
+        if (token) {
+          const carregarLista = async () => {
+            try {
+              const response = await axios.get(`${API_URL}/api/pedido`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,  // Adicionando o token ao cabeçalho
+                },
+              });
+              console.log(response.data);
+              setLista(response.data);
+            } catch (error) {
+              console.error('Erro ao carregar lista:', error);
+            }
+          };
+      
+          carregarLista();
+        }
+      }, [token]); // O useEffect só será disparado quando o token mudar
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContent}>
                 <Text style={styles.title1}>Seus pedidos anteriores</Text>
             </View>
-            <ScrollView >
-                {
-                    <View style={styles.body}>
-                    {lista.map((pedido, index) => {
-                        let qtd = 0;
-                        let produtos = []
-                      pedido.itensPedido.map(item => {
-                        qtd += item.qtdProduto;
-                        produtos.push(item.produto.titulo);
-                      });
-                      return(
-                        <Pedido
-                          key={index} 
-                          quantity={qtd}
-                          restaurantName={pedido.empresa.nome}
-                          orderName={produtos[0]}
-                          orderStatus={pedido.statusPedido}
-                          orderNumber={pedido.id}
-                          quantityItemsOrder={pedido.itensPedido.length}
-                          onPress={()=>navigation.navigate("DetalhePedido", {pedido})}
-                        />
-                      )
-                    })}
-                  </View>
-                  
-                }
-            </ScrollView>
+            <ScrollView>
+  <View style={styles.body}>
+    {lista.map((pedido, index) => {
+      let qtd = 0;
+      let produtos = [];
+      pedido.itensPedido.map(item => {
+        qtd += item.qtdProduto;
+        produtos.push(item.produto.titulo);
+      });
+
+      return (
+        <Pedido
+        key={index}
+        quantity={qtd}
+        restaurantName={pedido.empresa?.nome || "Restaurante desconhecido"}  // Valor default caso 'nome' seja undefined
+        orderName={produtos[0] || "Produto desconhecido"}  // Valor default caso 'produtos' esteja vazio
+        orderStatus={pedido.statusPedido || "Status desconhecido"}
+        orderNumber={pedido.id || "ID desconhecido"}
+        quantityItemsOrder={pedido.itensPedido?.length || 0}
+        onPress={() => navigation.navigate("DetalhePedido", { pedido })}
+      />
+      
+      );
+    })}
+  </View>
+</ScrollView>
+
             <Footer />
         </View>
     )
@@ -71,6 +93,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 20,
+        
     },
     iconWrapper: {
         paddingVertical: 20,
