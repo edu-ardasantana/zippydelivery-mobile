@@ -69,7 +69,7 @@ export default function ComeceAEntregar() {
             </View>
 
             <View style={styles.footer}>
-                <Image style={{}} source={require('../assets/images/iconFooter/my_location.png')} />
+                <Image style={styles.footerImage} source={require('../assets/images/iconFooter/my_location.png')} />
                 <Text style={styles.footerText}>Localizando pedidos a serem entregues na região</Text>
             </View>
         </ScrollView>
@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginHorizontal: 5,
         gap: 10,
+        zIndex: 1,
     },
     estatisticas2: {
         flexDirection: 'row',
@@ -197,10 +198,13 @@ const styles = StyleSheet.create({
         color: '#7D7D7D',
     },
     imagemMapa: {
+        position: 'absolute', 
+        top: -100, 
         width: '100%',
-        height: 600,
+        height: 700,
         resizeMode: 'cover',
-        marginTop: 40,
+        zIndex: 0, 
+        marginTop: 200
     },
     botaoLargar: {
         backgroundColor: '#EDD8DB',
@@ -220,7 +224,6 @@ const styles = StyleSheet.create({
     footer: {
         backgroundColor: "white",
         alignItems: 'center',
-        borderTopColor: '#DDD',
         position: 'absolute',
         bottom: 0,
         width: '100%',
@@ -232,12 +235,18 @@ const styles = StyleSheet.create({
         paddingVertical: 40,
         borderBottomWidth: 0,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1.5 },
-        shadowOpacity: 0,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
         shadowRadius: 3,
         elevation: 5,
+        borderWidth: 1,
+        borderColor: 'rgba(221, 221, 221, 0.9)',
         height: 60,
-
+    },
+    footerImage: {
+        width: 40,
+        height: 40,
+        resizeMode: 'contain',
     },
     footerText: {
         fontSize: 14,
