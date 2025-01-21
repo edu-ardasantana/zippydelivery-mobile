@@ -1,18 +1,22 @@
 import { API_URL } from '@/components/linkApi';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Button } from 'react-native-elements';
 import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 import { TextInputMask } from 'react-native-masked-text';
+import { CheckBox } from "react-native-elements";
 
 export default function CadastraUsuario({ navigation }) {
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const [successMessage, setSuccessMessage] = useState(''); // Estado para mensagem de sucesso
-    const [errorMessage, setErrorMessage] = useState(''); // Estado para mensagem de erro
+    const [veiculo, setVeiculo] = useState('');
+    const [placa, setPlaca] = useState('');
+    const [isEntregador, setIsEntregador] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const inserirDados = async () => {
         const userData = {
@@ -22,9 +26,20 @@ export default function CadastraUsuario({ navigation }) {
             senha,
         };
 
+        const entregadorData = {
+            ...userData,
+            veiculo,
+            placa,
+        };
+
         try {
-            const response = await axios.post(`${API_URL}/api/cliente`, userData);
-            console.log("Resposta da API: ", response);
+            if (isEntregador) {
+                const response = await axios.post(`${API_URL}/api/entregador`, entregadorData);
+                console.log("Resposta da API (Entregador): ", response);
+            } else {
+                const response = await axios.post(`${API_URL}/api/cliente`, userData);
+                console.log("Resposta da API: ", response);
+            }
 
             // Define a mensagem de sucesso
             setSuccessMessage("Cadastro realizado com sucesso!");
@@ -34,6 +49,7 @@ export default function CadastraUsuario({ navigation }) {
             setTimeout(() => {
                 navigation.navigate('Login');
             }, 2000);
+
         } catch (error) {
             console.error("Erro ao cadastrar usuário: ", error);
 
@@ -44,65 +60,83 @@ export default function CadastraUsuario({ navigation }) {
     };
     return (
 
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
 
-            <View style={{ alignItems: 'center' }}>
+            <View style={styles.header}>
+                <Image style={styles.logo} source={require('../assets/images/LogoNovo.png')} />
+            </View>
 
-                <Image
-                    style={styles.logo}
-                    source={require('../assets/images/LogoNovo.png')}
+            <View style={styles.form}>
+
+                <Text style={styles.label}>Nome</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder='Exemplo: Maria da Silva'
+                    placeholderTextColor='#C4C4CC'
+                    onChangeText={(text) => setNome(text)}
+                    value={nome}
                 />
 
-                <View>
+                <Text style={styles.label}>CPF</Text>
+                <TextInputMask
+                    style={styles.input}
+                    type={'cpf'}
+                    placeholder='000.000.000-00'
+                    placeholderTextColor='#C4C4CC'
+                    onChangeText={(text) => setCpf(text)}
+                    value={cpf}
+                />
 
-                    <Text style={styles.label}>Nome</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder='Exemplo: Maria da Silva'
-                        placeholderTextColor='#C4C4CC'
-                        onChangeText={(text) => setNome(text)}
-                        value={nome}
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder='Exemplo: exemplo@email.com'
+                    placeholderTextColor='#C4C4CC'
+                    onChangeText={(text) => setEmail(text)}
+                    value={email}
+                />
+
+                <Text style={styles.label}>Senha</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder='No mínimo 6 caracteres'
+                    placeholderTextColor='#C4C4CC'
+                    secureTextEntry={true}
+                    onChangeText={(text) => setSenha(text)}
+                    value={senha}
+                />
+
+                {isEntregador && (
+                    <>
+                        <Text style={styles.label}>Veículo</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder='Exemplo: Moto, Carro'
+                            placeholderTextColor='#C4C4CC'
+                            onChangeText={(text) => setVeiculo(text)}
+                            value={veiculo}
+                        />
+
+                        <Text style={styles.label}>Placa</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder='Exemplo: ABC-1234'
+                            placeholderTextColor='#C4C4CC'
+                            onChangeText={(text) => setPlaca(text)}
+                            value={placa}
+                        />
+                    </>
+                )}
+
+                <View style={styles.checkboxContainer}>
+                    <CheckBox
+                        checked={isEntregador}
+                        onPress={() => setIsEntregador(!isEntregador)}
+                        containerStyle={styles.checkbox}
+                        uncheckedColor="#FF9431"
+                        checkedColor="#FF9431"
                     />
-
-                </View>
-
-                <View>
-
-                    <Text style={styles.label}>CPF</Text>
-                    <TextInputMask
-                        style={styles.input}
-                        type={'cpf'}
-                        placeholder='000.000.000-00'
-                        placeholderTextColor='#C4C4CC'
-                        onChangeText={(text) => setCpf(text)}
-                        value={cpf}
-                    />
-
-                </View>
-
-                <View>
-
-                    <Text style={styles.label}>Email</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder='Exemplo: exemplo@email.com'
-                        placeholderTextColor='#C4C4CC'
-                        onChangeText={(text) => setEmail(text)}
-                        value={email}
-                    />
-
-                </View>
-
-                <View>
-                    <Text style={styles.label}>Senha</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder='No mínimo 6 caracteres'
-                        placeholderTextColor='#C4C4CC'
-                        secureTextEntry={true}
-                        onChangeText={(text) => setSenha(text)}
-                        value={senha}
-                    />
+                    <Text style={styles.checkboxText}>Quero ser entregador</Text>
                 </View>
 
                 <Button
@@ -112,14 +146,12 @@ export default function CadastraUsuario({ navigation }) {
                         inserirDados();
                     }}
                 />
-                
+
                 <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                     <Text style={styles.link}> Já tenho uma conta</Text>
                 </TouchableOpacity>
 
             </View>
-
-            {/* <br /><br /> <br /><br /><br /><br /><br /> */}
 
             <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
@@ -127,7 +159,7 @@ export default function CadastraUsuario({ navigation }) {
                 <View style={styles.dividerLine} />
             </View>
 
-            <View style={{ alignItems: 'center' }}>
+            <View style={styles.googleSignIn}>
                 <TouchableOpacity style={styles.googleSignInButton}>
                     <Image
                         style={styles.googleIcon}
@@ -135,28 +167,32 @@ export default function CadastraUsuario({ navigation }) {
                     />
                     <Text style={styles.googleButtonText}>Entre com o Google</Text>
                 </TouchableOpacity>
-
-                <FlashMessage position="top" />
-
             </View>
 
-        </View>
+            <FlashMessage position="top" />
 
-
-    )
-
+        </ScrollView >
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         flex: 1,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingHorizontal: 40,
+    },
+    header: {
+        alignItems: 'center',
+        marginBottom: 20,
     },
     logo: {
-        width: '60%',
-        height: '30%',
+        width: '70%',
+        height: 120,
         resizeMode: 'contain',
+    },
+    form: {
+        marginBottom: 20,
     },
     label: {
         fontSize: 16,
@@ -181,7 +217,8 @@ const styles = StyleSheet.create({
     },
     link: {
         fontSize: 14,
-        fontWeight: 500,
+        fontWeight: '500',
+        textAlign: 'center',
         marginTop: 30,
     },
     dividerContainer: {
@@ -197,6 +234,10 @@ const styles = StyleSheet.create({
     dividerText: {
         marginHorizontal: 10,
         color: '#4D585E',
+    },
+    googleSignIn: {
+        alignItems: 'center',
+        marginBottom: 30,
     },
     googleSignInButton: {
         flexDirection: 'row',
@@ -216,5 +257,18 @@ const styles = StyleSheet.create({
     googleButtonText: {
         color: '#4D585E',
         fontSize: 16,
+    },
+    checkboxContainer: {
+        width: 350,
+        flexDirection: "row",
+        alignItems: "center",
+        marginLeft: 12,
+    },
+    checkbox: {
+        marginRight: 0,
+    },
+    checkboxText: {
+        fontSize: 16,
+        color: "#4D585E",
     },
 });
