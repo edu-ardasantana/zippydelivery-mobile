@@ -3,7 +3,7 @@ import Loja from '../components/loja';
 import Footer from '../components/footer';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from "../components/linkApi";
 
@@ -80,8 +80,8 @@ export default function Home({ route, navigation }) {
   const handleSearch = () => {
     const filteredEmpresas = searchText
       ? empresas.filter(empresa =>
-          empresa.nome.toLowerCase().includes(searchText.toLowerCase())
-        )
+        empresa.nome.toLowerCase().includes(searchText.toLowerCase())
+      )
       : empresas;
     setEmpresasFiltradasPorNome(filteredEmpresas);
   };
@@ -102,74 +102,162 @@ export default function Home({ route, navigation }) {
     setEmpresasFiltradasPorCategoria([]);
   };
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.header}>
-        <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg' }} />
-        {endereco === null
-          ? <Text style={styles.endereco} onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })}>Escolher endereço</Text>
-          : <Text style={styles.endereco} onPress={() => navigation.navigate('ListAddress', { origin: 'Home' })}>{toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}</Text>
-        }
-        <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg' }} />
-      </TouchableOpacity>
+ user = "entregador";
 
-      <ScrollView>
-        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-          {[1, 2].map((index) => (
-            <View key={index} style={styles.banner}>
-              <Image style={styles.anuncioImage} source={banners[index]} />
-            </View>
-          ))}
-        </ScrollView>
+  const entregas = [
+    { id: '1', titulo: 'Império dos Churros #145', endereco: 'Rua Macaubal, 3000 - Eldorado, São José do Rio Preto, SP, 15043485' },
+    { id: '2', titulo: 'Império dos Churros #145', endereco: 'Rua Macaubal, 3000 - Eldorado, São José do Rio Preto, SP, 15043485' },
+    { id: '3', titulo: 'Império dos Churros #145', endereco: 'Rua Macaubal, 3000 - Eldorado, São José do Rio Preto, SP, 15043485' },
+  ];
 
-        <View style={styles.containerSearch}>
-          <View style={styles.search}>
-            <TextInput
-              style={styles.input}
-              placeholder="Busque lojas próximas"
-              onChangeText={setSearchText}
-              value={searchText}
-            />
-            <TouchableOpacity onPress={handleSearch}>
-              <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431' }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} />
-            </TouchableOpacity>
-          </View>
-        </View>
+  // if (clienteLogado.isEntregador)
+  if (user != "entregador") {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.header}>
+          <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg' }} />
+          {endereco === null
+            ? <Text style={styles.endereco} onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })}>Escolher endereço</Text>
+            : <Text style={styles.endereco} onPress={() => navigation.navigate('ListAddress', { origin: 'Home' })}>{toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}</Text>
+          }
+          <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg' }} />
+        </TouchableOpacity>
 
-        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
-          <TouchableOpacity style={[styles.etiqueta, empresaSelecionada === null && { backgroundColor: '#FF9431' }]} onPress={todas}>
-            <Text style={[styles.textoEtiqueta, empresaSelecionada === null && { color: 'white' }]}>Todas</Text>
-          </TouchableOpacity>
-          {categoriasEmpresas.map((c, index) => (
-  <TouchableOpacity key={c.id} onPress={() => filtarEmpresas(c)} style={[styles.etiqueta, empresaSelecionada === c.descricao && { backgroundColor: '#FF9431' }]}>
-    <Text style={[styles.textoEtiqueta, empresaSelecionada === c.descricao && { color: 'white' }]}>{c.descricao}</Text>
-  </TouchableOpacity>
-))}
-        </ScrollView>
+        <ScrollView>
+          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
+            {[1, 2].map((index) => (
+              <View key={index} style={styles.banner}>
+                <Image style={styles.anuncioImage} source={banners[index]} />
+              </View>
+            ))}
+          </ScrollView>
 
-        <Text style={styles.title2}>Lojas</Text>
-        {empresaSelecionada === null
-          ? empresasFiltradasPorNome.length > 0
-            ? empresasFiltradasPorNome.map((empresa, index) => (
-              <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
-                <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
+          <View style={styles.containerSearch}>
+            <View style={styles.search}>
+              <TextInput
+                style={styles.input}
+                placeholder="Busque lojas próximas"
+                onChangeText={setSearchText}
+                value={searchText}
+              />
+              <TouchableOpacity onPress={handleSearch}>
+                <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431' }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} />
               </TouchableOpacity>
-            ))
-            : empresas.map((empresa, index) => (
+            </View>
+          </View>
+
+          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
+            <TouchableOpacity style={[styles.etiqueta, empresaSelecionada === null && { backgroundColor: '#FF9431' }]} onPress={todas}>
+              <Text style={[styles.textoEtiqueta, empresaSelecionada === null && { color: 'white' }]}>Todas</Text>
+            </TouchableOpacity>
+            {categoriasEmpresas.map((c, index) => (
+              <TouchableOpacity key={c.id} onPress={() => filtarEmpresas(c)} style={[styles.etiqueta, empresaSelecionada === c.descricao && { backgroundColor: '#FF9431' }]}>
+                <Text style={[styles.textoEtiqueta, empresaSelecionada === c.descricao && { color: 'white' }]}>{c.descricao}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          <Text style={styles.title2}>Lojas</Text>
+          {empresaSelecionada === null
+            ? empresasFiltradasPorNome.length > 0
+              ? empresasFiltradasPorNome.map((empresa, index) => (
                 <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
                   <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
                 </TouchableOpacity>
               ))
-          : empresasFiltradasPorCategoria.map((empresa, index) => (
+              : empresas.map((empresa, index) => (
+                <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
+                  <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
+                </TouchableOpacity>
+              ))
+            : empresasFiltradasPorCategoria.map((empresa, index) => (
               <TouchableOpacity key={index} onPress={() => navigation.navigate('HomeLoja', { id: empresa.id })} style={styles.cadaRestaurante}>
                 <Loja categoria={empresa.categoria.descricao} nome={empresa.nome} taxaFrete={empresa.taxaFrete} imgPerfil={empresa.imgPerfil} tempoEntrega={empresa.tempoEntrega} />
               </TouchableOpacity>
             ))
-        }
+          }
+        </ScrollView>
+        <Footer />
+      </View>
+    );
+
+  } else {
+    return (
+
+      <ScrollView contentContainerStyle={styles.container} >
+        <View style={styles.headerContent}>
+          <View style={styles.infoUsuario}>
+            <Image source={{ uri: 'https://media.istockphoto.com/id/1337144146/pt/vetorial/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=_XeYoSJQIN7GrE08cUQDJCo3U7yvoEp5OKpbhQzpmC0=' }} style={styles.avatar} />
+            <View>
+              <Text style={styles.nomeUsuario}>Abinadabe</Text>
+              <Text style={styles.statusUsuario}>zippy a 2 meses</Text>
+            </View>
+          </View>
+          <Image source={require('../assets/images/LogoNovo.png')} style={styles.logoZippy} />
+        </View>
+
+        <View>
+          <View style={styles.estatisticasConteiner}>
+
+            <View style={styles.estatisticas}>
+              <View style={styles.blocoEstatistica}>
+                <Text style={styles.labelEstatistica}>Ganhos do dia</Text>
+                <Text style={{ fontWeight: 'bold', color: "black", fontSize: 20 }}>R$ 0,00</Text>
+                <Text style={styles.labelEstatistica}>Saldo mensal: <Text style={{ fontWeight: 'bold', color: "black" }}>R$ 373,12</Text></Text>
+              </View>
+
+              <View style={styles.blocoEstatistica}>
+                <View style={styles.linhaEstatistica}>
+                  <Text style={styles.labelEstatistica}>Aceitas</Text>
+                  <Text style={styles.valorEstatistica}>23</Text>
+                </View>
+                <View style={styles.linhaEstatistica}>
+                  <Text style={styles.labelEstatistica}>Finalizadas</Text>
+                  <Text style={styles.valorEstatistica}>20</Text>
+                </View>
+                <View style={styles.linhaEstatistica}>
+                  <Text style={styles.labelEstatistica}>Recusadas</Text>
+                  <Text style={styles.valorEstatistica}>2</Text>
+                </View>
+              </View>
+            </View>
+
+            <Image source={require('../assets/images/image.png')} style={styles.imagemMapa} />
+          </View>
+
+          <TouchableOpacity onPress={() => navigation.navigate('ComeceAEntregar')} style={styles.botaoEntregar}>
+            <Text style={styles.textoBotaoEntregar}>Comece a entregar</Text>
+          </TouchableOpacity>
+
+        </View>
+
+        <View style={styles.entregasContainer}>
+          <Text style={styles.tituloSecao}>Minhas entregas</Text>
+          <FlatList
+            data={entregas}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+
+              <View style={styles.itemEntrega}>
+                <Image style={styles.icon} source={require('../assets/images/iconFooter/diagonal_line.png')} />
+                <View style={styles.detalhesEntrega}>
+                  <Text style={styles.tituloEntrega}>{item.titulo}</Text>
+                  <Text style={styles.enderecoEntrega}>{item.endereco}</Text>
+                </View>
+                <TouchableOpacity
+                // onPress={() => navigation.navigate('')}
+                >
+                  <Image style={styles.icon} source={require('../assets/images/iconFooter/chevron_right_24dp_4D585E_FILL0_wght400_GRAD0_opsz24.png')} />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        </View>
+        <Footer />
       </ScrollView>
-      <Footer />
-    </View>
-  );
+    );
+  }
+
 }
 
 const styles = StyleSheet.create({
@@ -327,5 +415,141 @@ const styles = StyleSheet.create({
   },
   carousel: {
     marginLeft: 10,
+  },
+
+  //Entregador
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+    paddingRight: 30,
+    backgroundColor: '#FFF',
+  },
+  infoUsuario: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 65,
+    height: 65,
+    borderRadius: 35,
+  },
+  nomeUsuario: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  statusUsuario: {
+    fontSize: 14,
+    color: '#7D7D7D',
+  },
+  logoZippy: {
+    width: 150,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  estatisticasConteiner: {
+    position: 'relative',
+  },
+  estatisticas: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 5,
+    gap: 10,
+    position: 'absolute',
+    top: -30,
+    left: 10,
+    right: 10,
+    zIndex: 1,
+  },
+  blocoEstatistica: {
+    flex: 1,
+    justifyContent: 'space-between',
+    padding: 20,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+
+  },
+  linhaEstatistica: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10
+  },
+  valorEstatistica: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  labelEstatistica: {
+    fontSize: 14,
+    color: '#7D7D7D',
+  },
+  imagemMapa: {
+    width: '100%',
+    height: 300,
+    resizeMode: 'cover',
+    marginTop: 40,
+  },
+  botaoEntregar: {
+    backgroundColor: '#FF9431',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    marginVertical: 20,
+    borderRadius: 5,
+    width: '80%',
+    position: 'absolute',
+    bottom: -40,
+    zIndex: 1,
+  },
+  textoBotaoEntregar: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FFF',
+    textAlign: 'center',
+  },
+  entregasContainer: {
+    paddingHorizontal: 20,
+    backgroundColor: '#FFF',
+    flex: 1,
+    marginVertical: 50
+  },
+  tituloSecao: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  itemEntrega: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EAEAEA',
+  },
+  detalhesEntrega: {
+    flex: 1,
+  },
+  tituloEntrega: {
+    fontSize: 16,
+    color: '#7D7D7D',
+    fontWeight: 'bold',
+    
+  },
+  enderecoEntrega: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  iconeEntrega: {
+    fontSize: 18,
+    color: '#FFA500',
   },
 });
