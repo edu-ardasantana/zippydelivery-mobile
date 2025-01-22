@@ -102,7 +102,6 @@ export default function Home({ route, navigation }) {
     setEmpresasFiltradasPorCategoria([]);
   };
 
- user = "entregador";
 
   const entregas = [
     { id: '1', titulo: 'Império dos Churros #145', endereco: 'Rua Macaubal, 3000 - Eldorado, São José do Rio Preto, SP, 15043485' },
@@ -110,8 +109,7 @@ export default function Home({ route, navigation }) {
     { id: '3', titulo: 'Império dos Churros #145', endereco: 'Rua Macaubal, 3000 - Eldorado, São José do Rio Preto, SP, 15043485' },
   ];
 
-  // if (clienteLogado.isEntregador)
-  if (user != "entregador") {
+  if (clienteLogado) {
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.header}>
