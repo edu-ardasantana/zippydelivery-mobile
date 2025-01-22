@@ -1,10 +1,19 @@
 import React from 'react';
 import { View, ScrollView, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function ComeceAEntregar() {
+export default function ComeceAEntregar({ navigation }) {
 
     return (
         <ScrollView contentContainerStyle={styles.container} >
+            <TouchableOpacity
+                onPress={() => navigation.navigate("Home")}
+                style={styles.iconWrapper}
+            >
+                <Image
+                    style={styles.icon}
+                    source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")}
+                />
+            </TouchableOpacity>
             <View style={styles.headerContent}>
                 <View style={styles.infoUsuario}>
                     <Image source={{ uri: 'https://media.istockphoto.com/id/1337144146/pt/vetorial/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=_XeYoSJQIN7GrE08cUQDJCo3U7yvoEp5OKpbhQzpmC0=' }} style={styles.avatar} />
@@ -91,6 +100,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         borderBottomWidth: 1,
         borderBottomColor: '#EDEDED',
+    },
+    iconWrapper: {
+        paddingTop: 20,
+        paddingHorizontal: 10,
+    },
+    icon: {
+        width: 20,
+        height: 20,
+        tintColor: "#FF9431",
     },
     statusWrapper: {
         flexDirection: 'row',
@@ -198,12 +216,12 @@ const styles = StyleSheet.create({
         color: '#7D7D7D',
     },
     imagemMapa: {
-        position: 'absolute', 
-        top: -100, 
+        position: 'absolute',
+        top: -100,
         width: '100%',
         height: 700,
         resizeMode: 'cover',
-        zIndex: 0, 
+        zIndex: 0,
         marginTop: 200
     },
     botaoLargar: {
