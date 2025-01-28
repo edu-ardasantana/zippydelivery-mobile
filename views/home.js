@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Loja from '../components/loja';
 import Footer from '../components/footer';
+import FooterEntregador from '../components/footerEntregador';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native';
@@ -251,7 +252,7 @@ export default function Home({ route, navigation }) {
             )}
           />
         </View>
-        <Footer />
+        <FooterEntregador />
       </ScrollView>
     );
   }
