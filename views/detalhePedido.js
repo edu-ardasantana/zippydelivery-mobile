@@ -25,7 +25,7 @@ export default function DetalhePedido({ route, navigation }) {
             <View style={styles.headerContent}>
 
                 <TouchableOpacity onPress={() => navigation.navigate('Historico')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
+                    <Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} />
                 </TouchableOpacity>
 
                 <Text style={styles.titlePagina}>Detalhes do pedido</Text>

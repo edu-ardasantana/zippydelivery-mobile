@@ -114,12 +114,12 @@ export default function Home({ route, navigation }) {
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.header}>
-          <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={{ uri: 'https://api.iconify.design/material-symbols:location-on-rounded.svg' }} />
+          <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")} />
           {endereco === null
             ? <Text style={styles.endereco} onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })}>Escolher endereço</Text>
             : <Text style={styles.endereco} onPress={() => navigation.navigate('ListAddress', { origin: 'Home' })}>{toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}</Text>
           }
-          <Image style={styles.menuIcon} source={{ uri: 'https://api.iconify.design/material-symbols:keyboard-arrow-down-rounded.svg' }} />
+          <Image style={styles.menuIcon} source={require("../assets/images/iconFooter/material-symbols--keyboard-arrow-down-rounded.png")} />
         </TouchableOpacity>
 
         <ScrollView>
@@ -132,18 +132,18 @@ export default function Home({ route, navigation }) {
           </ScrollView>
 
           <View style={styles.containerSearch}>
-            <View style={styles.search}>
-              <TextInput
-                style={styles.input}
-                placeholder="Busque lojas próximas"
-                onChangeText={setSearchText}
-                value={searchText}
-              />
-              <TouchableOpacity onPress={handleSearch}>
-                <Image style={[styles.icon, { marginRight: 10, tintColor: '#FF9431' }]} source={{ uri: 'https://api.iconify.design/material-symbols:search-rounded.svg' }} />
-              </TouchableOpacity>
-            </View>
-          </View>
+  <View style={styles.search}>
+    <TextInput
+      style={styles.input}
+      placeholder="Busque lojas próximas"
+      onChangeText={setSearchText}
+      value={searchText}
+    />
+    <TouchableOpacity onPress={handleSearch} style={styles.searchIconContainer}>
+      <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--search-rounded.png')} />
+    </TouchableOpacity>
+  </View>
+</View>
 
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
             <TouchableOpacity style={[styles.etiqueta, empresaSelecionada === null && { backgroundColor: '#FF9431' }]} onPress={todas}>
@@ -333,6 +333,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 25,
     height: 25,
+    tintColor: '#FF9431'
   },
   containerSearch: {
     justifyContent: 'center',
@@ -352,7 +353,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 5,
   },
+
+  searchIconContainer: {
+    padding: 5,
+  },
   input: {
+    flex: 1,
     width: '100%',
     height: 40,
     paddingHorizontal: 10,
@@ -361,12 +367,12 @@ const styles = StyleSheet.create({
   },
   etiqueta: {
     backgroundColor: 'transparent',
-    padding: 8,
+    padding: 7,
     borderRadius: 50,
     borderColor: '#FF9431',
     borderWidth: 1.4,
     marginLeft: 7,
-    height: 30,
+    height: 35,
     alignItems: 'center',
     justifyContent: 'center',
   },

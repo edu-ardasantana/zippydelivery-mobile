@@ -1,8 +1,7 @@
-import { type } from 'os';
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-interface LojaProps  {
+interface LojaProps {
     nome: string;
     categoria: string;
     imgPerfil: string;
@@ -10,36 +9,42 @@ interface LojaProps  {
     tempoEntrega: string;
 }
 
-export default function Loja(props: LojaProps) {
-    const tempoMin = 40;
-    const tempoMax = 50;
-    const categoria = 'Bebidas';
-    const frete = formatarMoeda(6.99);
+export default function Loja({
+    nome = 'Nome não informado',
+    categoria = 'Sem categoria',
+    imgPerfil = 'https://via.placeholder.com/60',
+    taxaFrete = '0',
+    tempoEntrega = '0',
+}: LojaProps) {
 
-
-    function formatarMoeda(dataParam) {
-        return dataParam
-            ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-            : '';
+    function formatarMoeda(dataParam: number | string) {
+        const valor = typeof dataParam === 'string' ? parseFloat(dataParam) : dataParam;
+        return valor
+            ? valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            : 'R$ 0,00';
     }
+
+    const tempoMin = parseInt(tempoEntrega, 10);
+    const tempoMax = tempoMin + 10;
 
     return (
         <View style={styles.slide}>
-
             <View style={styles.colum1}>
-                <Image style={styles.lojaImage} source={{uri:props.imgPerfil}} />
+                <Image
+                    style={styles.lojaImage}
+                    source={{ uri: imgPerfil }}
+                    accessibilityLabel={`Imagem de perfil da loja ${nome}`}
+                />
             </View>
-
             <View style={styles.colum2}>
-                <Text style={styles.nomeItem}>{props.nome}</Text>
-
-                <Text style={styles.text}>{props.tempoEntrega}-{props.tempoEntrega + 10} min • {props.categoria} • {formatarMoeda(props.taxaFrete)}</Text>
-
+                <Text style={styles.nomeItem}>{nome}</Text>
+                <Text style={styles.text}>
+                    {tempoMin}-{tempoMax} min • {categoria} • {formatarMoeda(taxaFrete)}
+                </Text>
             </View>
-            
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     slide: {
@@ -47,11 +52,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         flexDirection: 'row',
         borderBottomWidth: 1,
-        borderBottomColor: '#BBB',
+        borderBottomColor: '#f3f3f3',
         justifyContent: 'space-between',
-        marginVertical: 20,
+        marginVertical: 4,
         paddingHorizontal: 5,
-        paddingBottom: 24,
+        paddingVertical: 14,
     },
     colum1: {
         flex: 1.2,
@@ -59,24 +64,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'center',
         marginLeft: 5,
+        maxWidth: 100,
+        maxHeight: undefined,
+        overflow: 'visible',
     },
     colum2: {
         flex: 2.5,
         flexDirection: 'column',
-        justifyContent: 'center',
-    },
-    colum3: {
-        flex: 0.5,
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-    },
-    iconWrapper: {
-        padding: 10,
-    },
-    icon: {
-        width: 20,
-        height: 20,
-        tintColor: '#ABABAB',
     },
     text: {
         color: '#7C7C8A',
@@ -84,8 +78,8 @@ const styles = StyleSheet.create({
         fontWeight: '400',
     },
     lojaImage: {
-        width: 70,
-        height: 70,
+        width: 60,
+        height: 60,
         borderRadius: 50,
         marginVertical: 10,
         marginRight: 7,
