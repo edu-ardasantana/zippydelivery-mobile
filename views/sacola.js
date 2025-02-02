@@ -148,7 +148,7 @@ export default function Sacola({ navigation }) {
         <View style={styles.container}>
             <View style={styles.headerContent}>
                 <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/solar:alt-arrow-left-outline.svg' }} />
+                    <Image style={styles.icon} source={require("../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png")} />
                 </TouchableOpacity>
                 <Text style={styles.title}>SACOLA</Text>
                 <TouchableOpacity onPress={limparSacola}>
@@ -180,7 +180,7 @@ export default function Sacola({ navigation }) {
 
             {cart.length === 0 && (
                 <View style={styles.emptyCartMessage}>
-                    <Image style={styles.emptyCartImage} source={{ uri: 'https://api.iconify.design/material-symbols:shopping-cart-outline-sharp.svg?color=%23e6e6e6' }} />
+                    <Image style={styles.emptyCartImage} source={require("../assets/images/iconFooter/material-symbols--shopping-cart-outline-sharp.png")} />
                     <Text style={styles.emptyCartText}>O seu carrinho está vazio!</Text>
                 </View>
             )}
