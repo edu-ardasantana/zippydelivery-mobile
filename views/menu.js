@@ -3,33 +3,31 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Footer from '../components/footer';
+import FooterEntregador from '../components/footerEntregador';
 import { API_URL } from '@/components/linkApi';
 
 export default function Menu({ navigation }) {
   const [nome, setNome] = useState('');
   const [id, setId] = useState(null);
   const [token, setToken] = useState('');
+  const [entregadorLogado, setEntregadorLogado] = useState(null);
 
-  // Carregar o token
   useEffect(() => {
     const fetchToken = async () => {
       const storedToken = await AsyncStorage.getItem('token');
       if (storedToken) {
-        console.log("tokenMenu", token)
-        setToken(storedToken);  // Atualiza o token
+        setToken(storedToken);
       }
     };
-    fetchToken();  // Carrega o token ao inicializar o componente
+    fetchToken();
   }, []);
 
-  // Carregar o ID
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const storedId = await AsyncStorage.getItem('id');  // Recupera o ID armazenado
+        const storedId = await AsyncStorage.getItem('id');
         if (storedId) {
-          console.log("id", storedId)
-          setId(storedId);  // Atualiza o ID
+          setId(storedId);
         } else {
           console.warn('ID não encontrado no AsyncStorage');
         }
@@ -38,38 +36,45 @@ export default function Menu({ navigation }) {
       }
     };
 
-    fetchUserId();  // Carrega o ID
+    fetchUserId();
   }, []);
 
-  // Buscar dados do cliente quando ID e token estiverem definidos
   useEffect(() => {
     if (id && token) {
       axios
         .get(`${API_URL}/api/cliente/user/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,  // Adicionando o token ao cabeçalho
-          }
+          headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          const data = response.data;
-          setNome(data.nome);
-          console.log("Nome do cliente:", data.nome);  // Debugging: mostra o nome do cliente
+          setNome(response.data.nome);
         })
         .catch((error) => {
           console.error('Erro ao buscar dados do cliente:', error);
-          // Adicionar um tratamento de erro aqui, caso necessário
+        });
+
+      axios
+        .get(`${API_URL}/api/entregador/usuario/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          if (response.data) {
+            setEntregadorLogado(response.data);
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar dados do entregador:', error);
         });
     }
-  }, [id, token]);  // Requisitar dados quando 'id' ou 'token' mudarem
-
-  const nomeUser = nome;
+  }, [id, token]);
 
   return (
     <View style={styles.container}>
       <View style={styles.body}>
         <View style={styles.info}>
-          <Text style={styles.infoNameUser}>{nomeUser}</Text>
-          <Text style={styles.infoText}>o que você quer fazer agora?</Text>
+          <Text style={styles.infoNameUser}>
+            {entregadorLogado ? entregadorLogado.nome : nome}
+          </Text>
+          <Text style={styles.infoText}>O que você quer fazer agora?</Text>
         </View>
         <View style={styles.options}>
           <TouchableOpacity
@@ -78,12 +83,16 @@ export default function Menu({ navigation }) {
           >
             <Text style={styles.optionText}>Configuração da conta</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+
+          {!entregadorLogado ? <TouchableOpacity
             style={styles.option}
             onPress={() => navigation.navigate('FormEndereco')}
           >
             <Text style={styles.optionText}>Endereço de entrega</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> : ''}
+
+          
+
           <TouchableOpacity
             style={styles.option}
             onPress={() => navigation.navigate('Exit')}
@@ -92,7 +101,7 @@ export default function Menu({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-      <Footer />
+      {entregadorLogado ? <FooterEntregador /> : <Footer />}
     </View>
   );
 }
@@ -141,3 +150,4 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
   },
 });
+

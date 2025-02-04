@@ -3,34 +3,33 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, Text, TextInput, Modal, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Input } from 'react-native-elements';
-import { useRoute } from '@react-navigation/native';
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { API_URL } from '../components/linkApi';
 
 export default function FormConta({ navigation }) {
     const [modalVisible, setModalVisible] = useState(false);
-    const [token, setToken] = useState('');  // Estado para armazenar o token
-    const route = useRoute();
-    //const { cliente } = route.params || {};
+    const [token, setToken] = useState('');
+    const [id, setId] = useState(null);
+    const [isEntregador, setIsEntregador] = useState(false);
 
+    // Estados para armazenar os dados do usuário
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const [idCliente, setIdCliente] = useState('');
-    const [id, setId] = useState(null);
+    const [idUsuario, setIdUsuario] = useState('');
+    const [veiculo, setVeiculo] = useState('');
+    const [placa, setPlaca] = useState('');
 
     useEffect(() => {
-        // Recuperar ID e Token do AsyncStorage
         const fetchIdAndToken = async () => {
             try {
                 const storedId = await AsyncStorage.getItem('id');
-                const storedToken = await AsyncStorage.getItem('token');  // Recuperar o token
-                console.log("idsss", storedId)
-                console.log("tokenForm", storedToken)
+                const storedToken = await AsyncStorage.getItem('token');
+
                 if (storedId && storedToken) {
                     setId(storedId);
-                    setToken(storedToken);  // Armazenar o token
-                    fetchClientData(storedId, storedToken);  // Passar token para a requisição
+                    setToken(storedToken);
+                    verificarSeEhEntregador(storedId, storedToken);
                 }
             } catch (error) {
                 console.log('Erro ao recuperar o ID ou token do AsyncStorage:', error);
@@ -40,65 +39,60 @@ export default function FormConta({ navigation }) {
         fetchIdAndToken();
     }, []);
 
-    const fetchClientData = (userId, token) => {
-        axios.get(`${API_URL}/api/cliente/user/${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,  // Passando o token para a requisição
-            }
+    // Função para verificar se o usuário é um entregador
+    const verificarSeEhEntregador = (userId, token) => {
+        axios.get(`${API_URL}/api/entregador/usuario/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
         })
         .then(response => {
-            const data = response.data;
-            console.log("data", data)
-            console.log("password", data.senha)
-            setNome(data.nome);
-            setEmail(data.email);
-           // setSenha(data.senha);
-            setIdCliente(data.id);
+            if (response.data) {
+                setIsEntregador(true);
+                setNome(response.data.nome);
+                setEmail(response.data.email);
+                setVeiculo(response.data.veiculo);
+                setPlaca(response.data.placa);
+                setIdUsuario(response.data.id);
+            } else {
+                buscarDadosCliente(userId, token);
+            }
+        })
+        .catch(() => {
+            buscarDadosCliente(userId, token);
+        });
+    };
+
+    // Caso não seja entregador, busca os dados do cliente
+    const buscarDadosCliente = (userId, token) => {
+        axios.get(`${API_URL}/api/cliente/user/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(response => {
+            setNome(response.data.nome);
+            setEmail(response.data.email);
+            setIdUsuario(response.data.id);
         })
         .catch(error => {
             console.log(error);
             showMessage({
-                message: `Algo deu errado: ${error.message}`,
+                message: `Erro ao buscar dados do cliente: ${error.message}`,
                 type: "danger",
             });
         });
     };
 
+    // Função para alterar os dados do usuário
     const alterarDados = () => {
-        axios
-            .put(`${API_URL}/api/cliente/${idCliente}`, {
-                nome: nome,
-                email: email,
-                senha: senha,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,  // Passando o token para a requisição
-                }
-            })
-            .then(() => {
-                showMessage({
-                    message: "Alteração realizada com sucesso!",
-                    type: "success"
-                });
-                navigation.navigate('ConfirmaAlteracao');
-            })
-            .catch(error => {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error.message}`,
-                    type: "danger",
-                });
-            });
-    };
+        const url = isEntregador ? `${API_URL}/api/entregador/${idUsuario}` : `${API_URL}/api/cliente/${idUsuario}`;
+        const data = isEntregador
+            ? { nome, email, senha, veiculo, placa }
+            : { nome, email, senha };
 
-    const excluirDados = () => {
-        axios.delete(`${API_URL}/api/cliente/${idCliente}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,  // Passando o token para a requisição
-            }
+        axios.put(url, data, {
+            headers: { Authorization: `Bearer ${token}` }
         })
         .then(() => {
-            navigation.navigate('Login');
+            showMessage({ message: "Alteração realizada com sucesso!", type: "success" });
+            navigation.navigate('ConfirmaAlteracao');
         })
         .catch(error => {
             console.log(error);
@@ -117,69 +111,52 @@ export default function FormConta({ navigation }) {
                 </TouchableOpacity>
             </View>
 
-            <View style={{ alignItems: 'center', }}>
-
-                <View style={{ marginBottom: 40, width: 300,  }}>
+            <View style={{ alignItems: 'center' }}>
+                <View style={{ marginBottom: 20, width: 300 }}>
                     <Input
-                        style={[{ paddingLeft: 20, }]}
                         leftIcon={<Image style={styles.icon} source={require("../assets/images/iconFooter/ic--twotone-edit.png")} />}
-                        onChangeText={(text) => setNome(text)}
+                        onChangeText={setNome}
                         value={nome}
                     />
                 </View>
+
                 <View>
                     <Text style={styles.label}>Email</Text>
                     <TextInput
                         style={styles.input}
-                        onChangeText={(text) => setEmail(text)}
+                        onChangeText={setEmail}
                         value={email}
                     />
                 </View>
-                <View>
-                    <Text style={styles.label}>Nova Senha <Text style={{ fontSize: 11 }}>(Opcional)</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="No mínimo 6 caracteres"
-                        placeholderTextColor="#C4C4CC"
-                        secureTextEntry={true}
-                        onChangeText={(text) => setSenha(text)}
-                        value={senha}
-                    />
-                </View>
+
+                {isEntregador && (
+                    <>
+                        <View>
+                            <Text style={styles.label}>Veículo</Text>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setVeiculo}
+                                value={veiculo}
+                            />
+                        </View>
+
+                        <View>
+                            <Text style={styles.label}>Placa</Text>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setPlaca}
+                                value={placa}
+                            />
+                        </View>
+                    </>
+                )}
+
                 <Button
                     buttonStyle={styles.button}
                     title="Atualizar dados"
                     onPress={alterarDados}
                 />
-                <View style={styles.centeredView}>
-                    <Modal animationType="slide" transparent={true} visible={modalVisible}>
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <Text style={styles.modalText}>Tem certeza que deseja excluir sua conta?</Text>
-                                <View style={styles.buttonGroup}>
-                                    <Pressable
-                                        style={[styles.buttonModal, styles.buttonCancel]}
-                                        onPress={() => setModalVisible(!modalVisible)}>
-                                        <Text style={styles.textStyle}>Cancelar</Text>
-                                    </Pressable>
-                                    <Pressable
-                                        style={[styles.buttonModal, styles.buttonDelete]}
-                                        onPress={excluirDados}>
-                                        <Text style={styles.textStyle}>Excluir</Text>
-                                    </Pressable>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
-                    
-                </View>
-                    <View>
-                        <Button
-                            buttonStyle={[ styles.buttonOpen]}
-                            title="Excluir conta"
-                            onPress={() => setModalVisible(true)}
-                        />
-                    </View>
+
                 <FlashMessage position="top" />
             </View>
         </View>
@@ -207,24 +184,6 @@ const styles = StyleSheet.create({
         height: 20,
         tintColor: '#FF9431',
     },
-    header: {
-        flexDirection: 'row',
-        paddingLeft: 25,
-        alignItems: 'center',
-        height: 50
-    },
-    menuIcon: {
-        width: 25,
-        height: 25,
-        tintColor: '#FF9431',
-        marginVertical: 30,
-        marginHorizontal: 5,
-    },
-    endereco: {
-        color: '#0D0D0D',
-        fontSize: 17,
-        fontWeight: '600',
-    },
     label: {
         fontSize: 16,
         marginBottom: 8,
@@ -237,7 +196,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#dbdbe749',
         marginBottom: 10,
         borderRadius: 5,
-
     },
     button: {
         marginTop: 20,
@@ -246,64 +204,5 @@ const styles = StyleSheet.create({
         width: 300,
         borderRadius: 5
     },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 22,
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    buttonModal: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
-    },
-    buttonOpen: {
-        backgroundColor: '#FF9431',
-        height: 40,
-        width: 300,
-        borderRadius: 5,
-    },
-    buttonCancel: {
-        backgroundColor: '#FF9431',
-        height: 40,
-        width: 90,
-        borderRadius: 5,
-        marginRight: 10,
-    },
-    buttonDelete: {
-        backgroundColor: 'red',
-        height: 40,
-        width: 90,
-        borderRadius: 5,
-    },
-    textStyle: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-        fontSize: 20,
-        fontWeight: 400
-    },
-    buttonGroup: {
-        flexDirection: 'row',
-        marginTop: 20,
-    },
 });
+

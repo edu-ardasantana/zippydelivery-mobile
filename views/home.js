@@ -18,6 +18,7 @@ export default function Home({ route, navigation }) {
   const [endereco, setEndereco] = useState(null);
   const [id, setId] = useState(null);
   const [clienteLogado, setClienteLogado] = useState(null);
+  const [entregadorLogado, setEntregadorLogado] = useState(null);
   const [searchText, setSearchText] = useState('');
   const isFocused = useIsFocused();
 
@@ -42,6 +43,7 @@ export default function Home({ route, navigation }) {
       fetchCliente();
       fetchCategoriasEmpresas();
       fetchEmpresas();
+      fetchEntregador();
     }
   }, [token]); // Reexecuta quando o token for atualizado
 
@@ -59,6 +61,19 @@ export default function Home({ route, navigation }) {
       console.error(error);
     }
   };
+
+  const fetchEntregador = async () => {
+    const storedId = await AsyncStorage.getItem('id');
+    setId(storedId);
+
+    const url = `${API_URL}/api/entregador/usuario/${storedId}`;
+    try {
+      const response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+      setEntregadorLogado(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const fetchCategoriasEmpresas = async () => {
     try {
@@ -132,18 +147,18 @@ export default function Home({ route, navigation }) {
           </ScrollView>
 
           <View style={styles.containerSearch}>
-  <View style={styles.search}>
-    <TextInput
-      style={styles.input}
-      placeholder="Busque lojas próximas"
-      onChangeText={setSearchText}
-      value={searchText}
-    />
-    <TouchableOpacity onPress={handleSearch} style={styles.searchIconContainer}>
-      <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--search-rounded.png')} />
-    </TouchableOpacity>
-  </View>
-</View>
+            <View style={styles.search}>
+              <TextInput
+                style={styles.input}
+                placeholder="Busque lojas próximas"
+                onChangeText={setSearchText}
+                value={searchText}
+              />
+              <TouchableOpacity onPress={handleSearch} style={styles.searchIconContainer}>
+                <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--search-rounded.png')} />
+              </TouchableOpacity>
+            </View>
+          </View>
 
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer} style={styles.carousel}>
             <TouchableOpacity style={[styles.etiqueta, empresaSelecionada === null && { backgroundColor: '#FF9431' }]} onPress={todas}>
@@ -188,8 +203,8 @@ export default function Home({ route, navigation }) {
           <View style={styles.infoUsuario}>
             <Image source={{ uri: 'https://media.istockphoto.com/id/1337144146/pt/vetorial/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=_XeYoSJQIN7GrE08cUQDJCo3U7yvoEp5OKpbhQzpmC0=' }} style={styles.avatar} />
             <View>
-              <Text style={styles.nomeUsuario}>Abinadabe</Text>
-              <Text style={styles.statusUsuario}>zippy a 2 meses</Text>
+              <Text style={styles.nomeUsuario}>{entregadorLogado? entregadorLogado.nome : 'Carregando...'}</Text>
+              <Text style={styles.statusUsuario}>Entregador zippy</Text>
             </View>
           </View>
           <Image source={require('../assets/images/LogoNovo.png')} style={styles.logoZippy} />
@@ -546,7 +561,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#7D7D7D',
     fontWeight: 'bold',
-    
+
   },
   enderecoEntrega: {
     fontSize: 14,
