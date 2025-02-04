@@ -201,9 +201,12 @@ export default function Home({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.container} >
         <View style={styles.headerContent}>
           <View style={styles.infoUsuario}>
-            <Image source={{ uri: 'https://media.istockphoto.com/id/1337144146/pt/vetorial/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=_XeYoSJQIN7GrE08cUQDJCo3U7yvoEp5OKpbhQzpmC0=' }} style={styles.avatar} />
+            <TouchableOpacity onPress={() => navigation.navigate('Menu')}>
+              <Image source={{ uri: 'https://media.istockphoto.com/id/1337144146/pt/vetorial/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=_XeYoSJQIN7GrE08cUQDJCo3U7yvoEp5OKpbhQzpmC0=' }} style={styles.avatar} />
+            </TouchableOpacity>
+
             <View>
-              <Text style={styles.nomeUsuario}>{entregadorLogado? entregadorLogado.nome : 'Carregando...'}</Text>
+              <Text style={styles.nomeUsuario}>{entregadorLogado ? entregadorLogado.nome : 'Carregando...'}</Text>
               <Text style={styles.statusUsuario}>Entregador zippy</Text>
             </View>
           </View>
