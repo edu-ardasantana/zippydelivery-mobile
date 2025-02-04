@@ -1,7 +1,48 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from "../components/linkApi";
 
 export default function ComeceAEntregar({ navigation }) {
+    const [entregadorLogado, setEntregadorLogado] = useState(null);
+    const [token, setToken] = useState('');
+    const [id, setId] = useState(null);
+    const [disponivel, setDisponivel] = useState(true);
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            const storedToken = await AsyncStorage.getItem('token');
+            if (storedToken) {
+                setToken(storedToken);
+            }
+        };
+
+        fetchToken(); // Carrega o token
+    }, []);
+
+    useEffect(() => {
+        if (token) {
+            fetchEntregador();
+        }
+    }, [token]);
+
+    const fetchEntregador = async () => {
+        const storedId = await AsyncStorage.getItem('id');
+        setId(storedId);
+
+        const url = `${API_URL}/api/entregador/usuario/${storedId}`;
+        try {
+            const response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+            setEntregadorLogado(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const alternarDisponibilidade = () => {
+        setDisponivel(!disponivel);
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container} >
@@ -18,14 +59,18 @@ export default function ComeceAEntregar({ navigation }) {
                 <View style={styles.infoUsuario}>
                     <Image source={{ uri: 'https://media.istockphoto.com/id/1337144146/pt/vetorial/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=_XeYoSJQIN7GrE08cUQDJCo3U7yvoEp5OKpbhQzpmC0=' }} style={styles.avatar} />
                     <View>
-                        <Text style={styles.nomeUsuario}>Abinadabe</Text>
-                        <Text style={styles.statusUsuario}>zippy a 2 meses</Text>
+                        <Text style={styles.nomeUsuario}>{entregadorLogado ? entregadorLogado.nome : 'Carregando...'}</Text>
+                        <Text style={styles.statusUsuario}>Entregador zippy</Text>
                     </View>
                 </View>
 
                 <View style={styles.statusWrapper}>
-                    <Image source={require('../assets/images/iconFooter/Polygon.png')} style={styles.statusIcon} />
-                    <Text style={styles.statusText}>Disponível</Text>
+                    <Image source={require('../assets/images/iconFooter/Polygon.png')} style={[styles.statusIcon, {
+                        tintColor: disponivel ? '#50A773' : 'red'
+                    }]} />
+                    <Text style={[styles.statusText, { color: disponivel ? '#50A773' : 'red' }]}>
+                        {disponivel ? "Disponível" : "Indisponível"}
+                    </Text>
                 </View>
 
             </View>
@@ -65,8 +110,19 @@ export default function ComeceAEntregar({ navigation }) {
                         </View>
 
                         <View>
-                            <TouchableOpacity style={styles.botaoLargar}>
-                                <Text style={styles.textoBotaoEntregar}>Largar</Text>
+                            <TouchableOpacity
+                                style={[
+                                    styles.botaoLargar,
+                                    { backgroundColor: disponivel ? '#EDD8DB' : '#50A773' }
+                                ]}
+                                onPress={alternarDisponibilidade}
+                            >
+                                <Text style={[
+                                    styles.textoBotaoEntregar,
+                                    { color: disponivel ? '#92000E' : 'white' }
+                                ]}>
+                                    {disponivel ? "Largar" : "Começar"}
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -231,7 +287,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginVertical: 20,
         borderRadius: 5,
-        width: 85,
+        width: 100,
     },
     textoBotaoEntregar: {
         fontSize: 14,
