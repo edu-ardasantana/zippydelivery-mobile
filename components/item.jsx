@@ -27,7 +27,7 @@ export default function Item({titulo, descricao, preco, onPress, imagem}) {
             </View>
 
             <View style={styles.colum2}> 
-                <Image style={styles.itemImage} source={imagem} />
+                <Image style={styles.itemImage} source={{uri:imagem}} />
             </View>
 
             {/* 

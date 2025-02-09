@@ -40,6 +40,7 @@ export default function Sacola({ navigation }) {
                 const usuarioId = await AsyncStorage.getItem('id');
                 setIdEmpresa(parseInt(empresaId, 10));
                 setUserId(parseInt(usuarioId, 10));
+                console.log("id ",usuarioId)
             } catch (error) {
                 console.log('Erro ao carregar dados do AsyncStorage:', error);
             }

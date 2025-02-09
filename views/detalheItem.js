@@ -51,7 +51,7 @@ export default function DetalheItem({ route, navigation }) {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={produto.imagem}
+          source={{uri:produto.imagem}}
           style={styles.backgroundImage}
         />
         <View style={styles.headerContent}>

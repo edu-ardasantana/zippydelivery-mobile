@@ -9,7 +9,7 @@ import HomeLojaScreen from '../views/homeLoja';
 import MenuScreen from '../views/menu';
 import DetalheItemScreen from '../views/detalheItem';
 import SacolaScreen from '../views/sacola';
-import ConfirmaPedidoScreen from '../views/messageScreens/confirmaPedido';
+import ConfirmaPedidoScreen from '../views/messageScreens/pedidoConfirmado';
 import ConfirmaAlteracaoScreen from '../views/messageScreens/confirmaAlteracao';
 import ExitScreen from '../views/messageScreens/exit';
 import FormEnderecoScreen from '../views/formEndereco';

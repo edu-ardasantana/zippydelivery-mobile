@@ -23,7 +23,7 @@ export default function ItemSacola({item}) {
         <View style={styles.slide}>
 
             <View style={styles.colum1}>
-                <Image style={styles.itemImage} source={item.imagem} />
+                <Image style={styles.itemImage} source={{uri:item.imagem}} />
                 {/*<Image style={styles.itemImage} source={{uri:(item.imagem)}} />*/}
             </View>
 
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         marginVertical: 10,
         marginRight: 7,
-        backgroundColor: "red"
+       // backgroundColor: "red"
 
     },
     title2: {
