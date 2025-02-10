@@ -6,14 +6,15 @@ import { useIsFocused } from '@react-navigation/native';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-
 import { API_URL } from '@/components/linkApi';
+import { Linking } from 'react-native'; 
 
 export default function ResumoSacola({ navigation, route }) {
   const { cupomInfo } = route.params;
   const valorDesconto = cupomInfo ? cupomInfo.percentualDesconto / 100 : 0.00;
   const [id, setId] = useState(null);
   const [idEmpresa, setIdEmpresa] = useState(null);
+  const [getEmpresa, setEmpresa] = useState(null);
   const [token, setToken] = useState('');
 
   const [getEndereco, setEndereco] = useState({});
@@ -21,6 +22,7 @@ export default function ResumoSacola({ navigation, route }) {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [url, setUrl] = useState('');
   const [getCliente, setCliente] = useState();
+  const [selectedEndereco, setSelectedEndereco] = useState(0);  // Define o estado para o índice do endereço selecionado
 
   const { cart, setCart } = useMyContext();
 
@@ -44,10 +46,15 @@ export default function ResumoSacola({ navigation, route }) {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(response => {
-        setEndereco(response.data.endereco);
-        setCliente(response.data);
+        console.log("Dados do cliente:", response.data);  // Adicionando log para inspecionar os dados
+        if (response.data) {
+          setEndereco(response.data.enderecos);
+          setCliente(response.data);
+        } else {
+          console.log("Endereço não encontrado.");
+        }
       })
-      .catch(error => console.log(error));
+      .catch(error => console.log("Erro ao buscar cliente:", error));
     }
   }, [id, token]);
 
@@ -58,7 +65,13 @@ export default function ResumoSacola({ navigation, route }) {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(response => {
-        setFormasPagamento(response.data.formasPagamento);
+        console.log('dados da empresa ', response.data);
+        if (response.data){
+          setFormasPagamento(response.data.formasPagamento);
+          setEmpresa(response.data)
+        }else {
+          console.log("Empresa não Encontrada");
+        }
       })
       .catch(error => console.log(error));
     }
@@ -69,7 +82,6 @@ export default function ResumoSacola({ navigation, route }) {
   };
 
   const valorTotal = calcularTotalCompras();
-
   const taxaFrete = cart[0]?.categoria?.empresa?.taxaFrete || 0;
   const color = taxaFrete === 0 ? "#39cd39" : "#FF9431";
 
@@ -79,7 +91,7 @@ export default function ResumoSacola({ navigation, route }) {
   ];
 
   const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
+console.log("empresa ", getEmpresa)
   function fazerPedido(cart) {
     const carrinho = cart.map(item => ({
       descricao: item.titulo,
@@ -89,11 +101,16 @@ export default function ResumoSacola({ navigation, route }) {
     }));
 
     const pedidoDinamico = {
-      cliente: getCliente,
+      cliente: {
+        cpf: getCliente.cpf,
+        email: getCliente.email,
+        id: getCliente.id,
+        nome: getCliente.nome
+      },
       dataHora: new Date().toISOString(),
       empresa: {
         id: parseInt(idEmpresa),
-        nome: "Pizzaria da Jamilly",
+        nome: getEmpresa.nome,
       },
       enderecoEntrega: getEndereco,
       formaPagamento: selectedPayment,
@@ -107,7 +124,7 @@ export default function ResumoSacola({ navigation, route }) {
     axios.post(`https://zippydelivery-fea08-default-rtdb.firebaseio.com/pedidos.json`, pedidoDinamico)
       .then(response => {
         AsyncStorage.setItem('idPedido', response.data.name);
-        navigation.navigate("PedidoConfirmado", response.data);
+        navigation.navigate("ConfirmaPedido", response.data);
       })
       .catch(error => console.log("Erro na requisição:", error));
   }
@@ -120,7 +137,7 @@ export default function ResumoSacola({ navigation, route }) {
       unit_price: element.preco * (1 - valorDesconto),
       currency_id: 'BRL',
     }));
-
+  
     axios.post('https://api.mercadopago.com/checkout/preferences', {
       items,
       auto_return: "approved",
@@ -130,28 +147,28 @@ export default function ResumoSacola({ navigation, route }) {
       headers: { 'Authorization': `Bearer APP_USR-1980238996971813-112320-8d04c96e13a81ac5d6c8e1a31397f802-1561790253` }
     })
     .then(response => {
-      setUrl(response.data.init_point);
-      navigation.navigate('Pagamento', { url: response.data.init_point });
+      const pagamentoUrl = response.data.init_point; // URL do Mercado Pago
+      Linking.openURL(pagamentoUrl); // Abre o link no navegador ou WebView
     })
     .catch(error => {
       if (error.response) {
-        // O pedido foi feito e o servidor respondeu com um código de erro
         console.error('Erro de requisição:', error.response.status);
         console.error('Detalhes do erro:', error.response.data);
       } else if (error.request) {
-        // A requisição foi feita, mas não houve resposta
         console.error('Erro na requisição:', error.request);
       } else {
-        // Algum outro erro ocorreu durante a configuração da requisição
         console.error('Erro desconhecido:', error.message);
       }
     });
   }
 
+
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContent}>
-        <TouchableOpacity onPress={() => navigation.navigate("Sacola")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Sacola")}
+          style={styles.iconWrapper}>
           <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png')} />
         </TouchableOpacity>
         <Text style={styles.title}>SACOLA</Text>
@@ -181,6 +198,33 @@ export default function ResumoSacola({ navigation, route }) {
         <Text>Total</Text>
         <Text>{formatarMoeda(valorTotal * (1 - valorDesconto) + taxaFrete)}</Text>
       </View>
+
+       {/* Exibir o endereço */}
+      
+
+<View style={styles.resumo}>
+  <Text>Endereço de Entrega</Text>
+  {getEndereco && getEndereco.length > 0 ? (
+    <Picker
+      style={styles.input}
+      selectedValue={selectedEndereco}  // Atribui o índice do endereço selecionado
+      onValueChange={(itemValue) => setSelectedEndereco(itemValue)}  // Atualiza o índice ao mudar a seleção
+    >
+      {getEndereco.map((endereco, index) => (
+        <Picker.Item
+          key={index}
+          label={`${endereco.logradouro}, ${endereco.numero} - ${endereco.bairro}`}  // Exibe o endereço no Picker
+          value={index}  // Atribui o índice como valor
+        />
+      ))}
+    </Picker>
+  ) : (
+    <Text>Endereço não disponível</Text>
+  )}
+</View>
+
+
+
 
       <Picker
         style={styles.input}
@@ -217,11 +261,16 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
+    justifyContent: "center",  // Isso garante que o título fique no centro
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#F3F3F3",
+  },
+  iconWrapper: {
+    position: 'absolute',  // Isso garante que o ícone fique fixado na esquerda
+    left: 20,  // Ajuste a distância da borda esquerda
+    paddingVertical: 20,
+    paddingHorizontal: 10,
   },
   icon: {
     width: 25,

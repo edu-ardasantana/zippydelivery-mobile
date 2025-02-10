@@ -18,7 +18,7 @@ export default function PedidoConfirmado() {
         const idPedido = await AsyncStorage.getItem('idPedido');
         if (idPedido) {
           // Recupera os detalhes do pedido
-          const response = await axios.get(`${API_URL}/api/pedidos/${idPedido}`);
+          const response = await axios.get(`https://zippydelivery-fea08-default-rtdb.firebaseio.com/pedidos.json`);
           const pedidoData = response.data;
 
           setPedido(pedidoData);
@@ -47,26 +47,27 @@ export default function PedidoConfirmado() {
       <Text style={styles.title}>Pedido Confirmado</Text>
 
       <View style={styles.orderDetails}>
-        <Text style={styles.text}>Pedido ID: {pedido.id}</Text>
-        <Text style={styles.text}>Cliente: {cliente.nome}</Text>
-        <Text style={styles.text}>Endereço: {cliente.endereco?.rua}, {cliente.endereco?.numero}</Text>
-        <Text style={styles.text}>Forma de pagamento: {pedido.formaPagamento}</Text>
-        <Text style={styles.text}>Status do pagamento: {statusPagamento}</Text>
-        <Text style={styles.text}>Status do pedido: {statusPedido}</Text>
-        <Text style={styles.text}>Total: {pedido.valorTotal}</Text>
-      </View>
+  <Text style={styles.text}>Pedido ID: {pedido?.id ?? 'N/A'}</Text>
+  <Text style={styles.text}>Cliente: {cliente?.nome ?? 'N/A'}</Text>
+  <Text style={styles.text}>Endereço: {cliente?.endereco?.rua ?? 'N/A'}, {cliente?.endereco?.numero ?? 'N/A'}</Text>
+  <Text style={styles.text}>Forma de pagamento: {pedido?.formaPagamento ?? 'N/A'}</Text>
+  <Text style={styles.text}>Status do pagamento: {statusPagamento ?? 'N/A'}</Text>
+  <Text style={styles.text}>Status do pedido: {statusPedido ?? 'N/A'}</Text>
+  <Text style={styles.text}>Total: {pedido?.valorTotal ?? 'N/A'}</Text>
+</View>
 
-      <View style={styles.orderItems}>
-        <Text style={styles.subtitle}>Itens do Pedido:</Text>
-        {pedido.itens.map((item, index) => (
-          <View key={index} style={styles.itemRow}>
-            <Image source={{ uri: item.imagem }} style={styles.itemImage} />
-            <Text style={styles.itemText}>{item.descricao}</Text>
-            <Text style={styles.itemText}>Quantidade: {item.qtdProduto}</Text>
-            <Text style={styles.itemText}>Preço: {item.preco}</Text>
-          </View>
-        ))}
-      </View>
+<View style={styles.orderItems}>
+  <Text style={styles.subtitle}>Itens do Pedido:</Text>
+  {pedido?.itens?.map((item, index) => (
+    <View key={index} style={styles.itemRow}>
+      <Image source={{ uri: item?.imagem }} style={styles.itemImage} />
+      <Text style={styles.itemText}>{item?.descricao ?? 'Sem descrição'}</Text>
+      <Text style={styles.itemText}>Quantidade: {item?.qtdProduto ?? 0}</Text>
+      <Text style={styles.itemText}>Preço: {item?.preco ?? 'N/A'}</Text>
+    </View>
+  ))}
+</View>
+
 
       <Button
         title="Voltar à Home"
