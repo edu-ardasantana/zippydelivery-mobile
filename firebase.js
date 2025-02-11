@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage"; 
+import { getDatabase } from "firebase/database";
 
 const firebaseConfigStorage = {
   apiKey: "AIzaSyD4z9evoXL37mLO-QIiFUIrT6miELZRjb0",
@@ -12,7 +12,7 @@ const firebaseConfigStorage = {
   measurementId: "G-DR9947NGM1"
 };
 
-const firebaseConfigAuth = {
+const firebaseConfigDatabase = {
   apiKey: "AIzaSyDnakVsQl6AByQWxUdhMmU1ijqQ0jcadLA",
   authDomain: "zippydelivery-fea08.firebaseapp.com",
   projectId: "zippydelivery-fea08",
@@ -25,7 +25,7 @@ const firebaseConfigAuth = {
 const appStorage = initializeApp(firebaseConfigStorage, "storageApp");
 const storage = getStorage(appStorage);
 
-const appAuth = initializeApp(firebaseConfigAuth, "authApp");
-const auth = getAuth(appAuth); 
+const appDatabase = initializeApp(firebaseConfigDatabase, "databaseApp");
+const db = getDatabase(appDatabase); 
 
-export { storage, auth };
+export { storage, db };

@@ -6,80 +6,102 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '@/components/linkApi';
 
+const FIREBASE_URL = 'https://zippydelivery-fea08-default-rtdb.firebaseio.com/pedidos.json';
+const CLIENTE_API_URL = 'https://zippydelivery-v2-latest.onrender.com/api/cliente';
 
 export default function Historico({ navigation }) {
+  const [lista, setLista] = useState([]);
+  const [clienteId, setClienteId] = useState(null);
 
-    const [lista, setLista] = useState([]);
-    const [token, setToken] = useState("");
-    console.log('token ', token)
+  useEffect(() => {
+    const fetchClienteId = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('id');
+        console.log('User ID do AsyncStorage:', userId);
 
-    useEffect(() => {
-        const fetchToken = async () => {
-          const storedToken = await AsyncStorage.getItem('token');
-          if (storedToken) {
-            console.log("tokenMenu", token)
-            setToken(storedToken);  // Atualiza o token
-          }
-        };
-        fetchToken();  // Carrega o token ao inicializar o componente
-      }, []);
-    
-      useEffect(() => {
-        // Verifica se o token existe antes de tentar fazer a requisição
-        if (token) {
-          const carregarLista = async () => {
-            try {
-              const response = await axios.get(`${API_URL}/api/pedido`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,  // Adicionando o token ao cabeçalho
-                },
-              });
-              console.log(response.data);
-              setLista(response.data);
-            } catch (error) {
-              console.error('Erro ao carregar lista:', error);
-            }
-          };
-      
-          carregarLista();
+        if (!userId) {
+          console.error('Nenhum ID encontrado no AsyncStorage');
+          return;
         }
-      }, [token]); // O useEffect só será disparado quando o token mudar
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.headerContent}>
-                <Text style={styles.title1}>Seus pedidos anteriores</Text>
-            </View>
-            <ScrollView>
-  <View style={styles.body}>
-    {lista.map((pedido, index) => {
-      let qtd = 0;
-      let produtos = [];
-      pedido.itensPedido.map(item => {
-        qtd += item.qtdProduto;
-        produtos.push(item.produto.titulo);
-      });
+        const response = await axios.get(CLIENTE_API_URL);
+        const clientes = response.data;
 
-      return (
-        <Pedido
-        key={index}
-        quantity={qtd}
-        restaurantName={pedido.empresa?.nome || "Restaurante desconhecido"}  // Valor default caso 'nome' seja undefined
-        orderName={produtos[0] || "Produto desconhecido"}  // Valor default caso 'produtos' esteja vazio
-        orderStatus={pedido.statusPedido || "Status desconhecido"}
-        orderNumber={pedido.id || "ID desconhecido"}
-        quantityItemsOrder={pedido.itensPedido?.length || 0}
-        onPress={() => navigation.navigate("DetalhePedido", { pedido })}
-      />
-      
-      );
-    })}
-  </View>
-</ScrollView>
+        const cliente = clientes.find((cliente) => cliente.usuario.id === parseInt(userId));
+        
+        if (cliente && cliente.id) {
+          console.log('ID do cliente logado:', cliente.id);
+          setClienteId(cliente.id);
+        } else {
+          console.error('Cliente não encontrado na API');
+        }
+      } catch (error) {
+        console.error('Erro ao buscar o ID do cliente:', error);
+      }
+    };
 
-            <Footer />
+    fetchClienteId();
+  }, []);
+
+  useEffect(() => {
+    const carregarLista = async () => {
+      if (!clienteId) return;
+
+      try {
+        const response = await axios.get(FIREBASE_URL);
+        if (response.data) {
+          const pedidosArray = Object.keys(response.data)
+            .map((key) => ({
+              id: key,
+              ...response.data[key],
+            }))
+            .filter((pedido) => pedido.cliente.id === clienteId); 
+
+          setLista(pedidosArray);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar pedidos do Firebase:', error);
+      }
+    };
+
+    carregarLista();
+  }, [clienteId]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.headerContent}>
+        <Text style={styles.title1}>Seus pedidos anteriores</Text>
+      </View>
+      <ScrollView>
+        <View style={styles.body}>
+          {lista.map((pedido) => {
+            let qtd = 0;
+            let produtos = [];
+
+            pedido.itens.forEach((item) => {
+              qtd += item.qtdProduto;
+              produtos.push(item.descricao);
+            });
+
+            return (
+              <Pedido
+                key={pedido.id}
+                quantity={qtd}
+                restaurantName={pedido.empresa?.nome || 'Restaurante desconhecido'}
+                orderName={produtos[0] || 'Produto desconhecido'}
+                orderStatus={pedido.statusPedido || 'Status desconhecido'}
+                orderNumber={pedido.id}
+                quantityItemsOrder={pedido.itens?.length || 0}
+                onPress={() => navigation.navigate('DetalhePedido', { pedido })}
+              />
+            );
+          })}
         </View>
-    )
+      </ScrollView>
+
+      <Footer />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
