@@ -19,6 +19,7 @@ import SemPedidosScreen from '../views/messageScreens/semPedidos';
 import ResumoSacola from '../views/resumoSacola';
 import DetalhePedido from '../views/detalhePedido';
 import ComeceAEntregar from '../views/comeceAEntregar';
+import ListAdress from '../views/listAdress'
 import { MyProvider } from '../views/myContext';
 
 
@@ -39,6 +40,7 @@ export default function App() {
         <Stack.Screen name="Exit" component={ExitScreen} options={{headerShown: false}} />
         <Stack.Screen name="ConfirmaAlteracao" component={ConfirmaAlteracaoScreen} options={{headerShown: false}} />
         <Stack.Screen name="FormEndereco" component={FormEnderecoScreen} options={{headerShown: false}} />
+        <Stack.Screen name="ListAdress" component={ListAdress} options={{headerShown: false}} />
         <Stack.Screen name="FormConta" component={FormContaScreen} options={{headerShown: false}} />
         <Stack.Screen name="Historico" component={HistoricoScreen} options={{headerShown: false}} />
         <Stack.Screen name="SemPedidos" component={SemPedidosScreen} options={{headerShown: false}} />

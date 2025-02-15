@@ -386,18 +386,20 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
+        marginBottom:20,
     },
     inputCupom: {
         height: 40,
         borderWidth: 1,
         borderColor: '#C4C4CC',
         paddingLeft: 10,
-        width: '70%',
+        width: '60%',
     },
     buttonCupom: {
-        width: '25%',
+        width: '60%',
         height: 40,
         backgroundColor: '#FF9431',
+        
     },
     buttonText: {
         fontWeight: '600',

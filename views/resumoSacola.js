@@ -144,11 +144,11 @@ console.log("empresa ", getEmpresa)
       back_urls: { success: "http://localhost:19006/PedidoConfirmado" },
       shipments: { cost: taxaFrete },
     }, {
-      headers: { 'Authorization': `Bearer APP_USR-1980238996971813-112320-8d04c96e13a81ac5d6c8e1a31397f802-1561790253` }
+      headers: { 'Authorization': `Bearer TEST-4306716972492066-021112-1acc393534dbdfe61465cf542d004115-190799322` }
     })
     .then(response => {
       const pagamentoUrl = response.data.init_point; // URL do Mercado Pago
-      Linking.openURL(pagamentoUrl); // Abre o link no navegador ou WebView
+      Linking.openURL(pagamentoUrl); // Abre o link no navegador.
     })
     .catch(error => {
       if (error.response) {
@@ -202,8 +202,8 @@ console.log("empresa ", getEmpresa)
        {/* Exibir o endereço */}
       
 
-<View style={styles.resumo}>
-  <Text>Endereço de Entrega</Text>
+       <View style={styles.resumo2}>
+  <Text style={styles.enderecoTitulo}>Endereço de Entrega</Text>
   {getEndereco && getEndereco.length > 0 ? (
     <Picker
       style={styles.input}
@@ -226,26 +226,34 @@ console.log("empresa ", getEmpresa)
 
 
 
-      <Picker
-        style={styles.input}
-        selectedValue={selectedPayment}
-        onValueChange={(itemValue) => setSelectedPayment(itemValue)}
-      >
-        {listaFormasPagamentos.map(forma => (
-          <Picker.Item key={forma.value} label={forma.label} value={forma.value} />
-        ))}
-      </Picker>
 
-      <Button
-        title="Fazer pedido"
-        onPress={() => {
-          if (selectedPayment.toLowerCase() === 'dinheiro') {
-            fazerPedido(cart);
-          } else {
-            mercadoPago(cart);
-          }
-        }}
-      />
+<View style={styles.resumo2}>
+  <Text style={styles.formaPagamentoTitulo}>Forma de Pagamento</Text>
+  <Picker
+    style={styles.input}
+    selectedValue={selectedPayment}
+    onValueChange={(itemValue) => setSelectedPayment(itemValue)}
+  >
+    {listaFormasPagamentos.map(forma => (
+      <Picker.Item key={forma.value} label={forma.label} value={forma.value} />
+    ))}
+  </Picker>
+</View>
+
+
+      <TouchableOpacity 
+  style={styles.button} 
+  onPress={() => {
+    if (selectedPayment.toLowerCase() === 'dinheiro') {
+      fazerPedido(cart);
+    } else {
+      mercadoPago(cart);
+    }
+  }}
+>
+  <Text style={styles.buttonText}>Fazer pedido</Text>
+</TouchableOpacity>
+
     </View>
   );
 }
@@ -300,6 +308,26 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 10,
   },
+  resumo2: {
+    flexDirection: "column", // Usar coluna para garantir que o título e o picker fiquem um abaixo do outro
+    justifyContent: "flex-start", // Alinhar para o topo
+    alignItems: "stretch", // Preencher a largura disponível
+    backgroundColor: "#F9F9F9",
+    paddingVertical: 20,
+    //paddingHorizontal: 2,
+    borderRadius: 8,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+
+  enderecoTitulo: {
+    fontWeight: "bold", // Título em negrito
+    fontSize: 16, // Tamanho da fonte
+    color: "#4D585E", // Cor do texto
+    marginBottom: 8, // Espaçamento entre o título e o Picker
+    marginLeft: 5,
+  },
+
   input: {
     height: 50,
     borderWidth: 1,
@@ -309,17 +337,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "#FFF",
   },
-  button: {
-    backgroundColor: "#FF9431",
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginHorizontal: 20,
-    marginTop: 20,
+  formaPagamentoTitulo: {
+    fontWeight: "bold", // Título em negrito
+    fontSize: 16, // Tamanho da fonte
+    color: "#4D585E", // Cor do texto
+    marginBottom: 8, // Espaçamento entre o título e o Picker
+    marginLeft: 5,
   },
+  button: {
+    backgroundColor: "#FF9431", // Cor de fundo do botão
+    paddingVertical: 12, // Aumenta a altura do botão
+    borderRadius: 8, // Borda arredondada
+    alignItems: "center", // Alinha o texto ao centro
+    marginHorizontal: 20, // Espaçamento das laterais
+    marginTop: 20, // Espaço superior
+    shadowColor: "#000", // Cor da sombra
+    shadowOffset: { width: 0, height: 4 }, // Posição da sombra
+    shadowOpacity: 0.3, // Opacidade da sombra
+    shadowRadius: 6, // Difusão da sombra
+    elevation: 5, // Elevação (sombra no Android)
+  },
+
   buttonText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    fontSize: 16,
+    color: "#FFF", // Cor do texto
+    fontWeight: "bold", // Peso da fonte
+    fontSize: 16, // Tamanho da fonte
   },
 });

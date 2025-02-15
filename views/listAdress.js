@@ -1,234 +1,107 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Image, Picker, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Image, StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import { showMessage } from "react-native-flash-message";
-import { TextInputMask } from 'react-native-masked-text';
-import { API_URL } from '../components/linkApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '@/components/linkApi';
 
-export default function FormEndereco({ navigation }) {
-
-    const [descricao, setDescricao] = useState('');
-    const [logradouro, setLogradouro] = useState('');
-    const [bairro, setBairro] = useState('');
-    const [cidade, setCidade] = useState('');
-    const [estado, setEstado] = useState('');
-    const [cep, setCep] = useState('');
-    const [complemento, setComplemento] = useState('');
-    const [idCliente, setIdCliente] = useState('');
-
-    const [selectedUF, setSelectedUF] = useState('');
-
-    const id = window.localStorage.getItem("id");
-
-    const local = localStorage.getItem("var");
+export default function ListarEnderecos({ navigation }) {
+    const [enderecos, setEnderecos] = useState([]);
+    const [token, setToken] = useState(null);
+    const [local, setLocal] = useState(null);
+    const [enderecoSelecionado, setEnderecoSelecionado] = useState(null);
+    const [clienteId, setCliente] = useState(null);
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/cliente/findByUser/`+id)
-            .then(function (response) {
-                const data = response.data;
-                setDescricao(data.descricao);
-                setLogradouro(data.logradouro);
-                setBairro(data.bairro);
-                setCidade(data.cidade);
-                setCep(data.cep);
-                setEstado(data.estado);
-                setComplemento(data.complemento);
-                setIdCliente(data.id);
-            })
-            .catch(function (error) {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error}`,
-                    type: "danger",
+        const fetchData = async () => {
+            try {
+                const storedToken = await AsyncStorage.getItem('token');
+                const storedId = await AsyncStorage.getItem('id');
+                const storedLocal = await AsyncStorage.getItem('var');
+
+                if (!storedToken || !storedId) {
+                    showMessage({ message: "Usuário não autenticado.", type: "danger" });
+                    return;
+                }
+
+                setToken(storedToken);
+                setLocal(storedLocal || 'Home');
+
+                // Buscar ID do cliente
+                const responseCliente = await axios.get(`${API_URL}/api/cliente/user/${storedId}`, {
+                    headers: { Authorization: `Bearer ${storedToken}` }
                 });
-            });
+
+                if (!responseCliente.data?.id) {
+                    showMessage({ message: "Erro ao obter o ID do cliente", type: "danger" });
+                    return;
+                }
+
+                const clienteId = responseCliente.data.id;
+                setCliente(clienteId);
+
+                // Buscar endereços do cliente
+                const responseEnderecos = await axios.get(`${API_URL}/api/cliente/${clienteId}/endereco`, {
+                    headers: { Authorization: `Bearer ${storedToken}` }
+                });
+
+                setEnderecos(responseEnderecos.data);
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+                showMessage({ message: "Erro ao carregar dados", description: error.message, type: "danger" });
+            }
+        };
+
+        fetchData();
     }, []);
 
-    const estados = [
-        { label: "Selecione...", value: "" },
-        { label: "Acre", value: "AC" },
-        { label: "Alagoas", value: "AL" },
-        { label: "Amapá", value: "AP" },
-        { label: "Amazonas", value: "AM" },
-        { label: "Bahia", value: "BA" },
-        { label: "Ceará", value: "CE" },
-        { label: "Distrito Federal", value: "DF" },
-        { label: "Espírito Santo", value: "ES" },
-        { label: "Goiás", value: "GO" },
-        { label: "Maranhão", value: "MA" },
-        { label: "Mato Grosso", value: "MT" },
-        { label: "Mato Grosso do Sul", value: "MS" },
-        { label: "Minas Gerais", value: "MG" },
-        { label: "Pará", value: "PA" },
-        { label: "Paraíba", value: "PB" },
-        { label: "Paraná", value: "PR" },
-        { label: "Pernambuco", value: "PE" },
-        { label: "Piauí", value: "PI" },
-        { label: "Rio de Janeiro", value: "RJ" },
-        { label: "Rio Grande do Norte", value: "RN" },
-        { label: "Rio Grande do Sul", value: "RS" },
-        { label: "Rondônia", value: "RO" },
-        { label: "Roraima", value: "RR" },
-        { label: "Santa Catarina", value: "SC" },
-        { label: "São Paulo", value: "SP" },
-        { label: "Sergipe", value: "SE" },
-        { label: "Tocantins", value: "TO" },
-    ];
+    const selecionarEndereco = async (endereco) => {
+        try {
+            await AsyncStorage.setItem("enderecoSelecionado", JSON.stringify(endereco));
+            setEnderecoSelecionado(endereco);
+            showMessage({ message: `Endereço selecionado: ${endereco.descricao}`, type: "success" });
 
-
-    const inserirDados = () => {
-        const userData = {
-            descricao: descricao,
-            logradouro: logradouro,
-            bairro: bairro,
-            cidade: cidade,
-            cep: cep,
-            complemento: complemento,
-            estado: selectedUF,
+            if (token) {
+                navigation.navigate('Home', { enderecoSelecionado: endereco });
+            } else {
+                showMessage({ message: 'Token inválido ou ausente. Faça login novamente.', type: 'danger' });
+            }
+        } catch (error) {
+            showMessage({ message: 'Erro ao selecionar endereço.', type: 'danger' });
         }
+    };
 
-
-        axios.put(`${API_URL}/api/cliente/${idCliente}`, userData)
-            .then(function (response) {
-                console.log(response);
-                showMessage({
-                    message: "Cadastro de endereço realizado com sucesso!",
-                    type: "success"
-                });
-            })
-            .catch(function (error) {
-                console.log(error);
-                showMessage({
-                    message: `Algo deu errado: ${error}`,
-                    type: "danger",
-                });
-            });
-    }
+    const renderEndereco = ({ item, index }) => (
+        <TouchableOpacity onPress={() => selecionarEndereco(item)} style={styles.enderecoContainer}>
+            <Text style={styles.enderecoText}><Text style={styles.bold}>Endereço {index + 1}: </Text>{item.descricao}</Text>
+            <Text style={styles.enderecoText}><Text style={styles.bold}>Logradouro: </Text>{item.logradouro}</Text>
+            <Text style={styles.enderecoText}><Text style={styles.bold}>Bairro: </Text>{item.bairro}</Text>
+            <Text style={styles.enderecoText}><Text style={styles.bold}>Cidade: </Text>{item.cidade} - {item.estado}</Text>
+            <Text style={styles.enderecoText}><Text style={styles.bold}>CEP: </Text>{item.cep}</Text>
+            <Text style={styles.enderecoText}><Text style={styles.bold}>Complemento: </Text>{item.complemento}</Text>
+        </TouchableOpacity>
+    );
 
     return (
-
         <View style={styles.container}>
-    {local == "sacola" ?
-        <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.navigate('Sacola')} style={styles.iconWrapper}>
-                <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-            </TouchableOpacity>
-        </View>
-        :
-        local == "menu" ?
-        <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
-                <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-            </TouchableOpacity>
-        </View>
-        : 
-        <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.iconWrapper}>
-                <Image style={styles.icon} source={{ uri: 'https://api.iconify.design/material-symbols:arrow-back-ios-new-rounded.svg' }} />
-            </TouchableOpacity>
-        </View>
-    }
-    <Text style={styles.title}>Alterar endereço de entrega</Text>
-
-    <View style={styles.formContainer}>
-
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Descrição</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setDescricao(text)}
-                value={descricao}
-            />
-        </View>
-
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Logradouro</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setLogradouro(text)}
-                value={logradouro}
-            />
-        </View>
-
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Bairro</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setBairro(text)}
-                value={bairro}
-            />
-        </View>
-
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cidade</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setCidade(text)}
-                value={cidade}
-            />
-        </View>
-
-        <View style={styles.row}>
-            <View style={styles.inputWrapper}>
-                <Text style={styles.label}>UF</Text>
-                <Picker
-                    style={styles.input}
-                    selectedValue={selectedUF}
-                    onValueChange={(itemValue, itemIndex) => setSelectedUF(itemValue)}
-                    value={estado}
-                >
-                    {estados.map((estado) => (
-                        <Picker.Item key={estado.value} label={estado.label} value={estado.value} />
-                    ))}
-                </Picker>
+            <View style={styles.headerContent}>
+                <TouchableOpacity onPress={() => navigation.navigate(local === "sacola" ? 'Sacola' : local === "menu" ? 'Menu' : 'Home')} style={styles.iconWrapper}>
+                    <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png')} />
+                </TouchableOpacity>
             </View>
+            <Text style={styles.title}>Meus Endereços</Text>
 
-            <View style={styles.inputWrapper}>
-                <Text style={styles.label}>CEP</Text>
-                <TextInputMask
-                    style={styles.input}
-                    type={'custom'}
-                    options={{
-                        mask: '99999-999'
-                    }}
-                    onChangeText={(text) => setCep(text)}
-                    value={cep}
+            {enderecos.length > 0 ? (
+                <FlatList
+                    data={enderecos}
+                    renderItem={renderEndereco}
+                    keyExtractor={(item) => item.id.toString()}
                 />
-            </View>
+            ) : (
+                <Text style={styles.emptyMessage}>Nenhum endereço encontrado.</Text>
+            )}
         </View>
-
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Complemento</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setComplemento(text)}
-                value={complemento}
-            />
-        </View>
-
-        <View style={{ flexDirection: 'row',  justifyContent: 'space-between', alignItems: 'center'}}>
-            <Button
-                buttonStyle={[styles.button, styles.buttonExcluir]}
-                title="Excluir"
-                onPress={() => {
-                    inserirDados();
-                }}
-            />
-        
-            <Button
-                buttonStyle={[styles.button, styles.buttonAtualizar, styles.titleButton]}
-                title="Atualizar"
-                onPress={() => {
-                    inserirDados();
-                }}
-            />
-        </View>
-    </View>
-</View>
-
-    )
-
+    );
 }
 
 const styles = StyleSheet.create({
@@ -259,52 +132,22 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingVertical: 20,
     },
-    formContainer: {
-        width: '100%',
+    enderecoContainer: {
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
     },
-    inputGroup: {
-        marginBottom: 15,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 10,
-    },
-    inputWrapper: {
-        flex: 1,
-    },
-    label: {
+    enderecoText: {
         fontSize: 16,
-        marginBottom: 8,
         color: '#4D585E',
     },
-    input: {
-        width: '100%',
-        height: 40,
-        paddingHorizontal: 10,
-        backgroundColor: '#dbdbe749',
-        borderRadius: 5,
-        marginBottom: 10,
+    bold: {
+        fontWeight: 'bold',
     },
-
-    
-    button: {
-        
+    emptyMessage: {
+        fontSize: 16,
+        color: '#888',
+        textAlign: 'center',
         marginTop: 20,
-        height: 40,
-        borderRadius: 5,
-        gap: 10,
     },
-
-    buttonExcluir: {
-        backgroundColor: '#92000E',
-      width: 150,
-    
-    },
-
-    buttonAtualizar: {
-        backgroundColor: '#FF9431',
-        width: 200,
-    }
-
 });

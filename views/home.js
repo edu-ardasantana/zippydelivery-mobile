@@ -4,7 +4,7 @@ import Footer from '../components/footer';
 import FooterEntregador from '../components/footerEntregador';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, FlatList, StyleSheet, Picker } from 'react-native'; // Importar Picker
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from "../components/linkApi";
 
@@ -16,11 +16,13 @@ export default function Home({ route, navigation }) {
   const [empresasFiltradasPorNome, setEmpresasFiltradasPorNome] = useState([]);
   const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
   const [endereco, setEndereco] = useState(null);
+  const [enderecos, setEnderecos] = useState([]); // Para armazenar todos os endereços
   const [id, setId] = useState(null);
   const [clienteLogado, setClienteLogado] = useState(null);
   const [entregadorLogado, setEntregadorLogado] = useState(null);
   const [searchText, setSearchText] = useState('');
   const isFocused = useIsFocused();
+
 
   const banners = {
     1: require('../assets/images/banner1.png'),
@@ -48,19 +50,26 @@ export default function Home({ route, navigation }) {
   }, [token]); // Reexecuta quando o token for atualizado
 
   const fetchCliente = async () => {
-    const storedId = await AsyncStorage.getItem('id');
-    setId(storedId);
-
-    const url = `${API_URL}/api/cliente/user/${storedId}`;
     try {
-      const response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+      const storedId = await AsyncStorage.getItem('id');
+      setId(storedId);
+  
+      const response = await axios.get(`${API_URL}/api/cliente/user/${storedId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
       setClienteLogado(response.data);
-      const enderecoPadrao = response.data.enderecos.find(end => end.padraoParaEntrega);
-      setEndereco(enderecoPadrao || null);
+      setEnderecos(response.data.enderecos);
+  
+      if (!endereco) { // Só define se não houver um já selecionado
+        const enderecoPadrao = response.data.enderecos.find((end) => end.padraoParaEntrega);
+        setEndereco(enderecoPadrao || null);
+      }
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const fetchEntregador = async () => {
     const storedId = await AsyncStorage.getItem('id');
@@ -118,22 +127,83 @@ export default function Home({ route, navigation }) {
     setEmpresasFiltradasPorCategoria([]);
   };
 
-
   const entregas = [
     { id: '1', titulo: 'Império dos Churros #145', endereco: 'Rua Macaubal, 3000 - Eldorado, São José do Rio Preto, SP, 15043485' },
     { id: '2', titulo: 'Império dos Churros #145', endereco: 'Rua Macaubal, 3000 - Eldorado, São José do Rio Preto, SP, 15043485' },
     { id: '3', titulo: 'Império dos Churros #145', endereco: 'Rua Macaubal, 3000 - Eldorado, São José do Rio Preto, SP, 15043485' },
   ];
 
+  const handleEnderecoChange = async (enderecoId) => {
+    const novoEndereco = enderecos.find((end) => end.id === enderecoId);
+  
+    if (!novoEndereco) {
+      console.error("Endereço não encontrado para o ID:", enderecoId);
+      return;
+    }
+  
+    setEndereco(novoEndereco);
+  
+    try {
+      await axios.put(
+        `${API_URL}/api/cliente/${id}/endereco`,
+        { enderecoId: novoEndereco.id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      console.log("Endereço atualizado com sucesso:", novoEndereco);
+  
+      // Buscar os dados atualizados do cliente após a atualização
+      fetchCliente();
+    } catch (error) {
+      console.error("Erro ao definir endereço padrão:", error);
+    }
+  };
+  
+  // useEffect(() => {
+  //   console.log("Endereço selecionado:", endereco);
+  // }, [endereco]);
+  
+  
+  
+  
   if (clienteLogado) {
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.header}>
           <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")} />
-          {endereco === null
-            ? <Text style={styles.endereco} onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })}>Escolher endereço</Text>
-            : <Text style={styles.endereco} onPress={() => navigation.navigate('ListAddress', { origin: 'Home' })}>{toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}</Text>
-          }
+          
+          <Text style={styles.endereco}>
+  {endereco === null
+    ? <Text onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })}>
+        <Text style={styles.enderecoEscolher}>Escolher endereço</Text>
+      </Text>
+    : <Text onPress={() => navigation.navigate('ListAdress', { origin: 'Home' })}>
+        {toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}
+      </Text>
+  }
+</Text>
+
+          {/* Picker para seleção de endereço */}
+          <Picker
+  selectedValue={endereco ? endereco.id : null} // Usa o ID do endereço
+  style={styles.picker}
+  onValueChange={(itemValue) => {
+    console.log("Valor selecionado:", itemValue);
+    handleEnderecoChange(itemValue);
+  }}
+>
+  {enderecos.map((enderecoItem) => (
+    <Picker.Item
+      key={enderecoItem.id}
+      label={`${toTitleCase(enderecoItem.logradouro)}, ${toTitleCase(enderecoItem.cidade)}`}
+      value={enderecoItem.id} // Usa apenas o ID como valor
+    />
+  ))}
+</Picker>
+
+
+
+
           <Image style={styles.menuIcon} source={require("../assets/images/iconFooter/material-symbols--keyboard-arrow-down-rounded.png")} />
         </TouchableOpacity>
 

@@ -21,57 +21,64 @@ export default function FormEndereco({ navigation }) {
     const [selectedUF, setSelectedUF] = useState('');
     const [local, setLocal] = useState('');
     const [token, setToken] = useState('');
-
-    // Carregar o token
-    useEffect(() => {
-      const fetchToken = async () => {
-        const storedToken = await AsyncStorage.getItem('token');
-        if (storedToken) {
-          console.log("tokenMenu", token)
-          setToken(storedToken);  // Atualiza o token
-        }
-      };
-      fetchToken();  // Carrega o token ao inicializar o componente
-    }, []);
+    const [isLoading, setIsLoading] = useState(true);  // Novo estado
 
 
     useEffect(() => {
-        AsyncStorage.getItem("id").then((id) => {
-            if (id) {
-                axios
-                .get(`${API_URL}/api/cliente/user/${id}`, {
-                  headers: {
-                    Authorization: `Bearer ${token}`,  // Adicionando o token ao cabeçalho
-                  }
-                })
-                    .then((response) => {
-                        const data = response.data;
-                        console.log("data ", data)
-                        setDescricao(data.descricao);
-                        setLogradouro(data.logradouro);
-                        setBairro(data.bairro);
-                        setCidade(data.cidade);
-                        setCep(data.cep);
-                        setEstado(data.estado);
-                        setComplemento(data.complemento);
-                        setIdCliente(data.id);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        showMessage({
-                            message: `Algo deu errado: ${error}`,
-                            type: "danger",
+        const fetchToken = async () => {
+          const storedToken = await AsyncStorage.getItem('token');
+          if (storedToken) {
+            setToken(storedToken);
+            setIsLoading(false);  // Atualiza o estado para não carregar mais
+          } else {
+            // Se não encontrar o token, pode tratar de uma forma específica
+            setIsLoading(false);  // Por exemplo, já carregar o loading
+          }
+        };
+        fetchToken();
+     }, []);
+     
+
+
+     useEffect(() => {
+        if (!isLoading && token) {  // Verifica se o token foi carregado e se não está em carregamento
+            AsyncStorage.getItem("id").then((id) => {
+                if (id) {
+                    axios
+                        .get(`${API_URL}/api/cliente/user/${id}`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,  // Passando o token no cabeçalho
+                            }
+                        })
+                        .then((response) => {
+                            const data = response.data;
+                            setDescricao(data.descricao);
+                            setLogradouro(data.logradouro);
+                            setBairro(data.bairro);
+                            setCidade(data.cidade);
+                            setCep(data.cep);
+                            setEstado(data.estado);
+                            setComplemento(data.complemento);
+                            setIdCliente(data.id);
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            showMessage({
+                                message: `Algo deu errado: ${error}`,
+                                type: "danger",
+                            });
                         });
+     
+                    AsyncStorage.getItem("var").then((local) => {
+                        if (local) {
+                            setLocal(local);
+                        }
                     });
-                AsyncStorage.getItem("var").then((local) => {
-                    if (local) {
-                        setLocal(local);
-
-                    }
-                });
-            }
-        });
-    }, []);
+                }
+            });
+        }
+     }, [isLoading, token]);  // A dependência do useEffect depende do isLoading e do token
+     
 
 
 
@@ -119,7 +126,7 @@ export default function FormEndereco({ navigation }) {
         }
 
 
-        axios.put(`${API_URL}/api/cliente/${idCliente}`, userData, {
+        axios.post(`${API_URL}/api/cliente/${idCliente}/endereco`, userData, {
             headers: {
                 Authorization: `Bearer ${token}`,  // Adicionando o token ao cabeçalho
               }
