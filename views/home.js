@@ -60,10 +60,13 @@ export default function Home({ route, navigation }) {
   
       setClienteLogado(response.data);
       setEnderecos(response.data.enderecos);
-  
+      
       if (!endereco) { // Só define se não houver um já selecionado
-        const enderecoPadrao = response.data.enderecos.find((end) => end.padraoParaEntrega);
-        setEndereco(enderecoPadrao || null);
+        const enderecoPadrao = await axios.get(`${API_URL}/api/cliente/${storedId}/endereco/default`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setEndereco(enderecoPadrao.data);
       }
     } catch (error) {
       console.error(error);
@@ -173,36 +176,17 @@ export default function Home({ route, navigation }) {
           <Image style={[styles.menuIcon, { width: 20, height: 20 }]} source={require("../assets/images/iconFooter/material-symbols--location-on-rounded.png")} />
           
           <Text style={styles.endereco}>
-  {endereco === null
-    ? <Text onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })}>
-        <Text style={styles.enderecoEscolher}>Escolher endereço</Text>
-      </Text>
-    : <Text onPress={() => navigation.navigate('ListAdress', { origin: 'Home' })}>
-        {toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}
-      </Text>
-  }
-</Text>
-
-          {/* Picker para seleção de endereço */}
-          <Picker
-  selectedValue={endereco ? endereco.id : null} // Usa o ID do endereço
-  style={styles.picker}
-  onValueChange={(itemValue) => {
-    console.log("Valor selecionado:", itemValue);
-    handleEnderecoChange(itemValue);
-  }}
->
-  {enderecos.map((enderecoItem) => (
-    <Picker.Item
-      key={enderecoItem.id}
-      label={`${toTitleCase(enderecoItem.logradouro)}, ${toTitleCase(enderecoItem.cidade)}`}
-      value={enderecoItem.id} // Usa apenas o ID como valor
-    />
-  ))}
-</Picker>
-
-
-
+            {endereco === null
+              ? <Text onPress={() => navigation.navigate('FormEndereco', { origin: 'Home' })}>
+                  <Text style={styles.enderecoEscolher}>Escolher endereço</Text>
+                </Text>
+              : endereco.padraoParaEntrega === true && (
+                <Text onPress={() => navigation.navigate('ListAdress', { origin: 'Home' })}>
+                  {toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}
+                </Text>
+              )
+            }
+          </Text>
 
           <Image style={styles.menuIcon} source={require("../assets/images/iconFooter/material-symbols--keyboard-arrow-down-rounded.png")} />
         </TouchableOpacity>

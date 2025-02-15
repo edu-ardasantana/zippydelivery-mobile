@@ -61,6 +61,7 @@ export default function ListarEnderecos({ navigation }) {
             setEnderecoSelecionado(endereco);
             showMessage({ message: `Endereço selecionado: ${endereco.descricao}`, type: "success" });
 
+            definirComoDefault(endereco.id);
             if (token) {
                 navigation.navigate('Home', { enderecoSelecionado: endereco });
             } else {
@@ -70,6 +71,12 @@ export default function ListarEnderecos({ navigation }) {
             showMessage({ message: 'Erro ao selecionar endereço.', type: 'danger' });
         }
     };
+
+    const definirComoDefault = (enderecoId) => {
+        axios.put(`${API_URL}/api/cliente/${clienteId}/endereco/padrao/${enderecoId}`, {
+            headers: { Authorization: `Bearer ${token}`, }
+        })
+    }
 
     const renderEndereco = ({ item, index }) => (
         <TouchableOpacity onPress={() => selecionarEndereco(item)} style={styles.enderecoContainer}>
