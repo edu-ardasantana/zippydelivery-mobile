@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { API_URL } from '@/components/linkApi';  // Certifique-se de que isso aponta para a URL correta da sua API
 
-export default function PedidoConfirmado() {
+export default function PedidoConfirmado({ route }) {
   const navigation = useNavigation();
   const [pedido, setPedido] = useState(null);
   const [cliente, setCliente] = useState(null);
   const [statusPagamento, setStatusPagamento] = useState('');
   const [statusPedido, setStatusPedido] = useState('');
+  const [enderecoEntrega, setEnderecoEntrega] = useState({});
+  const { idPedido } = route.params;
 
   useEffect(() => {
     const fetchPedidoData = async () => {
       try {
         const idPedido = await AsyncStorage.getItem('idPedido');
         if (idPedido) {
-          // Recupera os detalhes do pedido
-          const response = await axios.get(`https://zippydelivery-fea08-default-rtdb.firebaseio.com/pedidos.json`);
+          const response = await axios.get(`https://zippydelivery-fea08-default-rtdb.firebaseio.com/pedidos/${idPedido}.json`);
           const pedidoData = response.data;
 
           setPedido(pedidoData);
           setCliente(pedidoData.cliente);
           setStatusPagamento(pedidoData.statusPagamento);
           setStatusPedido(pedidoData.statusPedido);
+          setEnderecoEntrega(pedidoData.enderecoEntrega ? pedidoData.enderecoEntrega[0] : {});
         }
       } catch (error) {
         console.error('Erro ao carregar o pedido:', error);
@@ -42,49 +43,152 @@ export default function PedidoConfirmado() {
     );
   }
 
+  const enderecoCompleto = `${enderecoEntrega?.logradouro}, ${enderecoEntrega?.bairro}, ${enderecoEntrega?.cidade}, ${enderecoEntrega?.estado}, CEP: ${enderecoEntrega?.cep}`;
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Pedido Confirmado</Text>
 
       <View style={styles.orderDetails}>
-  <Text style={styles.text}>Pedido ID: {pedido?.id ?? 'N/A'}</Text>
-  <Text style={styles.text}>Cliente: {cliente?.nome ?? 'N/A'}</Text>
-  <Text style={styles.text}>Endereço: {cliente?.endereco?.rua ?? 'N/A'}, {cliente?.endereco?.numero ?? 'N/A'}</Text>
-  <Text style={styles.text}>Forma de pagamento: {pedido?.formaPagamento ?? 'N/A'}</Text>
-  <Text style={styles.text}>Status do pagamento: {statusPagamento ?? 'N/A'}</Text>
-  <Text style={styles.text}>Status do pedido: {statusPedido ?? 'N/A'}</Text>
-  <Text style={styles.text}>Total: {pedido?.valorTotal ?? 'N/A'}</Text>
-</View>
+        <Text style={styles.textBold}>Pedido ID:</Text>
+        <Text style={styles.text}>{idPedido}</Text>
 
-<View style={styles.orderItems}>
-  <Text style={styles.subtitle}>Itens do Pedido:</Text>
-  {pedido?.itens?.map((item, index) => (
-    <View key={index} style={styles.itemRow}>
-      <Image source={{ uri: item?.imagem }} style={styles.itemImage} />
-      <Text style={styles.itemText}>{item?.descricao ?? 'Sem descrição'}</Text>
-      <Text style={styles.itemText}>Quantidade: {item?.qtdProduto ?? 0}</Text>
-      <Text style={styles.itemText}>Preço: {item?.preco ?? 'N/A'}</Text>
-    </View>
-  ))}
-</View>
+        <Text style={styles.textBold}>Cliente:</Text>
+        <Text style={styles.text}>{cliente?.nome}</Text>
 
+        <Text style={styles.textBold}>Endereço:</Text>
+        <Text style={styles.text}>{enderecoCompleto}</Text>
 
-      <Button
-        title="Voltar à Home"
+        <Text style={styles.textBold}>Forma de pagamento:</Text>
+        <Text style={styles.text}>{pedido?.formaPagamento}</Text>
+
+        <Text style={styles.textBold}>Status do pagamento:</Text>
+        <Text style={styles.text}>{statusPagamento}</Text>
+
+        <Text style={styles.textBold}>Status do pedido:</Text>
+        <Text style={styles.text}>{statusPedido}</Text>
+
+        <Text style={styles.textBold}>Total:</Text>
+        <Text style={styles.text}>R${pedido?.valorTotal}</Text>
+      </View>
+
+      <View style={styles.orderItems}>
+        <Text style={styles.subtitle}>Itens do Pedido:</Text>
+        {pedido?.itens?.map((item, index) => (
+          <View key={index} style={styles.itemRow}>
+            <Image source={{ uri: item?.imagem }} style={styles.itemImage} />
+            <View style={styles.itemDetails}>
+              <Text style={styles.itemTextBold}>{item?.descricao}</Text>
+              <Text style={styles.itemText}>Quantidade: {item?.qtdProduto}</Text>
+              <Text style={styles.itemText}>Preço: R${item?.preco}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+
+      <TouchableOpacity
+        style={styles.button}
         onPress={() => navigation.navigate('Home')}
-      />
-    </View>
+      >
+        <Text style={styles.buttonText}>Voltar à Home</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  subtitle: { fontSize: 20, marginTop: 10, marginBottom: 10 },
-  text: { fontSize: 16, marginBottom: 5 },
-  orderDetails: { marginBottom: 20 },
-  orderItems: { width: '100%', marginBottom: 20 },
-  itemRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  itemImage: { width: 50, height: 50, marginRight: 10 },
-  itemText: { fontSize: 14, marginLeft: 10 },
+  container: { 
+    flexGrow: 1, 
+    justifyContent: 'flex-start', 
+    alignItems: 'center', 
+    padding: 20, 
+    backgroundColor: '#f8f8f8' 
+  },
+  title: { 
+    fontSize: 26, 
+    fontWeight: 'bold', 
+    marginBottom: 20, 
+    color: '#333' 
+  },
+  subtitle: { 
+    fontSize: 22, 
+    marginTop: 15, 
+    marginBottom: 10, 
+    fontWeight: '600',
+    color: '#555'
+  },
+  text: { 
+    fontSize: 16, 
+    marginBottom: 8, 
+    color: '#555',
+  },
+  textBold: { 
+    fontSize: 16, 
+    marginBottom: 8, 
+    fontWeight: 'bold', 
+    color: '#333'
+  },
+  orderDetails: { 
+    width: '100%', 
+    marginBottom: 20, 
+    padding: 15, 
+    backgroundColor: '#fff', 
+    borderRadius: 10, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4,
+  },
+  orderItems: { 
+    width: '100%', 
+    marginBottom: 20 
+  },
+  itemRow: { 
+    flexDirection: 'row', 
+    alignItems: 'flex-start', 
+    marginBottom: 15, 
+    backgroundColor: '#fff', 
+    borderRadius: 10, 
+    padding: 10, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4,
+  },
+  itemImage: { 
+    width: 80, 
+    height: 80, 
+    marginRight: 15, 
+    borderRadius: 10 
+  },
+  itemDetails: { 
+    flex: 1, 
+    justifyContent: 'flex-start' 
+  },
+  itemText: { 
+    fontSize: 14, 
+    color: '#666', 
+    marginBottom: 5 
+  },
+  itemTextBold: { 
+    fontSize: 14, 
+    color: '#333', 
+    fontWeight: 'bold', 
+    marginBottom: 5 
+  },
+  button: {
+    backgroundColor: '#FFA500',
+    borderRadius: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '80%',
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
