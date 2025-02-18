@@ -80,7 +80,7 @@ export default function DetalhePedido({ route, navigation }) {
 
             <View style={styles.resumoPedido}>
               <Text style={styles.h1}>
-                {item.titulo || "Produto desconhecido"}
+                {item.descricao || "Produto desconhecido"}
               </Text>
               <Text style={styles.h1}>
                 {item.qtdProduto} {item.qtdProduto === 1 ? "porção" : "porções"}
@@ -120,7 +120,7 @@ export default function DetalhePedido({ route, navigation }) {
       <View style={styles.resumo}>
         <Text style={{ fontWeight: "bold" }}>Total</Text>{" "}
         <Text style={{ fontWeight: "bold" }}>
-          {`R$ ${calcularTotal(pedido.itens, pedido.taxaEntrega).toFixed(2)}`}
+          {pedido.valorTotal.toFixed(2) || "0.00"}
         </Text>
       </View>
 

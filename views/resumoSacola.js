@@ -103,10 +103,12 @@ export default function ResumoSacola({ navigation, route }) {
       preco: item.preco,
       qtdProduto: item.quantity,
     }));
-
+  
+    // Calcular o valor com o desconto
     const valorComDesconto = valorTotal * (1 - valorDesconto);
+    // O valor final é a soma do valor com desconto mais a taxa de entrega
     const valorFinal = valorComDesconto + taxaFrete;
-
+  
     const pedidoDinamico = {
       cliente: {
         cpf: getCliente.cpf,
@@ -124,10 +126,10 @@ export default function ResumoSacola({ navigation, route }) {
       statusPagamento: "Pago",
       statusPedido: "Pendente",
       taxaEntrega: taxaFrete,
-      valorTotal: valorFinal,
+      valorTotal: valorFinal, // Envia o valor final, com o desconto e a taxa de entrega
       itens: carrinho,
     };
-
+  
     return axios
       .post(
         `https://zippydelivery-fea08-default-rtdb.firebaseio.com/pedidos.json`,
@@ -142,10 +144,7 @@ export default function ResumoSacola({ navigation, route }) {
           setIsPedidoCriado(true);
           return response.data;
         } else {
-          console.error(
-            "ID do pedido não retornado corretamente:",
-            response.data
-          );
+          console.error("ID do pedido não retornado corretamente:", response.data);
           throw new Error("ID do pedido não retornado corretamente");
         }
       })
@@ -153,7 +152,7 @@ export default function ResumoSacola({ navigation, route }) {
         console.error("Erro ao criar pedido:", error);
         throw error;
       });
-  }
+  }  
 
   function mercadoPago(cart, idPedido) {
     console.log("idPedido", idPedido);
@@ -296,7 +295,7 @@ export default function ResumoSacola({ navigation, route }) {
             .then((response) => {
               const idPedido = response.name;
 
-              if (selectedPayment.toLowerCase() === "DINHEIRO") {
+              if (selectedPayment.toLowerCase() === "dinheiro") {
                 navigation.navigate("ConfirmaPedido", { idPedido });
               } else {
                 mercadoPago(cart, idPedido);
