@@ -71,7 +71,7 @@ export default function PedidoConfirmado({ route }) {
         <Text style={styles.text}>{statusPedido}</Text>
 
         <Text style={styles.textBold}>Total:</Text>
-        <Text style={styles.text}>R${pedido?.valorTotal}</Text>
+        <Text style={styles.text}>R${pedido?.valorTotal.toFixed(2)}</Text>
       </View>
 
       <View style={styles.orderItems}>
