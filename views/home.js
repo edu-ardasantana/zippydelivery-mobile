@@ -177,7 +177,7 @@ export default function Home({ route, navigation }) {
             <Text
               style={styles.endereco}
               onPress={() =>
-                navigation.navigate("FormEndereco", { origin: "Home" })
+                navigation.navigate("FormEndereco")
               }
             >
               Escolher endereço
@@ -186,7 +186,7 @@ export default function Home({ route, navigation }) {
             <Text
               style={styles.endereco}
               onPress={() =>
-                navigation.navigate("ListAddress", { origin: "Home" })
+                navigation.navigate("ListAddress")
               }
             >
               {toTitleCase(endereco.logradouro)}, {toTitleCase(endereco.cidade)}

@@ -22,6 +22,9 @@ export default function ResumoSacola({ navigation, route }) {
   const [url, setUrl] = useState('');
   const [getCliente, setCliente] = useState();
   const [selectedEndereco, setSelectedEndereco] = useState(0);  // Define o estado para o índice do endereço selecionado
+  const [idPedido, setIdPedido] = useState(null);
+  const [collector_id, setCollectorId] = useState(null);
+  const [isPedidoCriado, setIsPedidoCriado] = useState(false);
 
   const { cart, setCart } = useMyContext();
 
@@ -125,52 +128,84 @@ function fazerPedido(cart) {
     itens: carrinho,
   };
 
-  return axios.post(`https://zippydelivery-fea08-default-rtdb.firebaseio.com/pedidos.json`, pedidoDinamico)
-    .then(response => {
+  return axios
+  .post(
+    `https://zippydelivery-fea08-default-rtdb.firebaseio.com/pedidos.json`,
+    pedidoDinamico,
+    { headers: { "Content-Type": "application/json" } } // Adiciona cabeçalho correto
+  )
+  .then((response) => {
+    console.log("Resposta da API:", response.data);
+    if (response.data && response.data.name) {
       AsyncStorage.setItem('idPedido', response.data.name);
-      return response; 
-    })
-    .catch(error => {
-      console.log("Erro na requisição:", error);
-      throw error; 
-    });
+      console.log(response.data.name)
+      setIdPedido(response.data.name); // Armazena o ID correto
+      setIsPedidoCriado(true);
+      mercadoPago(cart, response.data.name);
+    } else {
+      console.error("ID do pedido não retornado corretamente:", response.data);
+    }
+  })
+  .catch((error) => {
+    console.error("Erro ao criar pedido:", error);
+  });
 }
 
 
 
 
-  function mercadoPago(cart) {
-    const items = cart.map(element => ({
-      title: element.titulo,
-      id: element.id,
-      quantity: element.quantity,
-      unit_price: element.preco * (1 - valorDesconto),
-      currency_id: 'BRL',
-    }));
-  
-    axios.post('https://api.mercadopago.com/checkout/preferences', {
-      items,
-      auto_return: "approved",
-      back_urls: { success: "http://localhost:19006/PedidoConfirmado" },
-      shipments: { cost: taxaFrete },
-    }, {
-      headers: { 'Authorization': `Bearer TEST-4306716972492066-021112-1acc393534dbdfe61465cf542d004115-190799322` }
-    })
-    .then(response => {
-      const pagamentoUrl = response.data.init_point; 
+function mercadoPago(cart, idPedido) {
+  console.log("idPedido", idPedido)
+  const items = cart.map((element) => ({
+    title: element.titulo,
+    id: element.id,
+    quantity: element.quantity,
+    unit_price: element.preco,
+    currency_id: "BRL",
+  }));
+
+  axios
+.get(`https://api.mercadopago.com/v1/payments/1331905891`, {
+  headers: { Authorization: `Bearer TEST-4306716972492066-021112-1acc393534dbdfe61465cf542d004115-190799322` }
+})
+.then((response) => {
+  console.log("Collector ID:", response.data); // Identificador da conta que recebeu o pagamento
+  setCollectorId(response.data.collector_id)
+})
+.catch((error) => {
+  console.error("Erro ao buscar pagamento:", error);
+});
+
+
+  axios
+    .post(
+      "https://api.mercadopago.com/checkout/preferences",
+      {
+        items,
+        auto_return: "approved",
+        back_urls: {
+          success: `https://react-app-lake-six.vercel.app/idPedido=${idPedido}`,   // Passar idPedido como parâmetro na URL
+        },
+        shipments: { cost: taxaFrete },
+      },
+      {
+        headers: {
+          Authorization: `Bearer APP_USR-7867360652639685-021619-0dc737c49ef54c4b992010d49ec2b01f-2264316390`,
+        },
+      }
+      ,console.log("idPedidoooo ", idPedido)
+    )
+    .then((response) => {
+      const pagamentoUrl = response.data.init_point;
+      console.log("Redirecionando para URL de pagamento:", pagamentoUrl);
+
+      // Navegar para a tela de pagamento (ou abrir o link diretamente no navegador)
       Linking.openURL(pagamentoUrl);
     })
-    .catch(error => {
-      if (error.response) {
-        console.error('Erro de requisição:', error.response.status);
-        console.error('Detalhes do erro:', error.response.data);
-      } else if (error.request) {
-        console.error('Erro na requisição:', error.request);
-      } else {
-        console.error('Erro desconhecido:', error.message);
-      }
+    .catch((error) => {
+      console.error("Erro ao criar pagamento:", error);
     });
-  }
+}
 
 
 

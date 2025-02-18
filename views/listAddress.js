@@ -5,40 +5,36 @@ import { showMessage } from "react-native-flash-message";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '@/components/linkApi';
 
-export default function ListarEnderecos({ navigation }) {
+export default function ListAddress({ navigation }) {
     const [enderecos, setEnderecos] = useState([]);
     const [token, setToken] = useState(null);
-    const [local, setLocal] = useState(null);
-    const [enderecoSelecionado, setEnderecoSelecionado] = useState(null);
-    const [clienteId, setCliente] = useState(null);
+    const [clienteId, setClienteId] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const storedToken = await AsyncStorage.getItem('token');
                 const storedId = await AsyncStorage.getItem('id');
-                const storedLocal = await AsyncStorage.getItem('var');
-
+                
                 if (!storedToken || !storedId) {
                     showMessage({ message: "Usuário não autenticado.", type: "danger" });
                     return;
                 }
 
                 setToken(storedToken);
-                setLocal(storedLocal || 'Home');
-
+                
                 // Buscar ID do cliente
                 const responseCliente = await axios.get(`${API_URL}/api/cliente/user/${storedId}`, {
                     headers: { Authorization: `Bearer ${storedToken}` }
                 });
 
-                if (!responseCliente.data?.id) {
+                const clienteId = responseCliente.data?.id;
+                if (!clienteId) {
                     showMessage({ message: "Erro ao obter o ID do cliente", type: "danger" });
                     return;
                 }
 
-                const clienteId = responseCliente.data.id;
-                setCliente(clienteId);
+                setClienteId(clienteId);
 
                 // Buscar endereços do cliente
                 const responseEnderecos = await axios.get(`${API_URL}/api/cliente/${clienteId}/endereco`, {
@@ -58,25 +54,23 @@ export default function ListarEnderecos({ navigation }) {
     const selecionarEndereco = async (endereco) => {
         try {
             await AsyncStorage.setItem("enderecoSelecionado", JSON.stringify(endereco));
-            setEnderecoSelecionado(endereco);
             showMessage({ message: `Endereço selecionado: ${endereco.descricao}`, type: "success" });
-
-            definirComoDefault(endereco.id);
-            if (token) {
-                navigation.navigate('Home', { enderecoSelecionado: endereco });
-            } else {
-                showMessage({ message: 'Token inválido ou ausente. Faça login novamente.', type: 'danger' });
-            }
+            await definirComoDefault(endereco.id);
+            navigation.navigate('Home', { enderecoSelecionado: endereco });
         } catch (error) {
             showMessage({ message: 'Erro ao selecionar endereço.', type: 'danger' });
         }
     };
 
-    const definirComoDefault = (enderecoId) => {
-        axios.put(`${API_URL}/api/cliente/${clienteId}/endereco/padrao/${enderecoId}`, {
-            headers: { Authorization: `Bearer ${token}`, }
-        })
-    }
+    const definirComoDefault = async (enderecoId) => {
+        try {
+            await axios.put(`${API_URL}/api/cliente/${clienteId}/endereco/padrao/${enderecoId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+        } catch (error) {
+            showMessage({ message: "Erro ao definir endereço como padrão", type: "danger" });
+        }
+    };
 
     const renderEndereco = ({ item, index }) => (
         <TouchableOpacity onPress={() => selecionarEndereco(item)} style={styles.enderecoContainer}>
@@ -91,11 +85,6 @@ export default function ListarEnderecos({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerContent}>
-                <TouchableOpacity onPress={() => navigation.navigate(local === "sacola" ? 'Sacola' : local === "menu" ? 'Menu' : 'Home')} style={styles.iconWrapper}>
-                    <Image style={styles.icon} source={require('../assets/images/iconFooter/material-symbols--arrow-back-ios-new-rounded.png')} />
-                </TouchableOpacity>
-            </View>
             <Text style={styles.title}>Meus Endereços</Text>
 
             {enderecos.length > 0 ? (
@@ -116,21 +105,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         paddingHorizontal: 20,
-    },
-    headerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-    },
-    iconWrapper: {
-        paddingVertical: 20,
-        paddingHorizontal: 10,
-    },
-    icon: {
-        width: 20,
-        height: 20,
-        tintColor: '#FF9431',
     },
     title: {
         fontSize: 18,

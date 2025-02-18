@@ -16,7 +16,7 @@ const addToCart = (product) => {
         if (existingProductIndex !== -1) {
             // Se o produto já existe no carrinho, atualiza a quantidade
             const updatedCart = [...prevCart];
-            updatedCart[existingProductIndex].quantity += product.quantity;  // Aqui, usamos a quantidade passada
+            updatedCart[existingProductIndex].quantity += product.quantity;  // Incrementa a quantidade
             return updatedCart;
         } else {
             // Se o produto não existe no carrinho, adiciona com a quantidade fornecida
@@ -25,17 +25,17 @@ const addToCart = (product) => {
     });
 };
 
-
 const delToCart = (product) => {
     setCart((prevCart) => {
-        const updatedCart = prevCart.map((item) => 
-            item.id === product.id && item.quantity > 1 
-                ? { ...item, quantity: item.quantity - 1 } 
+        const updatedCart = prevCart.map((item) =>
+            item.id === product.id && item.quantity > 1
+                ? { ...item, quantity: item.quantity - 1 } // Diminui a quantidade
                 : item
         ).filter((item) => item.quantity > 0); // Remove produtos com quantidade 0
         return updatedCart;
     });
 };
+
 
 
 const removeFromCart = (productId) => {

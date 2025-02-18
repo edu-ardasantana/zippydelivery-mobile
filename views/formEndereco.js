@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Button } from 'react-native-elements';
 import { showMessage } from "react-native-flash-message";
@@ -15,6 +15,7 @@ export default function FormEndereco({ navigation }) {
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
+    const [numero, setNumero] = useState('');
     const [cep, setCep] = useState('');
     const [complemento, setComplemento] = useState('');
     const [idCliente, setIdCliente] = useState('');
@@ -53,6 +54,7 @@ export default function FormEndereco({ navigation }) {
                         .then((response) => {
                             const data = response.data;
                             setDescricao(data.descricao);
+                            setNumero(data.numero);
                             setLogradouro(data.logradouro);
                             setBairro(data.bairro);
                             setCidade(data.cidade);
@@ -137,6 +139,7 @@ export default function FormEndereco({ navigation }) {
                     message: "Cadastro de endereço realizado com sucesso!",
                     type: "success"
                 });
+                navigation.navigate('Home');
             })
             .catch(function (error) {
                 console.log(error);
@@ -148,7 +151,7 @@ export default function FormEndereco({ navigation }) {
     }
 
     return (
-
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
             {local == "sacola" ?
                 <View style={styles.headerContent}>
@@ -180,6 +183,15 @@ export default function FormEndereco({ navigation }) {
                         style={styles.input}
                         onChangeText={(text) => setDescricao(text)}
                         value={descricao}
+                    />
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Número</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => setNumero(text)}
+                        value={numero}
                     />
                 </View>
 
@@ -256,9 +268,10 @@ export default function FormEndereco({ navigation }) {
                 />
             </View>
         </View>
+                </ScrollView>
+
 
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -319,6 +332,7 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 20,
+        marginBottom: 20,
         backgroundColor: '#FF9431',
         height: 40,
         width: '100%',

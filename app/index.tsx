@@ -19,7 +19,7 @@ import SemPedidosScreen from '../views/messageScreens/semPedidos';
 import ResumoSacola from '../views/resumoSacola';
 import DetalhePedido from '../views/detalhePedido';
 import ComeceAEntregar from '../views/comeceAEntregar';
-import ListAdress from '../views/listAdress'
+import ListAdress from '../views/listAddress'
 import { MyProvider } from '../views/myContext';
 
 

@@ -5,22 +5,28 @@ import { ScrollView, TextInput, View, Text, TouchableOpacity, Image, StyleSheet,
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DetalheItem({ route, navigation }) {
-
   const [idEmpresa, setIdEmpresa] = useState(null);
-  const { produto, origin } = route.params;
-  const { addToCart, delToCart, removeFromCart, cart } = useMyContext([]);
+  const { produto } = route.params;
+  const { addToCart, delToCart, cart, clearCart } = useMyContext();
+
   const [selectedQuantity, _setSelectedQuantity] = useState(1);  
   const [showModal, setShowModal] = useState(false);
-
+  const [isReplacing, setIsReplacing] = useState(false); 
   const checkCartForCompany = (productId) => {
-    const cartItem = cart.find((produto) => produto.id === productId);
-    if (cart.length === 0 || (cartItem && cart[0].categoria.empresa.id === idEmpresa)) {
-        // Se o carrinho estiver vazio ou se o produto já for da mesma loja, adiciona ao carrinho
-        addToCart({ ...produto, quantity: selectedQuantity });
-        navigation.navigate('Sacola');
+    if (cart.length === 0) {
+      addToCart({ ...produto, quantity: selectedQuantity });
+      navigation.navigate('Sacola');
+      return;
+    }
+
+    const hasOtherCompanyProduct = cart.some((item) => item.categoria.empresa.id !== produto.categoria.empresa.id);
+
+    if (hasOtherCompanyProduct) {
+      setIsReplacing(true);  
+      setShowModal(true); 
     } else {
-        // Se houver produtos de outras lojas no carrinho, exibe o modal
-        setShowModal(true);
+      addToCart({ ...produto, quantity: selectedQuantity });
+      navigation.navigate('Sacola');
     }
   };
 
@@ -35,16 +41,21 @@ export default function DetalheItem({ route, navigation }) {
       setIdEmpresa(storedIdEmpresa);
     };
     fetchIdEmpresa();
-    
   }, []);
 
   function formatarMoeda(dataParam) {
     return dataParam ? dataParam.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
   }
 
-  // Função para adicionar ao carrinho quando o usuário clicar no botão
   const handleAddToCart = () => {
-    checkCartForCompany(produto.id);  // Verifica se o produto pode ser adicionado
+    checkCartForCompany(produto.id);  
+  };
+
+  const handleReplaceCart = () => {
+    clearCart();  
+    addToCart({ ...produto, quantity: selectedQuantity }); 
+    setShowModal(false);  
+    navigation.navigate('Sacola');
   };
 
   return (
@@ -97,7 +108,7 @@ export default function DetalheItem({ route, navigation }) {
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={require("../assets/images/iconFooter/material-symbols--remove-rounded.png")} />
           </TouchableOpacity>
           <Text style={[styles.title2, { color: '#FF9431', marginVertical: 20 }]}>{getProductQuantity(produto.id)}</Text>
-          <TouchableOpacity onPress={() =>  addToCart({ ...produto, quantity: selectedQuantity })} style={styles.button}>
+          <TouchableOpacity onPress={() => addToCart({ ...produto, quantity: selectedQuantity })} style={styles.button}>
             <Image style={[styles.icon, { width: 30, tintColor: '#0D0D0D' }]} source={require("../assets/images/iconFooter/material-symbols--add-rounded.png")} />
           </TouchableOpacity>
           <Button
@@ -105,57 +116,52 @@ export default function DetalheItem({ route, navigation }) {
             title={`Adicionar ${formatarMoeda((getProductQuantity(produto.id) * produto.preco))}`}
             buttonStyle={styles.addButton}
             titleStyle={styles.addButtonTitle}
-            onPress={handleAddToCart}  // Chama a função para adicionar ao carrinho
+            onPress={handleAddToCart} 
           />
         </View>
       </View>
+
       <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showModal}
-        onRequestClose={() => {
-          setShowModal(false);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>
-              Já existe um produto de outra loja no carrinho. Deseja ir para o carrinho e finalizar a compra?
-            </Text>
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity
-                style={[styles.button, { backgroundColor: '#FF9431' }]}
-                onPress={() => {
-                  setShowModal(false);
-                  navigation.navigate('Sacola');
-                }}
-              >
-                <Text style={styles.buttonText}>Ok</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  {
-                    backgroundColor: 'white',
-                    borderColor: '#FF9431',
-                    borderWidth: 1,
-                    marginLeft: 10
-                  }
-                ]}
-                onPress={() => {
-                  setShowModal(false);
-                }}
-              >
-                <Text style={[styles.buttonText, { color: '#FF9431' }]}>Não</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+  animationType="slide"
+  transparent={true}
+  visible={showModal}
+  onRequestClose={() => setShowModal(false)}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalText}>
+        Já existe um produto de outra loja no carrinho. Deseja substituir o item atual e finalizar a compra?
+      </Text>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#FF9431' }]}
+          onPress={handleReplaceCart}
+        >
+          <Text style={styles.buttonText}>Sim</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            {
+              backgroundColor: 'white',
+              borderColor: '#FF9431',
+              borderWidth: 1,
+              marginLeft: 10
+            }
+          ]}
+          onPress={() => setShowModal(false)}
+        >
+          <Text style={[styles.buttonText, { color: '#FF9431' }]}>Não</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
 
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -233,93 +239,123 @@ const styles = StyleSheet.create({
   box: {
     height: '40%',
     width: '90%',
-    justifyContent: 'center',
     flexDirection: 'row',
-    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6E6E6',
   },
   divider: {
-    height: 1,
-    backgroundColor: '#E6E6E6',
-    marginTop: 15,
+    width: '100%',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6E6E6',
+    margin: 20,
+  },
+  title1: {
+    color: '#0D0D0D',
+    fontSize: 22,
+    letterSpacing: 1.2,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  title2: {
+    color: '#FF9431',
+    fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  title3: {
+    color: '#0D0D0D',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 5,
+  },
+  descricao: {
+    color: '#7C7C8A',
+    fontSize: 16,
+    fontWeight: '400',
+  },
+  text: {
+    color: '#7C7C8A',
+    fontSize: 12,
+    fontWeight: '400',
+    padding: 10,
+    letterSpacing: 1.2,
+  },
+  input: {
+    height: 120,
+    paddingHorizontal: 10,
+    placeholderTextColor: '#ABABAB',
+    color: '#ABABAB',
+    borderColor: '#E6E6E6',
+    borderWidth: 1,
+    borderRadius: 5,
   },
   line4: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 10,
-    width: '80%',
-  },
-  button: {
-    backgroundColor: 'transparent',
-    alignItems: 'center',
+    marginVertical: 40,
+    width: '90%', 
   },
   buttonContainer: {
-    width: '70%',
-    marginTop: 20,
-    backgroundColor: '#FF9431',
-    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+
   },
   addButton: {
     backgroundColor: '#FF9431',
+    width: 140, 
+    height: 40,
+    marginLeft: 10,
+    justifyContent: 'center',
   },
   addButtonTitle: {
-    fontWeight: 'bold',
+    color: 'white',
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center', 
+    alignItems: 'center', 
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    width: '80%',
+    backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
-    width: 300,
-    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center', 
+    elevation: 10,
   },
   modalText: {
+    color: '#0D0D0D',
     fontSize: 16,
     textAlign: 'center',
+    marginBottom: 20,
   },
   buttonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 20,
+    justifyContent: 'center', 
+  },
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 5,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  input: {
-    height: 80,
-    borderWidth: 1,
-    padding: 10,
-    borderColor: '#E6E6E6',
-    borderRadius: 5,
-  },
-  title1: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#0D0D0D',
-  },
-  descricao: {
-    fontSize: 14,
-    color: '#999',
-  },
-  title2: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FF9431',
-  },
-  title3: {
-    fontSize: 16,
-    color: '#0D0D0D',
-    fontWeight: 'bold',
-  },
-  text: {
-    fontSize: 14,
-    color: '#999',
-  },
+
 });
