@@ -293,7 +293,7 @@ export default function Home({ route, navigation }) {
                     style={styles.cadaRestaurante}
                   >
                     <Loja
-  categoria="Categoria"
+  categoria={empresa.categoria.descricao}
   nome={empresa.nome}
   taxaFrete={empresa.taxaFrete}
   imgPerfil={empresa.imgPerfil}
@@ -311,7 +311,7 @@ export default function Home({ route, navigation }) {
                     style={styles.cadaRestaurante}
                   >
                     <Loja
-                      categoria="Categoria"
+                      categoria={empresa.categoria.descricao}
                       nome={empresa.nome}
                       taxaFrete={empresa.taxaFrete}
                       imgPerfil={empresa.imgPerfil}

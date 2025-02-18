@@ -74,31 +74,34 @@ export default function Historico({ navigation }) {
       </View>
       <ScrollView>
         <View style={styles.body}>
-          {lista.map((pedido) => {
-            let qtd = 0;
-            let produtos = [];
+          {lista.length === 0 ? (
+            <Text style={styles.noOrdersText}>Você ainda não fez nenhum pedido :(</Text>
+          ) : (
+            lista.map((pedido) => {
+              let qtd = 0;
+              let produtos = [];
 
-            pedido.itens.forEach((item) => {
-              qtd += item.qtdProduto;
-              produtos.push(item.descricao);
-            });
+              pedido.itens.forEach((item) => {
+                qtd += item.qtdProduto;
+                produtos.push(item.descricao);
+              });
 
-            return (
-              <Pedido
-                key={pedido.id}
-                quantity={qtd}
-                restaurantName={pedido.empresa?.nome || 'Restaurante desconhecido'}
-                orderName={produtos[0] || 'Produto desconhecido'}
-                orderStatus={pedido.statusPedido || 'Status desconhecido'}
-                orderNumber={pedido.id}
-                quantityItemsOrder={pedido.itens?.length || 0}
-                onPress={() => navigation.navigate('DetalhePedido', { pedido })}
-              />
-            );
-          })}
+              return (
+                <Pedido
+                  key={pedido.id}
+                  quantity={qtd}
+                  restaurantName={pedido.empresa?.nome || 'Restaurante desconhecido'}
+                  orderName={produtos[0] || 'Produto desconhecido'}
+                  orderStatus={pedido.statusPedido || 'Status desconhecido'}
+                  orderNumber={pedido.id}
+                  quantityItemsOrder={pedido.itens?.length || 0}
+                  onPress={() => navigation.navigate('DetalhePedido', { pedido })}
+                />
+              );
+            })
+          )}
         </View>
       </ScrollView>
-
       <Footer />
     </View>
   );

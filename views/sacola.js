@@ -40,7 +40,6 @@ export default function Sacola({ navigation }) {
                 const usuarioId = await AsyncStorage.getItem('id');
                 setIdEmpresa(parseInt(empresaId, 10));
                 setUserId(parseInt(usuarioId, 10));
-                console.log("id ",usuarioId)
             } catch (error) {
                 console.log('Erro ao carregar dados do AsyncStorage:', error);
             }
@@ -48,36 +47,45 @@ export default function Sacola({ navigation }) {
         loadData();
     }, []);
 
-    // Aplicar cupom
     const aplicarCupom = () => {
-        if (!getCupom) return;
-
+        if (!getCupom) return; // Se o cupom estiver vazio, não faz nada
+    
         axios
-            .get(`${API_URL}/api/cupom/codigo/${getCupom}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
+            .get('https://zippydelivery-v2-latest.onrender.com/api/cupom') // URL que retorna todos os cupons
             .then((response) => {
-                const cupomData = response.data;
-                if (cupomData && cupomData.quantidadeMaximaUso > 0) {
-                    const [ano, mes, dia] = cupomData.fimVigencia;
-                    const fimVigencia = new Date(ano, mes - 1, dia);
-                    if (fimVigencia >= agora) {
-                        setCupomInfo(cupomData);
+                const cupons = response.data; // Dados de todos os cupons retornados pela API
+    
+                // Procurar o cupom pelo código
+                const cupomData = cupons.find((cupom) => cupom.codigo === getCupom);
+    
+                if (cupomData) {
+                    if (cupomData.quantidadeMaximaUso > 0) {
+                        // Verificar a data de vigência do cupom
+                        const [ano, mes, dia] = cupomData.fimVigencia.split('-'); // Data de vigência (ano-mês-dia)
+                        const fimVigencia = new Date(ano, mes - 1, dia); // Criar objeto Date com a data de fim
+                        const agora = new Date(); // Data atual
+    
+                        if (fimVigencia >= agora) {
+                            setCupomInfo(cupomData); // Se o cupom for válido, armazena as informações
+                            console.log('Cupom aplicado com sucesso.');
+                        } else {
+                            setCupomInfo(null); // Se o cupom estiver expirado
+                            console.log('Cupom expirado.');
+                        }
                     } else {
-                        setCupomInfo(null);
-                        console.log('Cupom expirado.');
+                        setCupomInfo(null); // Se o cupom for inválido (quantidade máxima de uso esgotada)
+                        console.log('Cupom inválido ou esgotado.');
                     }
                 } else {
-                    setCupomInfo(null);
-                    console.log('Cupom inválido.');
+                    setCupomInfo(null); // Se o cupom não for encontrado
+                    console.log('Cupom não encontrado.');
                 }
             })
             .catch((error) => {
                 console.log('Erro ao aplicar cupom:', error);
             });
     };
+    
 
     // Carregar endereço
     useEffect(() => {
@@ -100,7 +108,6 @@ export default function Sacola({ navigation }) {
                 });
         }
     }, [userId, token, isFocused]);
-    
 
     // Atualizar estado do botão com base no carrinho
     useEffect(() => {
@@ -120,8 +127,6 @@ export default function Sacola({ navigation }) {
     const enderecoCompleto = getEndereco.enderecos && getEndereco.enderecos[0] && getEndereco.enderecos[0].logradouro
     ? `${getEndereco.enderecos[0].logradouro} - ${getEndereco.enderecos[0].bairro}, ${getEndereco.enderecos[0].cidade} - ${getEndereco.enderecos[0].estado} ${getEndereco.enderecos[0].complemento}`
     : null;
-
-
 
     // Renderizar item do carrinho
     const renderCartItem = ({ item }) => (
@@ -250,6 +255,7 @@ export default function Sacola({ navigation }) {
         </View>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

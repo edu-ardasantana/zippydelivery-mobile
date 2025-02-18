@@ -28,6 +28,23 @@ export default function DetalhePedido({ route, navigation }) {
     return subtotal + taxaEntrega;
   }
 
+  function mapFormaPagamento(formaPagamento) {
+    switch (formaPagamento) {
+      case "PIX":
+        return "PIX";
+      case "VALE_ALIMENTACAO":
+        return "Vale alimentação";
+      case "DINHEIRO":
+        return "Dinheiro";
+      case "CARTAO_DEBITO":
+        return "Cartão de débito";
+      case "CARTAO_CREDITO":
+        return "Cartão de crédito";
+      default:
+        return "Forma de pagamento desconhecida";
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContent}>
@@ -112,16 +129,9 @@ export default function DetalhePedido({ route, navigation }) {
       </View>
 
       <View style={styles.pagamento}>
-        <Text style={styles.h1}>Pagamento pelo app</Text>
+        <Text style={styles.h1}>Forma de pagamento</Text>
 
-        <Image
-          style={styles.logoCartao}
-          source={{
-            uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/langpt-1500px-Mastercard_2019_logo.svg.png",
-          }}
-        />
-
-        <Text style={styles.blocoText}>Mastecard **** 0987</Text>
+        <Text style={styles.blocoText}>{mapFormaPagamento(pedido.formaPagamento)}</Text>
       </View>
 
       <View style={styles.dividerContainer}>
@@ -140,7 +150,7 @@ export default function DetalhePedido({ route, navigation }) {
         <Text style={styles.blocoText}>
           {pedido.enderecoEntrega.logradouro},{" "}
           {pedido.enderecoEntrega.bairro} -{" "}
-          {pedido.enderecoEntrega.complemento}
+          {pedido.enderecoEntrega.cep}
         </Text>
       </View>
 
@@ -240,7 +250,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   },
   blocoText: {
-    fontSize: 11,
+    fontSize: 14,
+    marginRight: 20
   },
   dividerContainer: {
     flexDirection: "row",
@@ -260,6 +271,9 @@ const styles = StyleSheet.create({
   pagamento: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+    marginTop: 8,
   },
   logoCartao: {
     width: 35,

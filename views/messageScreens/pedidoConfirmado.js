@@ -25,7 +25,7 @@ export default function PedidoConfirmado({ route }) {
           setCliente(pedidoData.cliente);
           setStatusPagamento(pedidoData.statusPagamento);
           setStatusPedido(pedidoData.statusPedido);
-          setEnderecoEntrega(pedidoData.enderecoEntrega ? pedidoData.enderecoEntrega[0] : {});
+          setEnderecoEntrega(pedidoData.enderecoEntrega || {});
         }
       } catch (error) {
         console.error('Erro ao carregar o pedido:', error);
@@ -43,7 +43,9 @@ export default function PedidoConfirmado({ route }) {
     );
   }
 
-  const enderecoCompleto = `${enderecoEntrega?.logradouro}, ${enderecoEntrega?.bairro}, ${enderecoEntrega?.cidade}, ${enderecoEntrega?.estado}, CEP: ${enderecoEntrega?.cep}`;
+  const enderecoCompleto = enderecoEntrega?.logradouro
+    ? `${enderecoEntrega.logradouro}, ${enderecoEntrega.bairro}, ${enderecoEntrega.cidade}, ${enderecoEntrega.estado}, CEP: ${enderecoEntrega.cep}`
+    : 'Endereço não disponível';
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

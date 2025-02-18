@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Animated, StyleSheet } from 'react-native';
-import { ref, onValue } from 'firebase/database';
+import React, { useState, useEffect } from "react";
+import { View, Text, Animated, StyleSheet } from "react-native";
+import { ref, onValue } from "firebase/database";
 import { db } from "../firebase";
 
 export default function StatusTimeLine({ id }) {
-  const [status, setStatus] = useState(""); 
+  const [status, setStatus] = useState("");
   const [lineWidth] = useState(new Animated.Value(0));
 
   useEffect(() => {
     const statusRef = ref(db, `pedidos/${id}/statusPedido`);
     const unsubscribe = onValue(statusRef, (snapshot) => {
       if (snapshot.exists()) {
-        const newStatus = snapshot.val();
-        setStatus(newStatus); 
+        setStatus(snapshot.val());
       }
     });
 
@@ -20,17 +19,17 @@ export default function StatusTimeLine({ id }) {
   }, [id]);
 
   useEffect(() => {
-    if (status === "Pendente" || status === "Em preparo" || status === "Concluído") {
-      startLineAnimation(); 
+    if (status === "Pendente" || status === "Em preparo") {
+      startLineAnimation();
     }
   }, [status]);
 
   const startLineAnimation = () => {
-    lineWidth.setValue(0); 
+    lineWidth.setValue(0);
     Animated.loop(
       Animated.timing(lineWidth, {
         toValue: 100,
-        duration: 1000, 
+        duration: 1000,
         useNativeDriver: false,
       })
     ).start();
@@ -41,44 +40,48 @@ export default function StatusTimeLine({ id }) {
 
   return (
     <View style={styles.timelineContainer}>
-      {statusList.map((item, index) => (
-        <View key={index} style={styles.timelineItem}>
-          <Animated.View
-            style={[
-              styles.timelineLine,
-              index <= statusIndex ? styles.timelineActive : styles.timelineInactive,
-              {
-                width: index === statusIndex
-                  ? lineWidth.interpolate({
-                      inputRange: [0, 100],
-                      outputRange: ["0%", "190%"], 
-                    })
-                  : "190%",
-              },
-            ]}
-          />
-          <Text
-            style={[
-              styles.timelineText,
-              index <= statusIndex ? styles.timelineTextActive : styles.timelineTextInactive,
-            ]}
-          >
-            {item === "Em preparo" ? "Preparo" : item}
-          </Text>
+      {status !== "Cancelado" ? (
+        statusList.map((item, index) => (
+          <View key={index} style={styles.timelineItem}>
+            <Animated.View
+              style={[
+                styles.timelineLine,
+                {
+                  backgroundColor: status === "Concluído" || index <= statusIndex
+                    ? "#FF9431"
+                    : "#ccc",
+                  width: status === "Concluído" || index < statusIndex
+                    ? "190%"
+                    : index === statusIndex
+                    ? lineWidth.interpolate({
+                        inputRange: [0, 100],
+                        outputRange: ["0%", "190%"],
+                      })
+                    : "190%",
+                },
+              ]}
+            />
+            <Text
+              style={[
+                styles.timelineText,
+                { color: index <= statusIndex ? "#FF9431" : "#aaa" },
+              ]}
+            >
+              {item === "Em preparo" ? "Preparo" : item}
+            </Text>
+          </View>
+        ))
+      ) : (
+        <View style={styles.cancelledContainer}>
+          <View style={styles.fullRedBar} />
+          <Text style={styles.cancelledText}>Cancelado</Text>
         </View>
-      ))}
-      {status === "Cancelado" && (
-        <Text style={styles.cancelledStatus}>X</Text>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   timelineContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -95,18 +98,11 @@ const styles = StyleSheet.create({
   },
   timelineLine: {
     position: "absolute",
-    top: -12, 
-    left: "50%", 
+    top: -12,
+    left: "50%",
     height: 4,
-    backgroundColor: "#FF9431",
     borderRadius: 2,
-    transform: [{ translateX: -60 }], 
-  },
-  timelineActive: {
-    backgroundColor: "#FF9431",
-  },
-  timelineInactive: {
-    backgroundColor: "#ccc",
+    transform: [{ translateX: -60 }],
   },
   timelineText: {
     fontSize: 12,
@@ -115,18 +111,20 @@ const styles = StyleSheet.create({
     position: "relative",
     marginTop: 6,
   },
-  timelineTextActive: {
-    color: "#FF9431",
+  cancelledContainer: {
+    alignItems: "center",
+    width: "90%",
   },
-  timelineTextInactive: {
-    color: "#aaa",
+  fullRedBar: {
+    width: "100%",
+    height: 4,
+    backgroundColor: "red",
+    borderRadius: 2,
   },
-  cancelledStatus: {
+  cancelledText: {
     color: "red",
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: "bold",
-    position: "absolute",
-    top: 10,
-    right: 10,
+    marginTop: 6,
   },
 });
